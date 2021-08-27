@@ -11,6 +11,7 @@ public class MainApp extends ResourceConfig {
 
 	public MainApp() {
 		packages("com.ubot.web.api");
+		register(Config.class);
 	}
 
 }
