@@ -2,21 +2,26 @@ package com.ubot.web.db.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ResourceBundle;
 
 public class BaseDao {
-	private static String driverName = "com.mysql.cj.jdbc.Driver";
-	private static String dbURL = "jdbc:mysql://192.168.198.130:3306/ubot";
-	private static String userName = "centos";
-	private static String password = "password";
-	// server db
-//	private static String dbURL = "jdbc:mysql://172.16.45.245:3306/vsp";
-//	private static String userName = "apuser";
-//	private static String password = "apuser";
+	private static String driverName;
+	private static String dbURL;
+	private static String userName;
+	private static String poss_word;
+
+	static {
+		ResourceBundle rs = ResourceBundle.getBundle("DB");
+		driverName = rs.getString("DRIVER").trim();
+		dbURL = rs.getString("URL").trim();
+		userName = rs.getString("USER").trim();
+		poss_word = rs.getString("PASSWORD").trim();
+	}
 
 	public Connection getConnection() throws Exception {
 		Connection conn = null;
 		Class.forName(driverName);
-		conn = DriverManager.getConnection(dbURL, userName, password);
+		conn = DriverManager.getConnection(dbURL, userName, poss_word);
 		return conn;
 	}
 }
