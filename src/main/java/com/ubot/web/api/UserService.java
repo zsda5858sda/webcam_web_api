@@ -19,6 +19,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
@@ -40,21 +41,22 @@ public class UserService {
 	}
 
 	@GET
+	@Path("/{userId}")
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response getById(String requestJson) throws JsonProcessingException {
+	public Response getById(@PathParam("userId") String userId) throws JsonProcessingException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
+
 		try {
-			VSPUser inputUser = mapper.readValue(requestJson, VSPUser.class);
-			VSPUser user = userDao.findById(inputUser.getUserId()).orElseThrow(() -> new Exception("此ID尚未註冊"));
+			logger.info(userId);
+			VSPUser user = userDao.findById(userId).orElseThrow(() -> new Exception("此ID尚未註冊"));
 			message = "查詢使用者資料成功";
 			logger.info(message);
 			result.putPOJO("data", user);
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			e.printStackTrace();
 			message = String.format("查詢使用者資料錯誤, 原因: %s", e.getMessage());
 			logger.error(message);
 			result.put("message", message);
@@ -84,7 +86,7 @@ public class UserService {
 					break;
 				}
 
-				Thread.sleep(500);
+				Thread.sleep(1500);
 			}
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -133,44 +135,50 @@ public class UserService {
 				logger.info("開始新增使用者");
 
 				JSONObject json = new JSONObject();
-				VSPUser user = eventQueue.poll();
-				String newUserId = user.getUserId().concat(";");
-				user.setSubordinate(newUserId);
-				List<VSPUser> userList = new ArrayList<VSPUser>();
-				StringBuilder subordinate = new StringBuilder(newUserId);
 				String message = "";
+				VSPUser user = eventQueue.poll();
 				try {
-					String sql, sqlWorkType = "";
-					// 將worktype轉成sql判斷式
-					String[] workTypeArr = user.getWorkType().split(";");
-					for (String wt : workTypeArr) {
-						sqlWorkType += String.format("WORKTYPE like '%%%s%%'", wt);
-						if (!wt.equals(workTypeArr[workTypeArr.length - 1])) {
-							sqlWorkType += " or ";
+					if (user.getBranch().matches("800|100")) {
+						user.setSubordinate("ALL");
+						userDao.insertQuery(user);
+					} else {
+
+						String newUserId = user.getUserId().concat(";");
+						user.setSubordinate(newUserId);
+						List<VSPUser> userList = new ArrayList<VSPUser>();
+						StringBuilder subordinate = new StringBuilder(newUserId);
+						String sql, sqlWorkType = "";
+						// 將worktype轉成sql判斷式
+						String[] workTypeArr = user.getWorkType().split(";");
+						for (String wt : workTypeArr) {
+							sqlWorkType += String.format("WORKTYPE like '%%%s%%'", wt);
+							if (!wt.equals(workTypeArr[workTypeArr.length - 1])) {
+								sqlWorkType += " or ";
+							}
 						}
+
+						// 設定總行或主管之下屬
+						if (user.getBranch().equals(user.getDept()) && !user.getBranch().matches("0(.*)")) {
+							setSubordinateByHeadquarter(user, subordinate, sqlWorkType);
+						} else if (user.getManager().equalsIgnoreCase("y")) {
+							setSubordinateByManager(user, subordinate, sqlWorkType);
+						}
+
+						userDao.insertQuery(user);
+
+						// 查詢需要更新名單
+						sql = "select * from vspuser where USERID <> %s and (((%s) and (DEPT = BRANCH and BRANCH not like '0%%' or BRANCH = %s and MANAGER = 'Y')));";
+
+						userList = userDao
+								.selectQuery(String.format(sql, user.getUserId(), sqlWorkType, user.getBranch()))
+								.stream().map(u -> {
+									u.setSubordinate(u.getSubordinate() + newUserId);
+									return u;
+								}).collect(Collectors.toList());
+						userDao.updateSubordinate(userList);
+						logger.info("更新可查看之下屬");
+
 					}
-
-					// 設定總行或主管之下屬
-					if ((user.getBranch().equals(user.getDept()) && !user.getBranch().matches("0(.*)"))
-							|| user.getBranch().matches("800|100")) {
-						setSubordinateByHeadquarter(user, subordinate, sqlWorkType);
-					} else if (user.getManager().equalsIgnoreCase("y")) {
-						setSubordinateByManager(user, subordinate, sqlWorkType);
-					}
-
-					userDao.insertQuery(user);
-
-					// 查詢需要更新名單
-					sql = "select * from vspuser where USERID <> %s and (DEPT = 800 or DEPT = 100 or ((%s) and (DEPT = BRANCH and BRANCH not like '0%%' or BRANCH = %s and MANAGER = 'Y')));";
-
-					userList = userDao.selectQuery(String.format(sql, user.getUserId(), sqlWorkType, user.getBranch()))
-							.stream().map(u -> {
-								u.setSubordinate(u.getSubordinate() + newUserId);
-								return u;
-							}).collect(Collectors.toList());
-					userDao.updateSubordinate(userList);
-					logger.info("更新可查看之下屬");
-
 					message = "新增使用者成功";
 					logger.info(message);
 					json.put("message", message);
