@@ -2,7 +2,7 @@
 <html>
 
 <head>
-<meta charset="utf-8">
+    <meta charset="utf-8">
 </head>
 
 <body>
@@ -16,9 +16,6 @@
     </div>
 
     <div>
-        <!-- <label>部門: </label>
-        <select id="dept">
-        </select> -->
         <label>部門: </label><input id="dept" type="text">
     </div>
 
@@ -26,14 +23,38 @@
         <label>分行: </label><input id="branch" type="text">
     </div>
     <div>
-        <label>業務種類: </label><input id="workType" type="text">
+        <label>業務種類: </label>
+        <div id="cblist"></div>
     </div>
     <div>
-        <button type="button" onclick="submit()">Click Me!</button>
+        <button type="button" onclick="submit()">註冊</button>
     </div>
 
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        $(function () {
+            let requestURL = "http://localhost:8080/webcam_web_api/api/WorkReference";
+            $.ajax({
+                url: requestURL,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: function (returnData) {
+                    console.log(returnData);
+                    var dataList = returnData['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"] }));
+                        $('#cblist').append($('<label />', { text: dataList[i]["workName"] }));
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+        })
+    </script>
 </body>
 
 </html>

@@ -1,36 +1,16 @@
-// $(function () {
-//     let requestURL = "http://localhost:8080/webcam_web_api/WorkReference";
-//     $.ajax({
-//         url: requestURL,
-//         type: "GET",
-//         dataType: "json",
-//         contentType: "application/json;charset=utf-8",
-//         success: function (returnData) {
-//             console.log(returnData);
-//             var dataList = returnData['data'];
-//             for (var i = 0; i < dataList.length; i++) {
-//                 $('#dept').append($('<option>', {
-//                     value: dataList[i]['workType'],
-//                     text: dataList[i]['workName']
-//                 }));
-//             }
-//         },
-//         error: function (xhr, ajaxOptions, thrownError) {
-//             console.log(xhr.status);
-//             console.log(thrownError);
-//         }
-//     });
-// })
-
 function submit() {
-    let requestURL = "http://localhost:8080/webcam_web_api/User";
+    let requestURL = "http://localhost:8080/webcam_web_api/api/User";
     let dataJSON = {
         "userId": $("#uid").val(),
         "manager": $('input[name=manager]:checked').val(),
         "dept": $("#dept").val(),
-        "branch": $("#branch").val(),
-        "workType": $("#workType").val()
+        "branch": $("#branch").val()
     }
+    var workType = "";
+    $('input[name=workType]:checked').each(function(){
+        workType += this.value + ";"
+    });
+    dataJSON.workType = workType;
     $.ajax({
         url: requestURL,
         data: JSON.stringify(dataJSON),
@@ -45,6 +25,28 @@ function submit() {
             console.log(thrownError);
         }
     });
+}
+function search() {
+    
+    var minDate = $("#minDate").val().replaceAll("-", "");
+    var maxDate = $("#maxDate").val().replaceAll("-", "");
+    var userId = $("#uid").val();
+    var workType = "ALL";
+    let requestURL = `http://localhost:8080/webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&workType=${workType}`;
+    $.ajax({
+        url: requestURL,
+        dataType: "json",
+        type: "GET",
+        success: function (returnData) {
+            
+        },
+        error: function (xhr, thrownError) {
+            console.log(xhr.status);
+            console.log(thrownError);
+        }
+    });
+}
+
 function login() {
     var userId = $("#uid").val();
     var pwd = $("#password").val();
