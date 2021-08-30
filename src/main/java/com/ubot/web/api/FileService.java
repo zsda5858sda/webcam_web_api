@@ -77,4 +77,16 @@ public class FileService {
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
 	}
+
+	@GET
+	@Path("/download")
+	public Response downloadFile(@QueryParam("filePath") String filePath) throws MissingFileException {
+		File file = new File(filePath);
+		if (!file.exists()) {
+			throw new MissingFileException(filePath + " 此檔案不存在");
+		}
+		logger.info("檔案下載成功");
+		return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+				.header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"").build();
+	}
 }
