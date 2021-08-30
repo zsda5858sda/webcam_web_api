@@ -49,7 +49,6 @@ public class VSPUserDao extends BaseDao {
 			Statement stat = conn.createStatement();
 			logger.info(sql);
 			ResultSet resultSet = stat.executeQuery(sql);
-			StringBuilder builder = new StringBuilder();
 
 			while (resultSet.next()) {
 				VSPUser user = new VSPUser();
@@ -71,7 +70,6 @@ public class VSPUserDao extends BaseDao {
 				result.add(user);
 			}
 
-			logger.info(builder.toString());
 			stat.close();
 			resultSet.close();
 		} catch (SQLException e) {
