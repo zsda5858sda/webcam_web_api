@@ -45,4 +45,36 @@ function submit() {
             console.log(thrownError);
         }
     });
+function login() {
+    var userId = $("#uid").val();
+    var pwd = $("#password").val();
+    let loginURL = "http://localhost:8080/webcam_web_api/api/getAD";
+    let dataJSON = {
+        "loginId": userId,
+        "loginP_ss": pwd
+    }
+    $.ajax({
+        url: loginURL,
+        data: JSON.stringify(dataJSON),
+        dataType: "json",
+        type: "POST",
+        contentType: "application/json;charset=utf-8",
+        success: function (response) {
+            if (response["code"] == "0") {
+                let getUserURL = `http://localhost:8080/webcam_web_api/api/User/${userId}`;
+                $.ajax({
+                    url: getUserURL,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        console.log(data);
+                    }
+                })
+            }
+        },
+        error: function (xhr, thrownError) {
+            console.log(xhr.status);
+            console.log(thrownError);
+        }
+    });
 }
