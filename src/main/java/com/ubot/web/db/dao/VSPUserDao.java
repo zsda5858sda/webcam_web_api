@@ -19,24 +19,22 @@ public class VSPUserDao extends BaseDao {
 
 	public void insertQuery(VSPUser user) throws Exception {
 		Connection conn = getConnection();
-		String sql = "insert into vspuser(USERID, MANAGER, DEPT, BRANCH, WORKTYPE, SUBORDINATE) values(?,?,?,?,?,?)";
-		try {
-			PreparedStatement ps = conn.prepareStatement(sql);
+		String sql = "insert into vspuser(USERID, MANAGER, SECURITY, DEPT, BRANCH, WORKTYPE, SUBORDINATE) values(?,?,?,?,?,?,?)";
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
 			ps.setString(1, user.getUserId());
 			ps.setString(2, user.getManager());
-			ps.setString(3, user.getDept());
-
-			ps.setString(4, user.getBranch());
-			ps.setString(5, user.getWorkType());
-			ps.setString(6, user.getSubordinate());
+			ps.setString(3, user.getSecurity());
+			ps.setString(4, user.getDept());
+			ps.setString(5, user.getBranch());
+			ps.setString(6, user.getWorkType());
+			ps.setString(7, user.getSubordinate());
 
 			logger.info(ps.toString());
 			ps.execute();
 			ps.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			logger.error(e);
+			throw new Exception(e.getMessage());
 		} finally {
 			conn.close();
 		}
@@ -55,6 +53,7 @@ public class VSPUserDao extends BaseDao {
 
 				String userId = resultSet.getString("USERID");
 				String manager = resultSet.getString("MANAGER");
+				String security = resultSet.getString("SECURITY");
 				String dept = resultSet.getString("DEPT");
 				String branch = resultSet.getString("BRANCH");
 				String workType = resultSet.getString("WORKTYPE");
@@ -66,6 +65,7 @@ public class VSPUserDao extends BaseDao {
 				user.setSubordinate(subordinate);
 				user.setWorkType(workType);
 				user.setDept(dept);
+				user.setSecurity(security);
 
 				result.add(user);
 			}
@@ -73,9 +73,7 @@ public class VSPUserDao extends BaseDao {
 			stat.close();
 			resultSet.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			logger.error(e);
+			throw new Exception(e.getMessage());
 		} finally {
 			conn.close();
 		}
@@ -122,6 +120,7 @@ public class VSPUserDao extends BaseDao {
 			while (resultSet.next()) {
 				String userId = resultSet.getString("USERID");
 				String manager = resultSet.getString("MANAGER");
+				String security = resultSet.getString("SECURITY");
 				String dept = resultSet.getString("DEPT");
 				String branch = resultSet.getString("BRANCH");
 				String workType = resultSet.getString("WORKTYPE");
@@ -133,12 +132,13 @@ public class VSPUserDao extends BaseDao {
 				user.setSubordinate(subordinate);
 				user.setWorkType(workType);
 				user.setDept(dept);
+				user.setSecurity(security);
 			}
 
 			ps.close();
 			resultSet.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new Exception(e.getMessage());
 		} finally {
 			conn.close();
 		}

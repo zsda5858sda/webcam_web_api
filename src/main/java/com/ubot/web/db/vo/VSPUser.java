@@ -3,6 +3,7 @@ package com.ubot.web.db.vo;
 public class VSPUser {
 	private String userId;
 	private String manager;
+	private String security;
 	private String dept;
 	private String branch;
 	private String workType;
@@ -54,5 +55,13 @@ public class VSPUser {
 
 	public void setBranch(String branch) {
 		this.branch = branch;
+	}
+
+	public String getSecurity() {
+		return security;
+	}
+
+	public void setSecurity(String security) {
+		this.security = security;
 	}
 }
