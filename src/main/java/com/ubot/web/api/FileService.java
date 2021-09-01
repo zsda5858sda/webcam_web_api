@@ -2,6 +2,7 @@ package com.ubot.web.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,12 +13,14 @@ import com.ubot.web.db.dao.VSPFileDao;
 import com.ubot.web.db.vo.RequestBody;
 import com.ubot.web.exception.MissingFileException;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -26,6 +29,8 @@ public class FileService {
 	private final Logger logger;
 	private final VSPFileDao fileDao;
 	private final ObjectMapper mapper;
+	@Context
+	private HttpServletResponse response;
 
 	public FileService() {
 		this.logger = LogManager.getLogger(this.getClass());
@@ -88,5 +93,32 @@ public class FileService {
 		logger.info("檔案下載成功");
 		return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
 				.header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"").build();
+	}
+
+	@GET
+	@Path("/preview")
+	public void copyToPreview(@QueryParam("filePath") String filePath) throws MissingFileException {
+
+		try {
+			File file = new File(filePath);
+			if (!file.exists()) {
+				throw new MissingFileException(filePath + " 此檔案不存在");
+			}
+			String fileName = file.getName();
+			String type = fileName.substring(fileName.lastIndexOf(".") + 1);
+			switch (type) {
+			case "jpg":
+				response.setHeader("Content-Type", "image/jpeg");
+				break;
+			case "webm":
+				response.setHeader("Content-Type", "video/webm");
+				break;
+			}
+			response.setHeader("Content-Length", String.valueOf(file.length()));
+			response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+			Files.copy(file.toPath(), response.getOutputStream());
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
 	}
 }
