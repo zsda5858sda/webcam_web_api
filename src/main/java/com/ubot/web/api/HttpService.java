@@ -56,7 +56,7 @@ public class HttpService {
 		logger.info(requestJson);
 
 		long startTime = System.currentTimeMillis();
-		final long endTime = startTime + 50000;
+		final long endTime = startTime + 25000;
 		Timer timer = new Timer();
 
 		timer.schedule(new TimerTask() {
@@ -76,35 +76,36 @@ public class HttpService {
 				String errMessage = "";
 				StringBuffer errMessageBuffer = new StringBuffer("AD驗證登入失敗, 原因: ");
 				JSONObject result = new JSONObject();
-//				Response clientResponse = sendToAdHub(eaiVO);
+				Response clientResponse = sendToAdHub(eaiVO);
 
-//				if (clientResponse.getStatus() == 200) {
-//					String responseString = clientResponse.readEntity(String.class);
-//					JSONObject jsonResult = new JSONObject(responseString);
-//					String rc2 = jsonResult.getString("rc2");
-//					message = String.format(message,
-//							jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
-//					if (rc2.equals("M000")) {
-//						logger.info(message);
-				try {
-					VSPValidate validate = validateDao.selectQuery("select * from vspvalidate;");
-					result.put("message", message);
-					result.put("code", "0");
-					result.put("validate", validate.getValidate());
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (clientResponse.getStatus() == 200) {
+					String responseString = clientResponse.readEntity(String.class);
+					JSONObject jsonResult = new JSONObject(responseString);
+					String rc2 = jsonResult.getString("rc2");
+					message = String.format(message,
+							jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
+					if (rc2.equals("M000")) {
+						logger.info(message);
+						try {
+							VSPValidate validate = validateDao.selectQuery("select * from vspvalidate;");
+							result.put("message", message);
+							result.put("code", "0");
+							result.put("validate", validate.getValidate());
+						} catch (Exception e) {
+							errMessage = errMessageBuffer.append(String.format("%s", e.getMessage())).toString();
+							setErrResult(result, errMessage);
+						}
+
+					} else {
+						errMessage = errMessageBuffer.append(String.format("%s", jsonResult.get("msg2"))).toString();
+						setErrResult(result, errMessage);
+					}
+
+				} else {
+					errMessage = errMessageBuffer
+							.append(String.format("http status code %d", clientResponse.getStatus())).toString();
+					setErrResult(result, errMessage);
 				}
-
-//					} else {
-//						errMessage = errMessageBuffer.append(String.format("%s", jsonResult.get("msg2"))).toString();
-//						setErrResult(result, errMessage);
-//					}
-
-//				} else {
-//					errMessage = errMessageBuffer
-//							.append(String.format("http status code %d", clientResponse.getStatus())).toString();
-//					setErrResult(result, errMessage);
-//				}
 				asyncResponse.resume(Response.status(200).entity(result.toString()).build());
 			}
 		};
