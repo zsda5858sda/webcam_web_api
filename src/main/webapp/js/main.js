@@ -1,15 +1,23 @@
+var ip = "http://172.16.45.245:8080/"
+
 function submit() {
-    let requestURL = "http://localhost:8080/webcam_web_api/api/User";
+    var dept = $("#dept").val();
+    var branch = $("#branch").val();
+    let requestURL = `${ip}webcam_web_api/api/User`;
     let dataJSON = {
         "userId": $("#uid").val(),
         "manager": $('input[name=manager]:checked').val(),
-        "dept": $("#dept").val(),
-        "branch": $("#branch").val()
+        "security": $('input[name=security]:checked').val(),
+        "dept": dept,
+        "branch": branch,
     }
     var workType = "";
-    $('input[name=workType]:checked').each(function(){
+    $('input[name=workType]:checked').each(function () {
         workType += this.value + ";"
     });
+    if (branch.match("800|100|600")) {
+        workType = "ALL";
+    }
     dataJSON.workType = workType;
     $.ajax({
         url: requestURL,
@@ -20,30 +28,6 @@ function submit() {
         success: function (returnData) {
             console.log(returnData);
         },
-        error: function (xhr, ajaxOptions, thrownError) {
-            console.log(xhr.status);
-            console.log(thrownError);
-        }
-    });
-}
-function search() {
-    
-    var minDate = $("#minDate").val().replaceAll("-", "");
-    var maxDate = $("#maxDate").val().replaceAll("-", "");
-    var userId = $("#uid").val();
-    var workType = "ALL";
-    let requestURL = `http://localhost:8080/webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&workType=${workType}`;
-    $.ajax({
-        url: requestURL,
-        dataType: "json",
-        type: "GET",
-        success: function (returnData) {
-            
-        },
-        error: function (xhr, thrownError) {
-            console.log(xhr.status);
-            console.log(thrownError);
-        }
     });
 }
 
@@ -64,7 +48,7 @@ function login() {
         type: "POST",
         contentType: "application/json;charset=utf-8",
         success: function (response) {
-            if (response["code"] == "0") {
+            if (response["code"] == 0) {
                 if (response["validate"] == "Y") {
                     let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
                     
