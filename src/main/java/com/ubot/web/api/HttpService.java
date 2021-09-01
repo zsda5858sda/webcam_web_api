@@ -1,5 +1,6 @@
 package com.ubot.web.api;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -13,9 +14,13 @@ import org.json.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ubot.web.db.dao.VSPValidateDao;
 import com.ubot.web.db.vo.EaiVO;
+import com.ubot.web.db.vo.VSPValidate;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -33,10 +38,12 @@ import jakarta.ws.rs.core.Response;
 public class HttpService {
 	private final ObjectMapper mapper;
 	private final Logger logger;
+	private final VSPValidateDao validateDao;
 
 	public HttpService() {
 		this.mapper = new ObjectMapper();
 		this.logger = LogManager.getLogger(this.getClass());
+		this.validateDao = new VSPValidateDao();
 	}
 
 	@POST
@@ -79,8 +86,15 @@ public class HttpService {
 //							jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
 //					if (rc2.equals("M000")) {
 //						logger.info(message);
-				result.put("message", message);
-				result.put("code", "0");
+				try {
+					VSPValidate validate = validateDao.selectQuery("select * from vspvalidate;");
+					result.put("message", message);
+					result.put("code", "0");
+					result.put("validate", validate.getValidate());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 //					} else {
 //						errMessage = errMessageBuffer.append(String.format("%s", jsonResult.get("msg2"))).toString();
 //						setErrResult(result, errMessage);
@@ -97,6 +111,31 @@ public class HttpService {
 
 		sendAdThread.start();
 
+	}
+
+	@PATCH
+	@Path("/updateValid")
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response update(String requestJson) throws IOException {
+		ObjectNode result = mapper.createObjectNode();
+		String message = "";
+		logger.info(requestJson);
+		VSPValidate validate = mapper.readValue(requestJson, VSPValidate.class);
+		try {
+			validateDao.updateQuery(validate);
+			message = "更新驗證狀態成功";
+			logger.info(message);
+			result.put("message", message);
+			result.put("code", 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			message = "更新驗證狀態失敗";
+			logger.info(message);
+			result.put("message", message);
+			result.put("code", 1);
+		}
+		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
 	}
 
 	// 發送至AD之設定
