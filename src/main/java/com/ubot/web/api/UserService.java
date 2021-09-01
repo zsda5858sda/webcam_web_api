@@ -138,7 +138,7 @@ public class UserService {
 				String message = "";
 				VSPUser user = eventQueue.poll();
 				try {
-					if (user.getBranch().matches("800|100")) {
+					if (user.getBranch().equals(user.getDept()) && user.getBranch().matches("800|100|600")) {
 						user.setSubordinate("ALL");
 						userDao.insertQuery(user);
 					} else {
@@ -167,7 +167,7 @@ public class UserService {
 						userDao.insertQuery(user);
 
 						// 查詢需要更新名單
-						sql = "select * from vspuser where USERID <> %s and (((%s) and (DEPT = BRANCH and BRANCH not like '0%%' or BRANCH = %s and MANAGER = 'Y')));";
+						sql = "select * from vspuser where USERID <> %s and (((%s) and (DEPT = BRANCH and BRANCH not like '0%%' and WORKTYPE <> 'ALL' or BRANCH = %s and MANAGER = 'Y')));";
 
 						userList = userDao
 								.selectQuery(String.format(sql, user.getUserId(), sqlWorkType, user.getBranch()))
