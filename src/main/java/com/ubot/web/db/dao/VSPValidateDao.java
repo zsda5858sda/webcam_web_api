@@ -16,7 +16,7 @@ public class VSPValidateDao extends BaseDao {
 		VSPValidate result = new VSPValidate();
 
 		while (resultSet.next()) {
-			String validate = resultSet.getString("validate");
+			String validate = resultSet.getString("VALIDATE");
 
 			result.setValidate(validate);
 		}

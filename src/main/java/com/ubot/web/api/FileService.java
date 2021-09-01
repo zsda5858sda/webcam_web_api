@@ -109,7 +109,7 @@ public class FileService {
 	@GET
 	@Path("/preview")
 	public void copyToPreview(@QueryParam("filePath") String filePath) throws MissingFileException {
-
+		logger.info(filePath);
 		try {
 			File file = new File(filePath);
 			if (!file.exists()) {
@@ -128,6 +128,7 @@ public class FileService {
 			response.setHeader("Content-Length", String.valueOf(file.length()));
 			response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
 			Files.copy(file.toPath(), response.getOutputStream());
+			logger.info("檔案預覽成功");
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
