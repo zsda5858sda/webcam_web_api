@@ -16,7 +16,7 @@ public class Config implements ContainerResponseFilter {
 		res.getHeaders().add("Access-Control-Allow-Origin", "*");
 		res.getHeaders().add("Access-Control-Allow-Credentials", "true");
 		res.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-		res.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+		res.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
 	}
 
 }
