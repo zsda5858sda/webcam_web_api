@@ -16,6 +16,7 @@ public class VSPFileDao extends BaseDao {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 
 	public List<VSPFile> selectQuery(String sql) throws Exception {
+		sql += " order by SUBSTR(FILENAME, 1, 7) ASC, WORKDATE DESC";
 		List<VSPFile> result = new ArrayList<VSPFile>();
 		Connection conn = getConnection();
 		try {
