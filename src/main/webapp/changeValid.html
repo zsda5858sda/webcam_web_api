@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div>
+        <label>驗證狀態: </label>
+        <select id="validate">
+            <option value="Y">Y</option>
+            <option value="N">N</option>
+        </select>
+    </div>
+    <div>
+        <button type="button" onclick="updateValid()">更新</button>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function () {
+            var userId = localStorage.getItem("userId");
+            if (userId != "0913634") {
+                location.href = "login.html";
+            }
+        })
+        function updateValid() {
+            $.ajax({
+                url: `${ip}webcam_web_api/api/updateValid`,
+                type: "PATCH",
+                dataType: "json",
+                data: JSON.stringify({
+                    "validate": $("#validate").val()
+                }),
+                contentType: "application/json;charset=utf-8",
+                success: function (response) {
+                    console.log(response);
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
