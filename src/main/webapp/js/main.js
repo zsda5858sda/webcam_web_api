@@ -50,11 +50,13 @@ function search() {
 function login() {
     var userId = $("#uid").val();
     var pwd = $("#password").val();
-    let loginURL = "http://localhost:8080/webcam_web_api/api/getAD";
+    let loginURL = `${ip}webcam_web_api/api/getAD`;
     let dataJSON = {
         "loginId": userId,
         "loginP_ss": pwd
     }
+    localStorage.removeItem("subordinate");
+    localStorage.removeItem("workType");
     $.ajax({
         url: loginURL,
         data: JSON.stringify(dataJSON),
@@ -63,20 +65,33 @@ function login() {
         contentType: "application/json;charset=utf-8",
         success: function (response) {
             if (response["code"] == "0") {
-                let getUserURL = `http://localhost:8080/webcam_web_api/api/User/${userId}`;
-                $.ajax({
-                    url: getUserURL,
-                    type: "GET",
-                    dataType: "json",
-                    success: function(data) {
-                        console.log(data);
-                    }
-                })
+                if (response["validate"] == "Y") {
+                    let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
+                    
+                    $.ajax({
+                        url: getUserURL,
+                        type: "GET",
+                        dataType: "json",
+                        async: false,
+                        success: function (data) {
+                            localStorage.setItem("subordinate", data.data["subordinate"])
+                            localStorage.setItem("workType", data.data["workType"])
+                            localStorage.setItem("security", data.data["security"])
+                            localStorage.setItem("dept", data.data["dept"])
+                            localStorage.setItem("branch", data.data["branch"])
+                        }
+                    })
+                }
+                localStorage.setItem("userId", userId);
+                location.href = "file.html";
+            } else {
+                console.log(response);
+                alert(response.message);
             }
         },
-        error: function (xhr, thrownError) {
+        error: function (xhr) {
             console.log(xhr.status);
-            console.log(thrownError);
+            alert(xhr.responseJSON.message);
         }
     });
 }
