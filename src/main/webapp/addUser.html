@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div>
+        <label>員編: </label><input id="uid" type="text">
+    </div>
+    <div>
+        <label>主管: </label>
+        <input id="managerY" name="manager" type="radio" value="Y"><label>是</label>
+        <input id="managerN" name="manager" type="radio" value="N" checked><label>否</label>
+    </div>
+
+    <div id="securityDiv">
+        <label>安控人員: </label>
+        <input id="securityY" name="security" type="radio" value="Y"><label>是</label>
+        <input id="securityN" name="security" type="radio" value="N" checked><label>否</label>
+    </div>
+
+    <div id="deptDiv">
+        <label>部門: </label><select id="dept"></select>
+    </div>
+
+    <div id="branchDiv">
+        <label>分行: </label><select id="branch"></select>
+    </div>
+    <div id="workTypeDiv">
+        <label>業務種類: </label>
+        <div id="cblist"></div>
+    </div>
+    <div>
+        <button type="button" onclick="submit()">註冊</button>
+    </div>
+
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function () {
+            var dept = localStorage.getItem("dept");
+            var branch = localStorage.getItem("branch");
+            if (localStorage.getItem("security") == "N") {
+                history.go(-1);
+            }
+            if (dept != null) {
+                if (!dept.match("100|800|600")) {
+                    if (dept == branch) {
+                        $("#securityDiv").hide();
+                        $("#deptDiv").hide();
+                        $("#branchDiv").hide();
+                        $("#workTypeDiv").hide();
+
+                    } else {
+                        $("#securityDiv").hide();
+                        $("#deptDiv").hide();
+                        $("#branchDiv").hide();
+                    }
+                }
+            }
+            $.ajax({
+                url: `${ip}webcam_web_api/api/WorkReference`,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (returnData) {
+                    console.log(returnData);
+                    if (returnData.code == 0) {
+                        var dataList = returnData['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            let workType = dataList[i]["workType"];
+                            if (workType == dept) {
+                                $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked" }));
+                            } else {
+                                $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"] }));
+                            }
+                            $('#cblist').append($('<label />', { text: dataList[i]["workName"] }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            });
+            $.ajax({
+                url: `${ip}webcam_web_api/api/Branch`,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (returnData) {
+                    console.log(returnData);
+                    if (returnData.code == 0) {
+                        var dataList = returnData['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            let branchCode = dataList[i]["branchCode"];
+                            let branchName = dataList[i]["branchName"];
+                            $('#dept').append($('<option />', { value: branchCode, text: branchName }));
+                            $('#branch').append($('<option />', { value: branchCode, text: branchName }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            });
+            $("#dept").val(dept);
+            $("#branch").val(branch);
+        })
+    </script>
+</body>
+
+</html>
