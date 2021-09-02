@@ -48,24 +48,24 @@ public class FileService {
 		try {
 			String minDate = requestBody.getMinDate();
 			String maxDate = requestBody.getMaxDate();
-			String userId = requestBody.getUserId();
+			String canSeeUserId = requestBody.getUserId();
 			String workType = requestBody.getWorkType();
-			String[] userIdArr = userId.split(";");
+			String[] userIdArr = canSeeUserId.split(";");
 			String sqlFileName = "";
 			for (String uid : userIdArr) {
-				sqlFileName += String.format("FILENAME like '%s%%-s-%%.webm' or FILENAME like '%s%%.jpg'", uid, uid);
+				sqlFileName += String.format("FILENAME like '%s%%.webm' or FILENAME like '%s%%.jpg'", uid, uid);
 				if (!uid.equals(userIdArr[userIdArr.length - 1])) {
 					sqlFileName += " or ";
 				}
 			}
-			String sql = "select * from vspfile where WORKDATE <= %s and WORKDATE >= %s";
+			String sql = "select * from vspfile where WORKDATE <= %s and WORKDATE >= %s and (%s)";
 			if (workType.equals("ALL")) {
-				result.putPOJO("data", fileDao.selectQuery(String.format(sql, maxDate, minDate)));
+				result.putPOJO("data", fileDao.selectQuery(
+						String.format(sql, maxDate, minDate, "FILENAME like '%.webm' or FILENAME like '%.jpg'")));
 			} else if (workType.equals("null")) {
-				sql += " and (%s)";
 				result.putPOJO("data", fileDao.selectQuery(String.format(sql, maxDate, minDate, sqlFileName)));
 			} else {
-				sql += " and (%s) and (%s)";
+				sql += " and (%s)";
 				String sqlWorkType = "";
 				// 將worktype轉成sql判斷式
 				String[] workTypeArr = workType.split(";");
