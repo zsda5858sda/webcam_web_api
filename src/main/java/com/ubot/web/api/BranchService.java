@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.VSPBranchDao;
 import com.ubot.web.db.vo.VSPBranch;
 
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -43,6 +45,30 @@ public class BranchService {
 			result.putPOJO("data", branchList);
 		} catch (Exception e) {
 			message = String.format("查詢分行代碼失敗, 原因: %s", e.getMessage());
+			logger.error(message);
+			result.put("message", message);
+			result.put("code", 1);
+		}
+
+		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response save(String requestJson) throws IOException {
+		ObjectNode result = mapper.createObjectNode();
+		String message = "";
+		logger.info(requestJson);
+		try {
+			VSPBranch branch = mapper.readValue(requestJson, VSPBranch.class);
+			branchDao.insertQuery(branch);
+			message = "新增分行代碼成功";
+			logger.info(message);
+			result.put("message", message);
+			result.put("code", 0);
+		} catch (Exception e) {
+			message = String.format("新增分行代碼失敗, 原因: %s", e.getMessage());
 			logger.error(message);
 			result.put("message", message);
 			result.put("code", 1);
