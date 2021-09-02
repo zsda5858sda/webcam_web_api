@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div>
+        <label>業務種類名稱: </label><input id="workName" type="text">
+    </div>
+    <div>
+        <label>業務種類代碼: </label><input id="workType" type="text">
+    </div>
+    <div>
+        <button type="button" onclick="addWork()">新增</button>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function() {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+        })
+    </script>
+</body>
+
+</html>

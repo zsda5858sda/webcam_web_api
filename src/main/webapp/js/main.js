@@ -98,4 +98,22 @@ function addBranch() {
         }
     })
 }
+
+function addWork() {
+    let requestURL = `${ip}webcam_web_api/api/WorkReference`;
+    let dataJSON = {
+        "workName": $("#workName").val(),
+        "workType": $("#workType").val()
+    }
+    $.ajax({
+        url: requestURL,
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify(dataJSON),        
+        contentType: "application/json;charset=utf-8",
+        success: function(response) {
+            alert(response.message);
+            console.log(response);
+        }
+    })
 }
