@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div>
+        <label>分行名稱: </label><input id="branchName" type="text">
+    </div>
+    <div>
+        <label>分行代碼: </label><input id="branchCode" type="text">
+    </div>
+    <div>
+        <button type="button" onclick="addBranch()">新增</button>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function() {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+        })
+    </script>
+</body>
+
+</html>

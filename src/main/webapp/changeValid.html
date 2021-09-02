@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -21,6 +22,7 @@
     <script>
         $(function () {
             var userId = localStorage.getItem("userId");
+            
             if (userId != "0913634") {
                 location.href = "login.html";
             }
@@ -35,6 +37,7 @@
                 }),
                 contentType: "application/json;charset=utf-8",
                 success: function (response) {
+                    alert(response.message);
                     console.log(response);
                 }
             })

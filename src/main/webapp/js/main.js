@@ -79,3 +79,23 @@ function login() {
         }
     });
 }
+
+function addBranch() {
+    let requestURL = `${ip}webcam_web_api/api/Branch`;
+    let dataJSON = {
+        "branchName": $("#branchName").val(),
+        "branchCode": $("#branchCode").val()
+    }
+    $.ajax({
+        url: requestURL,
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify(dataJSON),        
+        contentType: "application/json;charset=utf-8",
+        success: function(response) {
+            alert(response.message);
+            console.log(response);
+        }
+    })
+}
+}
