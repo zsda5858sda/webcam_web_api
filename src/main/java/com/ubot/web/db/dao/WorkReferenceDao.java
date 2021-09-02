@@ -1,7 +1,9 @@
 package com.ubot.web.db.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,5 +46,22 @@ public class WorkReferenceDao extends BaseDao {
 		resultSet.close();
 		conn.close();
 		return result;
+	}
+
+	public void insertQuery(WorkReference workReference) throws Exception {
+		Connection conn = getConnection();
+		String sql = "insert into workreference (WORKNAME, WORKTYPE) values (?,?);";
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setString(1, workReference.getWorkName());
+			ps.setString(2, workReference.getWorkType());
+			logger.info(ps.toString());
+			ps.execute();
+			ps.close();
+		} catch (SQLException e) {
+			throw new Exception(e.getMessage());
+		} finally {
+			conn.close();
+		}
 	}
 }

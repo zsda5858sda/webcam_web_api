@@ -1,5 +1,6 @@
 package com.ubot.web.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +12,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.WorkReferenceDao;
 import com.ubot.web.db.vo.WorkReference;
 
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -38,13 +41,37 @@ public class WorkReferenceService {
 
 		try {
 			List<WorkReference> workReferenceList = workReferenceDao.selectQuery("select * from workreference");
-			message = "查詢部門別成功";
+			message = "查詢業務種類成功";
 			logger.info(message);
 			result.put("message", message);
 			result.put("code", 0);
 			result.putPOJO("data", workReferenceList);
 		} catch (Exception e) {
-			message = String.format("查詢部門別失敗, 原因: %s", e.getMessage());
+			message = String.format("查詢業務種類失敗, 原因: %s", e.getMessage());
+			logger.error(message);
+			result.put("message", message);
+			result.put("code", 1);
+		}
+
+		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response save(String requestJson) throws IOException {
+		ObjectNode result = mapper.createObjectNode();
+		String message = "";
+		logger.info(requestJson);
+		try {
+			WorkReference workReference = mapper.readValue(requestJson, WorkReference.class);
+			workReferenceDao.insertQuery(workReference);
+			message = "新增業務種類成功";
+			logger.info(message);
+			result.put("message", message);
+			result.put("code", 0);
+		} catch (Exception e) {
+			message = String.format("新增業務種類失敗, 原因: %s", e.getMessage());
 			logger.error(message);
 			result.put("message", message);
 			result.put("code", 1);
