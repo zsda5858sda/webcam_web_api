@@ -41,9 +41,14 @@
     <script src="js/main.js"></script>
     <script>
         $(function () {
+            
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
             var dept = localStorage.getItem("dept");
             var branch = localStorage.getItem("branch");
-            if (localStorage.getItem("security") == "N") {
+            var security = localStorage.getItem("security");
+            if (security == "N") {
                 history.go(-1);
             }
             if (dept != null) {

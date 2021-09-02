@@ -130,6 +130,9 @@
 
         var userArr = [], dateArr = [], responseData;
         $(function () {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
             $("#minDate").datepicker({ dateFormat: "yy-mm-dd" });
             $("#maxDate").datepicker({ dateFormat: "yy-mm-dd" });
             var subordinate = localStorage.getItem("subordinate");
