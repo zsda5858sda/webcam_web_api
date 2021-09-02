@@ -148,8 +148,8 @@
         })
 
         function search() {
-            var minDate = $("#minDate").val().replaceAll("-", "");
-            var maxDate = $("#maxDate").val().replaceAll("-", "");
+            var minDate = $("#minDate").val().replace(/-/g, "");
+            var maxDate = $("#maxDate").val().replace(/-/g, "");
             var userId = $("#uid").val();
             var workType = localStorage.getItem("workType");
             let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&workType=${workType}`;
@@ -162,55 +162,34 @@
                         $(".search_container").hide();
                         $(".file_manager").show();
                         responseData = response.data;
-                        for (i = 0; i < responseData.length; i++) {
-                            userArr.push(responseData[i]["fileName"].substring(0, 7));
-                        }
-                        userArr = userArr.filter(function (data, index, arr) {
-                            return arr.indexOf(data) === index;
-                        });
-                        console.log(userArr);
-                        if (userArr.length == 1) {
-                            localStorage.setItem("selectedUser", userArr[0]);
+                        if (responseData.length != 0) {
                             for (i = 0; i < responseData.length; i++) {
-                                dateArr.push(responseData[i]["workDate"]);
+                                userArr.push(responseData[i]["fileName"].substring(0, 7));
                             }
-                            dateArr = dateArr.filter(function (data, index, arr) {
+                            userArr = userArr.filter(function (data, index, arr) {
                                 return arr.indexOf(data) === index;
-                            })
-                            console.log(dateArr);
-                            dateArr.forEach(function (data) {
-                                $("#insertContainer").append(`
-                            <div class="col-lg-3 col-md-4 col-sm-12">
-                                <div class="folder">
-                                    <a href="javascript:selectFolder('${data}');">
-                                        <div class="icon">
-                                            <i class="fas fa-folder fa-9x"></i>
-                                        </div>
-                                        <div class="file-name">
-                                            <p class="m-b-5 text-muted">${data}</p>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            `)
-                            })
+                            });
+                            console.log(userArr);
+                            if (userArr.length == 1) {
+                                localStorage.setItem("selectedUser", userArr[0]);
+                                for (i = 0; i < responseData.length; i++) {
+                                    dateArr.push(responseData[i]["workDate"]);
+                                }
+                                dateArr = dateArr.filter(function (data, index, arr) {
+                                    return arr.indexOf(data) === index;
+                                })
+                                console.log(dateArr);
+                                dateArr.forEach(function (data) {
+                                    appendFolderContainer(data)
+                                })
+                            } else {
+                                userArr.forEach(function (data) {
+                                    appendFolderContainer(data)
+                                })
+                            }
                         } else {
-                            userArr.forEach(function (data) {
-                                $("#insertContainer").append(`
-                            <div class="col-lg-3 col-md-4 col-sm-12">
-                                <div class="folder">
-                                    <a href="javascript:selectFolder('${data}');">
-                                        <div class="icon">
-                                            <i class="fas fa-folder fa-9x"></i>
-                                        </div>
-                                        <div class="file-name">
-                                            <p class="m-b-5 text-muted">${data}</p>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            `)
-                            })
+                            location.reload();
+                            alert("查無資料")
                         }
                     } else {
                         alert(response.message);
@@ -239,20 +218,7 @@
                 })
                 console.log(dateArr);
                 dateArr.forEach(function (data) {
-                    $("#insertContainer").append(`
-                            <div class="col-lg-3 col-md-4 col-sm-12">
-                                <div class="folder">
-                                    <a href="javascript:selectFolder('${data}');">
-                                        <div class="icon">
-                                            <i class="fas fa-folder fa-9x"></i>
-                                        </div>
-                                        <div class="file-name">
-                                            <p class="m-b-5 text-muted">${data}</p>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            `)
+                    appendFolderContainer(data)
                 })
             } else {
                 localStorage.setItem("selectedDate", incomingData);
@@ -262,57 +228,7 @@
 
                 filterData.forEach(function (data) {
                     let fileName = data.fileName;
-                    if (fileName.includes("webm")) {
-                        $("#insertContainer").append(`
-                            <div class="col-lg-3 col-md-4 col-sm-12">
-                                <div class="card">
-                                    <div class="file">
-                                        <div class="icon">
-                                            <i class="far fa-file-video"></i>
-                                        </div>
-                                        <div class="file-name">
-                                            <p class="m-b-5 text-muted">${fileName}</p>
-                                            <small><span class="date text-muted">${data.workDate}</span></small>
-                                        </div>
-                                        <div class="dropdown">
-                                        <button class="btn btn-info" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fas fa-bars"></i>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item" href="javascript:preview('${data.filePath}');">預覽</a></li>
-                                            <li><a class="dropdown-item" href="javascript:download('${data.filePath}');">下載</a></li>
-                                        </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> 
-                        `)
-                    } else if (fileName.includes("jpg")) {
-                        $("#insertContainer").append(`
-                            <div class="col-lg-3 col-md-4 col-sm-12">
-                                <div class="card">
-                                    <div class="file">
-                                        <div class="icon">
-                                            <i class="far fa-file-image"></i>
-                                        </div>
-                                        <div class="file-name">
-                                            <p class="m-b-5 text-muted">${fileName}</p>
-                                            <small><span class="date text-muted">${data.workDate}</span></small>
-                                        </div>
-                                        <div class="dropdown">
-                                        <button class="btn btn-info" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fas fa-bars"></i>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item" href="javascript:preview('${data.filePath}');">預覽</a></li>
-                                            <li><a class="dropdown-item" href="javascript:download('${data.filePath}');">下載</a></li>
-                                        </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> 
-                        `)
-                    }
+                    appendFileContainer(fileName, data)
                 })
 
             }
@@ -320,11 +236,56 @@
         }
 
         function preview(incomingData) {
-            location.href = `${ip}webcam_web_api/api/File/preview?filePath=${incomingData}`;
+            window.open(`${ip}webcam_web_api/api/File/preview?filePath=${incomingData}`);
         }
 
         function download(incomingData) {
-            location.href = `${ip}webcam_web_api/api/File/download?filePath=${incomingData}`;
+            window.open(`${ip}webcam_web_api/api/File/download?filePath=${incomingData}`);
+        }
+
+        function appendFolderContainer(folderName) {
+            $("#insertContainer").append(`
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="folder">
+                    <a href="javascript:selectFolder('${folderName}');">
+                        <div class="icon">
+                            <i class="fas fa-folder fa-9x"></i>
+                        </div>
+                        <div class="file-name">
+                            <p class="m-b-5 text-muted">${folderName}</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            `)
+        }
+
+        function appendFileContainer(fileName, fileData) {
+            var fileIcon = fileName.includes("webm") ? '<i class="far fa-file-video"></i>' : '<i class="far fa-file-image"></i>';
+            $("#insertContainer").append(`
+                <div class="col-lg-3 col-md-4 col-sm-12">
+                    <div class="card">
+                        <div class="file">
+                            <div class="icon">
+                                ${fileIcon}
+                            </div>
+                            <div class="file-name">
+                                <p class="m-b-5 text-muted">${fileName}</p>
+                                <small><span class="date text-muted">${fileData.workDate}</span></small>
+                            </div>
+                            <div class="dropdown">
+                            <button class="btn btn-info" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="javascript:preview('${fileData.filePath}');">預覽</a></li>
+                                <li><a class="dropdown-item" href="javascript:download('${fileData.filePath}');">下載</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            `)
         }
     </script>
 </body>
