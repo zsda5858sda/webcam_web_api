@@ -30,6 +30,7 @@ function submit() {
         contentType: "application/json;charset=utf-8",
         success: function (returnData) {
             console.log(returnData);
+            alert(returnData.message);
         },
     });
 }
