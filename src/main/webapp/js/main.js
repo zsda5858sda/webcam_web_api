@@ -1,4 +1,7 @@
 var ip = "http://172.16.45.245:8080/"
+// var ip = "http://localhost:8080/"
+
+
 
 function submit() {
     var dept = $("#dept").val();
@@ -48,26 +51,35 @@ function login() {
         type: "POST",
         contentType: "application/json;charset=utf-8",
         success: function (response) {
+            var isRegister = false;
+            var validate = response["validate"];
             if (response["code"] == 0) {
-                if (response["validate"] == "Y") {
+                if (validate == "Y") {
                     let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
-                    
+
                     $.ajax({
                         url: getUserURL,
                         type: "GET",
                         dataType: "json",
                         async: false,
-                        success: function (data) {
-                            localStorage.setItem("subordinate", data.data["subordinate"])
-                            localStorage.setItem("workType", data.data["workType"])
-                            localStorage.setItem("security", data.data["security"])
-                            localStorage.setItem("dept", data.data["dept"])
-                            localStorage.setItem("branch", data.data["branch"])
+                        success: function (responseUserData) {
+                            if (responseUserData.code == 0) {
+                                localStorage.setItem("subordinate", responseUserData.data["subordinate"])
+                                localStorage.setItem("workType", responseUserData.data["workType"])
+                                localStorage.setItem("security", responseUserData.data["security"])
+                                localStorage.setItem("dept", responseUserData.data["dept"])
+                                localStorage.setItem("branch", responseUserData.data["branch"])
+                                isRegister = true;
+                            } else {
+                                alert(responseUserData.message);
+                            }
                         }
                     })
                 }
-                localStorage.setItem("userId", userId);
-                location.href = "file.html";
+                if ((validate == "Y") == isRegister) {
+                    localStorage.setItem("userId", userId);
+                    location.href = "file.html";
+                }
             } else {
                 console.log(response);
                 alert(response.message);
