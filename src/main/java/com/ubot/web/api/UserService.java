@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.VSPUserDao;
 import com.ubot.web.db.vo.VSPUser;
+import com.ubot.web.exception.NotFoundException;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -50,12 +51,17 @@ public class UserService {
 
 		try {
 			logger.info(userId);
-			VSPUser user = userDao.findById(userId).orElseThrow(() -> new Exception("此ID尚未註冊"));
+			VSPUser user = userDao.findById(userId).orElseThrow(() -> new NotFoundException("此ID尚未註冊, 請聯絡該部門安控人員"));
 			message = "查詢使用者資料成功";
 			logger.info(message);
 			result.putPOJO("data", user);
 			result.put("message", message);
 			result.put("code", 0);
+		} catch (NotFoundException nfe) {
+			message = nfe.getMessage();
+			logger.error(message);
+			result.put("message", message);
+			result.put("code", 1);
 		} catch (Exception e) {
 			message = String.format("查詢使用者資料錯誤, 原因: %s", e.getMessage());
 			logger.error(message);
