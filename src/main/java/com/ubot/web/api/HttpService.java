@@ -82,9 +82,10 @@ public class HttpService {
 					String responseString = clientResponse.readEntity(String.class);
 					JSONObject jsonResult = new JSONObject(responseString);
 					String rc2 = jsonResult.getString("rc2");
-					message = String.format(message,
-							jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
+					logger.info(responseString);
 					if (rc2.equals("M000")) {
+						message = String.format(message,
+								jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
 						logger.info(message);
 						try {
 							VSPValidate validate = validateDao.selectQuery("select * from vspvalidate;");
@@ -92,18 +93,21 @@ public class HttpService {
 							result.put("code", "0");
 							result.put("validate", validate.getValidate());
 						} catch (Exception e) {
-							errMessage = errMessageBuffer.append(String.format("%s", e.getMessage())).toString();
+							errMessage = errMessageBuffer.append(e.getMessage()).toString();
+							logger.error(errMessage);
 							setErrResult(result, errMessage);
 						}
 
 					} else {
-						errMessage = errMessageBuffer.append(String.format("%s", jsonResult.get("msg2"))).toString();
+						errMessage = errMessageBuffer.append(jsonResult.get("msg2")).toString();
+						logger.error(errMessage);
 						setErrResult(result, errMessage);
 					}
 
 				} else {
 					errMessage = errMessageBuffer
 							.append(String.format("http status code %d", clientResponse.getStatus())).toString();
+					logger.error(errMessage);
 					setErrResult(result, errMessage);
 				}
 				asyncResponse.resume(Response.status(200).entity(result.toString()).build());
