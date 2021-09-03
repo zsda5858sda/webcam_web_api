@@ -1,4 +1,4 @@
-package com.ubot.web.utils;
+package com.ubot.web.config;
 
 import java.io.IOException;
 
