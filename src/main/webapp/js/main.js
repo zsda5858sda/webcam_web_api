@@ -1,5 +1,5 @@
-var ip = "http://172.16.45.245:8080/"
-// var ip = "http://localhost:8080/"
+// var ip = "http://172.16.45.245:8080/"
+var ip = "http://localhost:8080/";
 
 
 
@@ -31,9 +31,10 @@ function submit() {
         type: "POST",
         dataType: "json",
         contentType: "application/json;charset=utf-8",
-        success: function (returnData) {
-            console.log(returnData);
-            alert(returnData.message);
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
+            console.log(response);
+            alert(response.message);
         },
     });
 }
@@ -54,9 +55,11 @@ function login() {
         dataType: "json",
         type: "POST",
         contentType: "application/json;charset=utf-8",
-        success: function (response) {
+        success: async function (response) {
             var isRegister = false;
             var validate = response["validate"];
+            localStorage.setItem("validate", validate);
+            await sendLog(userId, response.message);
             if (response["code"] == 0) {
                 if (validate == "Y") {
                     let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
@@ -179,9 +182,10 @@ function addBranch() {
         url: requestURL,
         type: "POST",
         dataType: "json",
-        data: JSON.stringify(dataJSON),        
+        data: JSON.stringify(dataJSON),
         contentType: "application/json;charset=utf-8",
-        success: function(response) {
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             console.log(response);
         }
@@ -198,11 +202,64 @@ function addWork() {
         url: requestURL,
         type: "POST",
         dataType: "json",
-        data: JSON.stringify(dataJSON),        
+        data: JSON.stringify(dataJSON),
         contentType: "application/json;charset=utf-8",
-        success: function(response) {
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             console.log(response);
         }
     })
+}
+
+async function sendLog(userId, action) {
+    var userIp = (await $.getJSON("https://api.ipify.org/?format=json")).ip;
+    let requestURL = `${ip}webcam_web_api/api/Log`
+    var dataJSON = {
+        "userId": userId,
+        "action": action,
+        "ip": userIp
+    }
+    $.ajax({
+        url: requestURL,
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify(dataJSON),
+        contentType: "application/json;charset=utf-8",
+        success: function (response) {
+            console.log(response);
+        }
+    })
+}
+
+async function searchLog(isApp) {
+    var minDate = $("#minDate").val().replace(/-/g, "");
+    var maxDate = $("#maxDate").val().replace(/-/g, "");
+    var userId = $("#uid").val();
+    var appendPath = isApp ? "/app" : "";
+    let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
+    var responseData = (await $.getJSON(requestURL)).data;
+    var userIdColumnName = userId.length == 7 ? "員編" : "客戶";
+    console.log(responseData);
+    $.jgrid.gridUnload("#logList");
+    $("#logList").jqGrid({
+        colNames: [userIdColumnName, '建立時間', '事件', '來源IP'],
+        colModel: [
+            { name: 'userId', index: 'userId' },
+            { name: 'createDatetime', index: 'createDatetime' },
+            { name: 'action', index: 'action' },
+            { name: 'ip', index: 'ip' },
+        ],
+        datatype: "local",
+        data: responseData,
+        width: null,
+        shrinkToFit: false,
+        rowNum: 10,
+        rowList: [10, 20, 30],
+        pager: '#logPage',
+        sortname: 'createDatetime',
+        viewrecords: true,
+        sortorder: "desc",
+    });
+    $("#logList").jqGrid('navGrid', '#logPage', { edit: false, add: false, del: false });
 }
