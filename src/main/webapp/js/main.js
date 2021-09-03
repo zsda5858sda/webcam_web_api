@@ -21,6 +21,9 @@ function submit() {
     if (branch.match("800|100|600")) {
         workType = "ALL";
     }
+    if (branch == "800") {
+        dataJSON.security = "AU";
+    }
     dataJSON.workType = workType;
     $.ajax({
         url: requestURL,

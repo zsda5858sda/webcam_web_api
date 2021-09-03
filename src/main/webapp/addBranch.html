@@ -24,6 +24,9 @@
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
+            if (security == "U") {
+                history.go(-1);
+            }
         })
     </script>
 </body>

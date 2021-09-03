@@ -18,8 +18,8 @@
 
     <div id="securityDiv">
         <label>安控人員: </label>
-        <input id="securityY" name="security" type="radio" value="Y"><label>是</label>
-        <input id="securityN" name="security" type="radio" value="N" checked><label>否</label>
+        <input id="securityY" name="security" type="radio" value="SU"><label>是</label>
+        <input id="securityN" name="security" type="radio" value="U" checked><label>否</label>
     </div>
 
     <div id="deptDiv">
@@ -48,7 +48,7 @@
             var dept = localStorage.getItem("dept");
             var branch = localStorage.getItem("branch");
             var security = localStorage.getItem("security");
-            if (security == "N") {
+            if (security == "U") {
                 history.go(-1);
             }
             if (dept != null) {
