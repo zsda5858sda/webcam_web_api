@@ -112,7 +112,7 @@
             <label>日期區間: </label><input type="text" id="minDate" />~<input type="text" id="maxDate" />
         </div>
         <div class="button">
-            <button type="button" onclick="search()">查詢</button>
+            <button type="button" onclick="searchFile()">查詢</button>
         </div>
     </div>
     <div id="main-content" class="file_manager" style="display: none;">
@@ -133,6 +133,8 @@
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
+            localStorage.removeItem("selectedUser");
+            localStorage.removeItem("selectedDate");
             $("#minDate").datepicker({ dateFormat: "yy-mm-dd" });
             $("#maxDate").datepicker({ dateFormat: "yy-mm-dd" });
             var subordinate = localStorage.getItem("subordinate");
@@ -146,61 +148,6 @@
                 $(".button").append(`<button type="button" onclick="location.href='changeValid.html'">更改驗證狀態</button>`);
             }
         })
-
-        function search() {
-            var minDate = $("#minDate").val().replace(/-/g, "");
-            var maxDate = $("#maxDate").val().replace(/-/g, "");
-            var userId = $("#uid").val();
-            var workType = localStorage.getItem("workType");
-            let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&workType=${workType}`;
-            $.ajax({
-                url: requestURL,
-                dataType: "json",
-                type: "GET",
-                success: function (response) {
-                    if (response.code == 0) {
-                        $(".search_container").hide();
-                        $(".file_manager").show();
-                        responseData = response.data;
-                        if (responseData.length != 0) {
-                            for (i = 0; i < responseData.length; i++) {
-                                userArr.push(responseData[i]["fileName"].substring(0, 7));
-                            }
-                            userArr = userArr.filter(function (data, index, arr) {
-                                return arr.indexOf(data) === index;
-                            });
-                            console.log(userArr);
-                            if (userArr.length == 1) {
-                                localStorage.setItem("selectedUser", userArr[0]);
-                                for (i = 0; i < responseData.length; i++) {
-                                    dateArr.push(responseData[i]["workDate"]);
-                                }
-                                dateArr = dateArr.filter(function (data, index, arr) {
-                                    return arr.indexOf(data) === index;
-                                })
-                                console.log(dateArr);
-                                dateArr.forEach(function (data) {
-                                    appendFolderContainer(data)
-                                })
-                            } else {
-                                userArr.forEach(function (data) {
-                                    appendFolderContainer(data)
-                                })
-                            }
-                        } else {
-                            location.reload();
-                            alert("查無資料")
-                        }
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function (xhr, thrownError) {
-                    console.log(xhr.status);
-                    console.log(thrownError);
-                }
-            });
-        }
 
         function selectFolder(incomingData) {
             $("#insertContainer").empty();

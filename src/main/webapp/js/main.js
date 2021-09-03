@@ -82,7 +82,7 @@ function login() {
                 }
                 if ((validate == "Y") == isRegister) {
                     localStorage.setItem("userId", userId);
-                    location.href = "file.html";
+                    location.href = "index.html";
                 }
             } else {
                 console.log(response);
@@ -92,6 +92,79 @@ function login() {
         error: function (xhr) {
             console.log(xhr.status);
             alert(xhr.responseJSON.message);
+        }
+    });
+}
+
+function updateValid() {
+    $.ajax({
+        url: `${ip}webcam_web_api/api/updateValid`,
+        type: "PATCH",
+        dataType: "json",
+        data: JSON.stringify({
+            "validate": $("#validate").val()
+        }),
+        contentType: "application/json;charset=utf-8",
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
+            alert(response.message);
+            console.log(response);
+        }
+    })
+}
+
+function searchFile() {
+    var minDate = $("#minDate").val().replace(/-/g, "");
+    var maxDate = $("#maxDate").val().replace(/-/g, "");
+    var userId = $("#uid").val();
+    var workType = localStorage.getItem("workType");
+    let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&workType=${workType}`;
+    $.ajax({
+        url: requestURL,
+        dataType: "json",
+        type: "GET",
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
+            if (response.code == 0) {
+                $(".search_container").hide();
+                $(".file_manager").show();
+                responseData = response.data;
+                if (responseData.length != 0) {
+                    for (i = 0; i < responseData.length; i++) {
+                        userArr.push(responseData[i]["fileName"].substring(0, 7));
+                    }
+                    userArr = userArr.filter(function (data, index, arr) {
+                        return arr.indexOf(data) === index;
+                    });
+                    console.log(userArr);
+                    if (userArr.length == 1) {
+                        localStorage.setItem("selectedUser", userArr[0]);
+                        for (i = 0; i < responseData.length; i++) {
+                            dateArr.push(responseData[i]["workDate"]);
+                        }
+                        dateArr = dateArr.filter(function (data, index, arr) {
+                            return arr.indexOf(data) === index;
+                        })
+                        console.log(dateArr);
+                        dateArr.forEach(function (data) {
+                            appendFolderContainer(data)
+                        })
+                    } else {
+                        userArr.forEach(function (data) {
+                            appendFolderContainer(data)
+                        })
+                    }
+                } else {
+                    location.reload();
+                    alert("查無資料")
+                }
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function (xhr, thrownError) {
+            console.log(xhr.status);
+            console.log(thrownError);
         }
     });
 }

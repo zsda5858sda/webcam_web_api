@@ -27,21 +27,6 @@
                 location.href = "login.html";
             }
         })
-        function updateValid() {
-            $.ajax({
-                url: `${ip}webcam_web_api/api/updateValid`,
-                type: "PATCH",
-                dataType: "json",
-                data: JSON.stringify({
-                    "validate": $("#validate").val()
-                }),
-                contentType: "application/json;charset=utf-8",
-                success: function (response) {
-                    alert(response.message);
-                    console.log(response);
-                }
-            })
-        }
     </script>
 </body>
 
