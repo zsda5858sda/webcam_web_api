@@ -3,6 +3,7 @@ var ip = "http://localhost:8080/";
 
 
 
+//新增使用者api
 function submit() {
     var dept = $("#dept").val();
     var branch = $("#branch").val();
@@ -39,6 +40,7 @@ function submit() {
     });
 }
 
+//登入api
 function login() {
     var userId = $("#uid").val();
     var pwd = $("#password").val();
@@ -99,6 +101,7 @@ function login() {
     });
 }
 
+//更新後台使用者驗證api
 function updateValid() {
     $.ajax({
         url: `${ip}webcam_web_api/api/updateValid`,
@@ -116,6 +119,7 @@ function updateValid() {
     })
 }
 
+//查詢檔案api
 function searchFile() {
     var minDate = $("#minDate").val().replace(/-/g, "");
     var maxDate = $("#maxDate").val().replace(/-/g, "");
@@ -172,6 +176,7 @@ function searchFile() {
     });
 }
 
+//新增分行、部門代碼api
 function addBranch() {
     let requestURL = `${ip}webcam_web_api/api/Branch`;
     let dataJSON = {
@@ -192,6 +197,7 @@ function addBranch() {
     })
 }
 
+//新增業務種類代碼api
 function addWork() {
     let requestURL = `${ip}webcam_web_api/api/WorkReference`;
     let dataJSON = {
@@ -212,6 +218,7 @@ function addWork() {
     })
 }
 
+//新增後台log api
 async function sendLog(userId, action) {
     var userIp = (await $.getJSON("https://api.ipify.org/?format=json")).ip;
     let requestURL = `${ip}webcam_web_api/api/Log`
@@ -232,6 +239,7 @@ async function sendLog(userId, action) {
     })
 }
 
+//查詢log api
 async function searchLog(isApp) {
     var minDate = $("#minDate").val().replace(/-/g, "");
     var maxDate = $("#maxDate").val().replace(/-/g, "");
