@@ -1,5 +1,6 @@
 package com.ubot.web.db.vo;
 
+//分行相關代碼，對應vspbranch表
 public class VSPBranch {
 	private String branchCode;
 	private String branchName;

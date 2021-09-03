@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+// 查無ID例外
 @Provider
 public class NotFoundException extends Exception implements ExceptionMapper<NotFoundException> {
 	private static final long serialVersionUID = 1L;

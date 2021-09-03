@@ -27,6 +27,7 @@ import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+// 接收有關User的所有請求
 @Path("/User")
 public class UserService {
 	private final Logger logger;

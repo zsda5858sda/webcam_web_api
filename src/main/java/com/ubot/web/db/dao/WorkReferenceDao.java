@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ubot.web.db.vo.WorkReference;
 
+// 有關對workreference表的CRUD
 public class WorkReferenceDao extends BaseDao {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 

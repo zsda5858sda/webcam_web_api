@@ -1,5 +1,6 @@
 package com.ubot.web.db.vo;
 
+//僅打AD驗證時轉換用VO，與DB無實際關聯
 public class EaiVO {
 	private String loginId;
 	private String loginP_ss;

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ubot.web.db.vo.VSPBranch;
 
+// 有關對vspbranch表的CRUD
 public class VSPBranchDao extends BaseDao {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 

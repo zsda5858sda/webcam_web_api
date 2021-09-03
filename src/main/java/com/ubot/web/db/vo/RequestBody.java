@@ -2,6 +2,7 @@ package com.ubot.web.db.vo;
 
 import jakarta.ws.rs.QueryParam;
 
+//僅接收來自前端帶過來的URL參數，與DB無實際關聯
 public class RequestBody {
 	@QueryParam("minDate")
 	private String minDate;

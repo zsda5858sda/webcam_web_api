@@ -1,5 +1,6 @@
 package com.ubot.web.db.vo;
 
+//後臺使用者資料，對應vspuser表
 public class VSPUser {
 	private String userId;
 	private String manager;

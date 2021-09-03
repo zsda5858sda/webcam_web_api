@@ -1,5 +1,6 @@
 package com.ubot.web.db.vo;
 
+//業務種類代碼，對應workreference表
 public class WorkReference {
 	private String workName;
 	private String workType;

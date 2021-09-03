@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ubot.web.db.vo.VSPUser;
 
+// 有關對vspuser表的CRUD
 public class VSPUserDao extends BaseDao {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 

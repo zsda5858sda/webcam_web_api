@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ResourceBundle;
 
+// 建立資料庫連線設定
 public class BaseDao {
 	private static String driverName;
 	private static String dbURL;

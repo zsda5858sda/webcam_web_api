@@ -19,6 +19,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+// 接收有關Branch的所有請求
 @Path("/Branch")
 public class BranchService {
 	private final Logger logger;

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ubot.web.db.vo.VSPFile;
 
+// 有關對vspfile表的CRUD
 public class VSPFileDao extends BaseDao {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -39,9 +40,7 @@ public class VSPFileDao extends BaseDao {
 			stat.close();
 			resultSet.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			logger.error(e);
+			throw new Exception(e.getMessage());
 		} finally {
 			conn.close();
 		}

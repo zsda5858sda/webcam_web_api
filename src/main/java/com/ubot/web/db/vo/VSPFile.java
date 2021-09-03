@@ -1,5 +1,6 @@
 package com.ubot.web.db.vo;
 
+//存放對保檔案用，對應vspfile表
 public class VSPFile {
 	private Integer vid;
 	private String fileName;

@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+// 查無檔案例外
 @Provider
 public class MissingFileException extends Exception implements ExceptionMapper<MissingFileException> {
 	private static final long serialVersionUID = 1L;

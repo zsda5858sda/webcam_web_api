@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 import com.ubot.web.db.vo.VSPValidate;
 
+// 有關對vspvalidate表的CRUD
 public class VSPValidateDao extends BaseDao {
 
 	public VSPValidate selectQuery(String sql) throws Exception {

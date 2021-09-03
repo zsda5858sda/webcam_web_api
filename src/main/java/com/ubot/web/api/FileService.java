@@ -24,6 +24,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+// 接收有關File的所有請求
 @Path("/File")
 public class FileService {
 	private final Logger logger;
