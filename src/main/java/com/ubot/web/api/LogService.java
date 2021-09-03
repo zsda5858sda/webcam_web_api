@@ -24,7 +24,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-// 接收有關Log的CRUD
+// 接收有關Log的所有請求
 @Path("/Log")
 public class LogService {
 	private final Logger logger;
@@ -44,11 +44,11 @@ public class LogService {
 		logger.info(requestBody.toString());
 		String message = "";
 		try {
-			String minDate = requestBody.getMinDate() + "0000";
-			String maxDate = requestBody.getMaxDate() + "2359";
+			String minDate = requestBody.getMinDate();
+			String maxDate = requestBody.getMaxDate();
 			String userId = requestBody.getUserId();
-			String sql = "select * from vsplog where CREATEDATETIME between '%s' and '%s' and USERID = %s";
-			List<VSPLog> logList = logDao.searchVSPLog(String.format(sql, minDate, maxDate, userId));
+			String sql = setSql("select * from vsplog", minDate, maxDate, userId);
+			List<VSPLog> logList = logDao.searchVSPLog(sql);
 			message = "查詢log成功";
 			logger.info(message);
 			result.putPOJO("data", logList);
@@ -71,10 +71,10 @@ public class LogService {
 		logger.info(requestBody.toString());
 		String message = "";
 		try {
-			String minDate = requestBody.getMinDate() + "0000";
-			String maxDate = requestBody.getMaxDate() + "2359";
+			String minDate = requestBody.getMinDate();
+			String maxDate = requestBody.getMaxDate();
 			String userId = requestBody.getUserId();
-			String sql = "select * from log where CREATEDATETIME between '%s' and '%s' and USERID = %s";
+			String sql = setSql("select * from log", minDate, maxDate, userId);
 			List<Log> logList = logDao.searchAppLog(String.format(sql, minDate, maxDate, userId));
 			message = "查詢log成功";
 			logger.info(message);
@@ -112,5 +112,21 @@ public class LogService {
 			result.put("code", 1);
 		}
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
+	}
+
+	private String setSql(String sql, String minDate, String maxDate, String userId) {
+		if (minDate != null && !minDate.equals("") && minDate != null && !minDate.equals("")) {
+			minDate += "0000";
+			maxDate += "2359";
+			sql += String.format(" where CREATEDATETIME between '%s' and '%s'", minDate, maxDate);
+		}
+		if (userId != null && !userId.equals("")) {
+			if (sql.contains("where")) {
+				sql += String.format(" and USERID = %s", userId);
+			} else {
+				sql += String.format(" where USERID = %s", userId);
+			}
+		}
+		return sql;
 	}
 }
