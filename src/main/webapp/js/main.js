@@ -1,10 +1,9 @@
 // var ip = "http://172.16.45.245:8080/"
 var ip = "http://localhost:8080/";
 
-
-
 //新增使用者api
 function submit() {
+    $("#submitBtn").attr("disabled", true);
     var dept = $("#dept").val();
     var branch = $("#branch").val();
     let requestURL = `${ip}webcam_web_api/api/User`;
@@ -34,8 +33,8 @@ function submit() {
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
-            console.log(response);
             alert(response.message);
+            $("#submitBtn").attr("disabled", false);
         },
     });
 }
@@ -90,12 +89,10 @@ function login() {
                     location.href = "index.html";
                 }
             } else {
-                console.log(response);
                 alert(response.message);
             }
         },
         error: function (xhr) {
-            console.log(xhr.status);
             alert(xhr.responseJSON.message);
         }
     });
@@ -103,6 +100,7 @@ function login() {
 
 //更新後台使用者驗證api
 function updateValid() {
+    $("#updateValidBtn").attr("disabled", true);
     $.ajax({
         url: `${ip}webcam_web_api/api/updateValid`,
         type: "PATCH",
@@ -112,9 +110,14 @@ function updateValid() {
         }),
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
-            await sendLog(localStorage.getItem("userId"), response.message);
-            alert(response.message);
-            console.log(response);
+            if (response.code == 0) {
+                await sendLog(localStorage.getItem("userId"), response.message);
+                alert(response.message);
+                $("#updateValidBtn").attr("disabled", false);
+            } else {
+                alert(response.message);
+                $("#updateValidBtn").attr("disabled", false);
+            }
         }
     })
 }
@@ -150,6 +153,7 @@ function searchFile() {
 
 //新增分行、部門代碼api
 function addBranch() {
+    $("#addBranchBtn").attr("disabled", true);
     let requestURL = `${ip}webcam_web_api/api/Branch`;
     let dataJSON = {
         "branchName": $("#branchName").val(),
@@ -164,13 +168,14 @@ function addBranch() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
-            console.log(response);
+            $("#addBranchBtn").attr("disabled", false);
         }
     })
 }
 
 //新增業務種類代碼api
 function addWork() {
+    $("#addWorkBtn").attr("disabled", true);
     let requestURL = `${ip}webcam_web_api/api/WorkReference`;
     let dataJSON = {
         "workName": $("#workName").val(),
@@ -185,7 +190,7 @@ function addWork() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
-            console.log(response);
+            $("#addWorkBtn").attr("disabled", false);
         }
     })
 }
@@ -215,12 +220,15 @@ async function sendLog(userId, action) {
 async function searchLog(isApp) {
     var minDate = $("#minDate").val().replace(/-/g, "");
     var maxDate = $("#maxDate").val().replace(/-/g, "");
+    if ((minDate != "" && maxDate == "") || (minDate == "" && maxDate != "")) {
+        alert("請選擇查詢區間")
+        return;
+    }
     var userId = $("#uid").val();
     var appendPath = isApp ? "/app" : "";
     let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
     var responseData = (await $.getJSON(requestURL)).data;
     var userIdColumnName = userId.length == 7 ? "員編" : "客戶";
-    console.log(responseData);
     $.jgrid.gridUnload("#logList");
     $("#logList").jqGrid({
         colNames: [userIdColumnName, '建立時間', '事件', '來源IP'],
