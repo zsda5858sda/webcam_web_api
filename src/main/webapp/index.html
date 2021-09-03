@@ -7,39 +7,46 @@
 </head>
 
 <body>
-
-    <div id="addBranchDiv">
-        <button type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
-    </div>
-    <div id="addWorkDiv">
-        <button type="button" onclick="location.href = 'addWork.html'">新增業務種類</button>
-    </div>
-    <div id="addUserDiv">
-        <button type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
-    </div>
     <div>
         <button type="button" onclick="location.href = 'file.html'">查詢對保資料</button>
     </div>
     <div>
-        <button type="button" onclick="location.href = 'searchAppLog.html'">查詢app log</button>
+        <br>
+        <button type="button" onclick="location.href = 'searchAppLog.html'">查詢對保log</button>
     </div>
     <div>
+        <br>
         <button type="button" onclick="location.href = 'searchLog.html'">查詢後台log</button>
+    </div>
+    <div id="changeValidDiv">
+    </div>
+    <div id="addBranchDiv">
+        <br>
+        <button type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
+    </div>
+    <div id="addWorkDiv">
+        <br>
+        <button type="button" onclick="location.href = 'addWork.html'">新增業務種類</button>
+    </div>
+    <div id="addUserDiv">
+        <br>
+        <button type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
     <script>
         $(function() {
+            var userId = localStorage.getItem("userId");
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
-            if (localStorage.getItem("validate") != "Y") {
-                location.href = "file.html";
-            }
-            if (localStorage.getItem("security") == "U") {
+            if (localStorage.getItem("security") == "U" || localStorage.getItem("validate") != "Y") {
                 $("#addBranchDiv").hide();
                 $("#addWorkDiv").hide();
                 $("#addUserDiv").hide();
+            }
+            if (userId == "0913634") {
+                $("#changeValidDiv").append(`<br><button type="button" onclick="location.href='changeValid.html'">更改驗證狀態</button>`);
             }
         })
     </script>
