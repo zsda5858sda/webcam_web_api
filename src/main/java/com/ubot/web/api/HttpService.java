@@ -60,6 +60,7 @@ public class HttpService {
 		final long endTime = startTime + 25000;
 		Timer timer = new Timer();
 
+		// 設定連線timeout
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -130,7 +131,7 @@ public class HttpService {
 		VSPValidate validate = mapper.readValue(requestJson, VSPValidate.class);
 		try {
 			validateDao.updateQuery(validate);
-			message = "更新驗證狀態成功";
+			message = "更新驗證狀態成功，請重新登入";
 			logger.info(message);
 			result.put("message", message);
 			result.put("code", 0);

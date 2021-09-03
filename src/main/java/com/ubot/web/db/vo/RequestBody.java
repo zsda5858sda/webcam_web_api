@@ -35,16 +35,16 @@ public class RequestBody {
 	@Override
 	public String toString() {
 		String result = "";
-		if (minDate != null) {
+		if (minDate != null && !minDate.equals("")) {
 			result += "minDate=" + minDate;
 		}
-		if (maxDate != null) {
+		if (maxDate != null && !maxDate.equals("")) {
 			result += ", maxDate=" + maxDate;
 		}
-		if (userId != null) {
+		if (userId != null && !userId.equals("")) {
 			result += ", userId=" + userId;
 		}
-		if (workType != null) {
+		if (workType != null && !workType.equals("")) {
 			result += ", workType=" + workType;
 		}
 		return result;
