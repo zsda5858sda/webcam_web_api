@@ -3,104 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/fontawesome/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.css" />
     <link href="css/main.css" rel="stylesheet" />
-    <script src="js/bootstrap/bootstrap.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
-    <style>
-        .file_manager .file a:hover .hover,
-        .file_manager .file .file-name small {
-            display: block
-        }
-
-        .file_manager .file {
-            padding: 0 !important
-        }
-
-        .file_manager .file .icon {
-            text-align: center
-        }
-
-
-        .file_manager .file {
-            position: relative;
-            border-radius: .55rem;
-            overflow: hidden
-        }
-
-        .file_manager .file .image,
-        .file_manager .file .icon {
-            max-height: 180px;
-            overflow: hidden;
-            background-size: cover;
-            background-position: top
-        }
-
-        .file_manager .file .icon {
-            padding: 15px 10px;
-            display: table;
-            width: 100%
-        }
-
-        .file_manager .file .icon i {
-            display: table-cell;
-            font-size: 30px;
-            vertical-align: middle;
-            color: #777;
-            line-height: 100px
-        }
-
-        .file_manager .file .file-name {
-            padding: 10px;
-            border-top: 1px solid #f7f7f7
-        }
-
-        .file_manager .file .file-name small .date {
-            float: right
-        }
-
-        .folder {
-            padding: 20px;
-            display: block;
-            text-align: center;
-            color: #777
-        }
-
-        @media only screen and (max-width: 992px) {
-            .file_manager .nav-tabs {
-                padding-left: 0;
-                padding-right: 0
-            }
-
-            .file_manager .nav-tabs .nav-item {
-                display: inline-block
-            }
-        }
-
-        .card {
-            background: #fff;
-            transition: .5s;
-            border: 0;
-            margin-bottom: 30px;
-            border-radius: .55rem;
-            position: relative;
-            width: 100%;
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
-        }
-
-        a:hover {
-            text-decoration: none;
-        }
-
-        .dropdown {
-            position: absolute;
-            right: 10px;
-            top: 80px;
-        }
-    </style>
 </head>
 
 <body>
@@ -115,26 +19,18 @@
             <button type="button" onclick="searchFile()">查詢</button>
         </div>
     </div>
-    <div id="main-content" class="file_manager" style="display: none;">
-        <div class="container">
-            <div id="insertContainer" class="row clearfix">
-            </div>
-        </div>
-        <div id="imageDiv">
-        </div>
-    </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
     <script src="js/main.js"></script>
     <script>
 
-        var userArr = [], dateArr = [], responseData;
         $(function () {
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
             localStorage.removeItem("selectedUser");
             localStorage.removeItem("selectedDate");
+            localStorage.removeItem("fileData");
             $("#minDate").datepicker({ dateFormat: "yy-mm-dd" });
             $("#maxDate").datepicker({ dateFormat: "yy-mm-dd" });
             var subordinate = localStorage.getItem("subordinate");
@@ -144,96 +40,9 @@
             } else {
                 $("#uid").val(userId);
             }
-            if (userId == "0913634") {
-                $(".button").append(`<button type="button" onclick="location.href='changeValid.html'">更改驗證狀態</button>`);
-            }
         })
 
-        function selectFolder(incomingData) {
-            $("#insertContainer").empty();
-            if (incomingData.length == 7) {
-                localStorage.setItem("selectedUser", incomingData);
-                let tmpDateArr = [];
-                for (i = 0; i < responseData.length; i++) {
-                    let data = responseData[i];
-                    if (data["fileName"].includes(incomingData)) {
-                        tmpDateArr.push(data["workDate"]);
-                    }
-                }
-                dateArr = tmpDateArr.filter(function (data, index, arr) {
-                    return arr.indexOf(data) === index;
-                })
-                console.log(dateArr);
-                dateArr.forEach(function (data) {
-                    appendFolderContainer(data)
-                })
-            } else {
-                localStorage.setItem("selectedDate", incomingData);
-                var filterData = responseData.filter(function (data) {
-                    return data["fileName"].includes(localStorage.getItem("selectedUser")) && data["workDate"] == incomingData;
-                })
-
-                filterData.forEach(function (data) {
-                    let fileName = data.fileName;
-                    appendFileContainer(fileName, data)
-                })
-
-            }
-
-        }
-
-        function preview(incomingData) {
-            window.open(`${ip}webcam_web_api/api/File/preview?filePath=${incomingData}`);
-        }
-
-        function download(incomingData) {
-            window.open(`${ip}webcam_web_api/api/File/download?filePath=${incomingData}`);
-        }
-
-        function appendFolderContainer(folderName) {
-            $("#insertContainer").append(`
-            <div class="col-lg-3 col-md-4 col-sm-12">
-                <div class="folder">
-                    <a href="javascript:selectFolder('${folderName}');">
-                        <div class="icon">
-                            <i class="fas fa-folder fa-9x"></i>
-                        </div>
-                        <div class="file-name">
-                            <p class="m-b-5 text-muted">${folderName}</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            `)
-        }
-
-        function appendFileContainer(fileName, fileData) {
-            var fileIcon = fileName.includes("webm") ? '<i class="far fa-file-video"></i>' : '<i class="far fa-file-image"></i>';
-            $("#insertContainer").append(`
-                <div class="col-lg-3 col-md-4 col-sm-12">
-                    <div class="card">
-                        <div class="file">
-                            <div class="icon">
-                                ${fileIcon}
-                            </div>
-                            <div class="file-name">
-                                <p class="m-b-5 text-muted">${fileName}</p>
-                                <small><span class="date text-muted">${fileData.workDate}</span></small>
-                            </div>
-                            <div class="dropdown">
-                            <button class="btn btn-info" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-bars"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="javascript:preview('${fileData.filePath}');">預覽</a></li>
-                                <li><a class="dropdown-item" href="javascript:download('${fileData.filePath}');">下載</a></li>
-                            </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
-            `)
-        }
+       
     </script>
 </body>
 

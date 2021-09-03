@@ -133,34 +133,10 @@ function searchFile() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             if (response.code == 0) {
-                $(".search_container").hide();
-                $(".file_manager").show();
-                responseData = response.data;
+                let responseData = response.data;
                 if (responseData.length != 0) {
-                    for (i = 0; i < responseData.length; i++) {
-                        userArr.push(responseData[i]["fileName"].substring(0, 7));
-                    }
-                    userArr = userArr.filter(function (data, index, arr) {
-                        return arr.indexOf(data) === index;
-                    });
-                    console.log(userArr);
-                    if (userArr.length == 1) {
-                        localStorage.setItem("selectedUser", userArr[0]);
-                        for (i = 0; i < responseData.length; i++) {
-                            dateArr.push(responseData[i]["workDate"]);
-                        }
-                        dateArr = dateArr.filter(function (data, index, arr) {
-                            return arr.indexOf(data) === index;
-                        })
-                        console.log(dateArr);
-                        dateArr.forEach(function (data) {
-                            appendFolderContainer(data)
-                        })
-                    } else {
-                        userArr.forEach(function (data) {
-                            appendFolderContainer(data)
-                        })
-                    }
+                    location.href = "fileManage.html";
+                    localStorage.setItem("fileData", JSON.stringify(responseData));
                 } else {
                     location.reload();
                     alert("查無資料")
@@ -169,10 +145,6 @@ function searchFile() {
                 alert(response.message);
             }
         },
-        error: function (xhr, thrownError) {
-            console.log(xhr.status);
-            console.log(thrownError);
-        }
     });
 }
 
