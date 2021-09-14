@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div>
+        <label>員編: </label>
+        <select class="uid-select" id="uid" style="width: 200px;">
+            <option value="">請選擇</option>
+        </select>
+    </div>
+    <div id="deptDiv">
+        <label>部門 / 分行: </label><select id="dept">
+            <option value="">請選擇</option>
+        </select>
+    </div>
+
+    <div id="branchDiv">
+        <label>派駐單位: </label><select id="branch">
+            <option value="">請選擇</option>
+        </select>
+    </div>
+    <div>
+        <label>主管: </label>
+        <input id="managerY" name="manager" type="radio" value="Y"><label>是</label>
+        <input id="managerN" name="manager" type="radio" value="N"><label>否</label>
+    </div>
+
+    <div id="securityDiv">
+        <label>安控人員: </label>
+        <input name="security" type="radio" value="SU"><label>是</label>
+        <input name="security" type="radio" value="U"><label>否</label>
+    </div>
+    <div id="workTypeDiv">
+        <label>業務種類: </label>
+        <div id="cblist"></div>
+    </div>
+    <div>
+        <button type="button" id="submitBtn" onclick="goCheckPage('U')">確定</button>
+    </div>
+
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function () {
+
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+            var dept = localStorage.getItem("dept");
+            var branch = localStorage.getItem("branch");
+            var security = localStorage.getItem("security");
+            if (security == "U") {
+                history.go(-1);
+            }
+            if (dept != null) {
+                if (!dept.match("100|800|600")) {
+                    $("#securityDiv").hide();
+                    $("#deptDiv").hide();
+                    $("#branchDiv").hide();
+                }
+            }
+            $.ajax({
+                url: `${ip}webcam_web_api/api/User/${branch}/${dept}`,
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (returnData) {
+                    if (returnData.code == 0) {
+                        var dataList = returnData['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            $('#uid').append($('<option />', { value: JSON.stringify(dataList[i]), text: dataList[i]["userId"] }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            })
+            $.ajax({
+                url: `${ip}webcam_web_api/api/WorkReference`,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (returnData) {
+                    console.log(returnData);
+                    if (returnData.code == 0) {
+                        var dataList = returnData['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            let workType = dataList[i]["workType"];
+                            $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"] }));
+                            $('#cblist').append($('<label />', { text: dataList[i]["workName"], for: `${workType}` }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            });
+            searchBranch();
+            $(".uid-select").select2();
+
+            if (dept == branch && !dept.match("100|800|600") && !dept.startsWith("0")) {
+                $("input[name=manager]").change(function () {
+                    if ($(this).val() == "Y") {
+                        $('input[name=workType]').prop("disabled", false);
+                    } else {
+                        $(`input[name=workType][value!=${dept}]`).prop("disabled", true);
+                        $(`input[name=workType][value!=${dept}]`).prop("checked", false);
+                    }
+                })
+            }
+            $("#uid").change(function () {
+                $("#uid option[value='']").remove();
+                var data = JSON.parse($("#uid").val());
+                if (data != "") {
+                    $('input[name=manager]').each(function (index, element) {
+                        if ($(element).val() == data.manager) {
+                            $(element).prop("checked", true);
+                        }
+                    })
+                    $('input[name=security]').each(function (index, element) {
+                        if ($(element).val() == data.security) {
+                            $(element).prop("checked", true);
+                        }
+                    })
+                    $("input[name=workType]").prop("checked", false);
+                    $("input[name=workType]").each(function (index, element) {
+                        if (data.workType.match($(element).val())) {
+                            $(element).prop("checked", true);
+                        }
+                    })
+                    $("#dept").val(data.dept);
+                    $("#branch").val(data.branch);
+
+                    if (dept == branch && !dept.match("100|800|600") && !dept.startsWith("0")) {
+                        if (data.manager == "Y") {
+                            $('input[name=workType]').prop("disabled", false);
+                        } else {
+                            $(`input[name=workType][value!=${data.dept}]`).prop("disabled", true);
+                            $(`input[name=workType][value!=${data.dept}]`).prop("checked", false);
+                        }
+                    }
+                }
+            })
+
+        })
+    </script>
+</body>
+
+</html>

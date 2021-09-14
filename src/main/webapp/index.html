@@ -32,6 +32,10 @@
         <br>
         <button type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
     </div>
+    <div id="updateUserDiv">
+        <br>
+        <button type="button" onclick="location.href = 'updateUser.html'">更新使用者</button>
+    </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
     <script>
@@ -44,6 +48,7 @@
                 $("#addBranchDiv").hide();
                 $("#addWorkDiv").hide();
                 $("#addUserDiv").hide();
+                $("#updateUserDiv").hide();
             }
             if (userId == "0913634") {
                 $("#changeValidDiv").append(`<br><button type="button" onclick="location.href='changeValid.html'">更改驗證狀態</button>`);
