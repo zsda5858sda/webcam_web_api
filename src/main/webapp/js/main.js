@@ -4,37 +4,21 @@ var ip = "http://localhost:8080/";
 //新增使用者api
 function submit() {
     $("#submitBtn").attr("disabled", true);
-    var dept = $("#dept").val();
-    var branch = $("#branch").val();
     let requestURL = `${ip}webcam_web_api/api/User`;
-    let dataJSON = {
-        "userId": $("#uid").val(),
-        "manager": $('input[name=manager]:checked').val(),
-        "security": $('input[name=security]:checked').val(),
-        "dept": dept,
-        "branch": branch,
-    }
-    var workType = "";
-    $('input[name=workType]:checked').each(function () {
-        workType += this.value + ";"
-    });
-    if (branch.match("800|100|600")) {
-        workType = "ALL";
-    }
-    if (branch == "800") {
-        dataJSON.security = "AU";
-    }
-    dataJSON.workType = workType;
+    let dataJSON = localStorage.getItem("checkData");
     $.ajax({
         url: requestURL,
-        data: JSON.stringify(dataJSON),
+        data: dataJSON,
         type: "POST",
         dataType: "json",
+        async: false,
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#submitBtn").attr("disabled", false);
+            localStorage.removeItem("checkData");
+            history.back();
         },
     });
 }
@@ -228,10 +212,9 @@ async function searchLog(isApp) {
     var appendPath = isApp ? "/app" : "";
     let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
     var responseData = (await $.getJSON(requestURL)).data;
-    var userIdColumnName = userId.length == 7 ? "員編" : "客戶";
     $.jgrid.gridUnload("#logList");
     $("#logList").jqGrid({
-        colNames: [userIdColumnName, '建立時間', '事件', '來源IP'],
+        colNames: ['員編 / 客戶電話', '時間', '事件描述', '來源IP'],
         colModel: [
             { name: 'userId', index: 'userId' },
             { name: 'createDatetime', index: 'createDatetime' },
@@ -250,4 +233,115 @@ async function searchLog(isApp) {
         sortorder: "desc",
     });
     $("#logList").jqGrid('navGrid', '#logPage', { edit: false, add: false, del: false });
+}
+
+function goCheckPage(type) {
+
+    var userId;
+    var branch = $("#branch").val();
+    var dept = $("#dept").val();
+    if (type == "R") {
+        userId = $("#uid").val().replaceAll(" ", "");
+        if (userId == "") {
+            alert("請輸入員編");
+            return;
+        }
+        if (userId.length > 7) {
+            alert("輸入的員編過長")
+            return;
+        }
+    } else {
+        userId = JSON.parse($("#uid").val()).userId;
+    }
+    if (dept == "") {
+        alert("請選擇部門 / 分行");
+        return;
+    }
+    if (branch == "") {
+        alert("請選擇派駐單位");
+        return;
+    }
+    var workType = "", workName = "";
+    var manager = $('input[name=manager]:checked').val();
+    var security = $('input[name=security]:checked').val();
+    $('input[name=workType]:checked').each(function () {
+        workType += this.value + ";"
+        workName += $(`label[for=${this.value}]`).text() + " ";
+    });
+    if (branch.match("800|100|600")) {
+        workType = "ALL";
+        workName = "ALL";
+    }
+    if (branch == "800" && dept == "800") {
+        security = "AU";
+    }
+    if (branch == "600" && dept == "600") {
+        security = "SU";
+    }
+    let dataJSON = {
+        "userId": userId,
+        "manager": manager,
+        "security": security,
+        "dept": dept,
+        "branch": branch,
+        "workType": workType
+    }
+    let dataNameJSON = {
+        "userId": userId,
+        "manager": manager == "N" ? "否" : "是",
+        "security": security == "U" ? "否" : "是",
+        "dept": $('#dept :selected').text(),
+        "branch": $('#branch :selected').text(),
+        "workName": workName,
+        "type": type
+    }
+    localStorage.setItem("checkData", JSON.stringify(dataJSON));
+    localStorage.setItem("checkDataName", JSON.stringify(dataNameJSON));
+    location.href = "checkUser.html";
+}
+
+// 更新使用者api
+function updateUser() {
+    $("#submitBtn").attr("disabled", true);
+    let requestURL = `${ip}webcam_web_api/api/User`;
+    let dataJSON = localStorage.getItem("checkData");
+    $.ajax({
+        url: requestURL,
+        data: dataJSON,
+        type: "PATCH",
+        dataType: "json",
+        async: false,
+        contentType: "application/json;charset=utf-8",
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
+            alert(response.message);
+            $("#submitBtn").attr("disabled", false);
+            localStorage.removeItem("checkData");
+            history.back();
+        },
+    });
+}
+
+// 搜尋分行、部門代碼api
+function searchBranch() {
+    $.ajax({
+        url: `${ip}webcam_web_api/api/Branch`,
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        async: false,
+        success: function (returnData) {
+            if (returnData.code == 0) {
+                var dataList = returnData['data'];
+                for (var i = 0; i < dataList.length; i++) {
+                    let branchCode = dataList[i]["branchCode"];
+                    let branchName = dataList[i]["branchName"];
+                    $('#dept').append($('<option />', { value: branchCode, text: branchName }));
+                    $('#branch').append($('<option />', { value: branchCode, text: branchName }));
+                }
+            } else {
+                alert(returnData.message);
+            }
+        },
+    });
 }

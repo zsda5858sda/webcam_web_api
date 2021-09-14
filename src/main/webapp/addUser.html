@@ -18,8 +18,8 @@
 
     <div id="securityDiv">
         <label>安控人員: </label>
-        <input id="securityY" name="security" type="radio" value="SU"><label>是</label>
-        <input id="securityN" name="security" type="radio" value="U" checked><label>否</label>
+        <input name="security" type="radio" value="SU"><label>是</label>
+        <input name="security" type="radio" value="U" checked><label>否</label>
     </div>
 
     <div id="deptDiv">
@@ -34,14 +34,14 @@
         <div id="cblist"></div>
     </div>
     <div>
-        <button type="button"  id="submitBtn" onclick="submit()">註冊</button>
+        <button type="button" id="submitBtn" onclick="goCheckPage('R')">確定</button>
     </div>
 
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
     <script>
         $(function () {
-            
+
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
@@ -53,17 +53,9 @@
             }
             if (dept != null) {
                 if (!dept.match("100|800|600")) {
-                    if (dept == branch) {
-                        $("#securityDiv").hide();
-                        $("#deptDiv").hide();
-                        $("#branchDiv").hide();
-                        $("#workTypeDiv").hide();
-
-                    } else {
-                        $("#securityDiv").hide();
-                        $("#deptDiv").hide();
-                        $("#branchDiv").hide();
-                    }
+                    $("#securityDiv").hide();
+                    $("#deptDiv").hide();
+                    $("#branchDiv").hide();
                 }
             }
             $.ajax({
@@ -81,38 +73,33 @@
                             if (workType == dept) {
                                 $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked" }));
                             } else {
-                                $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"] }));
+                                if (dept == branch && !dept.match("100|800|600")) {
+                                    $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], disabled: "disabled" }));
+                                } else {
+                                    $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"] }));
+                                }
                             }
-                            $('#cblist').append($('<label />', { text: dataList[i]["workName"] }));
+                            $('#cblist').append($('<label />', { text: dataList[i]["workName"], for: `${workType}` }));
                         }
                     } else {
                         alert(returnData.message);
                     }
                 },
             });
-            $.ajax({
-                url: `${ip}webcam_web_api/api/Branch`,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (returnData) {
-                    console.log(returnData);
-                    if (returnData.code == 0) {
-                        var dataList = returnData['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            let branchCode = dataList[i]["branchCode"];
-                            let branchName = dataList[i]["branchName"];
-                            $('#dept').append($('<option />', { value: branchCode, text: branchName }));
-                            $('#branch').append($('<option />', { value: branchCode, text: branchName }));
-                        }
-                    } else {
-                        alert(returnData.message);
-                    }
-                },
-            });
+            searchBranch();
             $("#dept").val(dept);
             $("#branch").val(branch);
+
+            if (dept == branch && !dept.match("100|800|600")) {
+                $("input[name=manager]").change(function () {
+                    if ($(this).val() == "Y") {
+                        $('input[name=workType]').prop("disabled", false);
+                    } else {
+                        $(`input[name=workType][value!=${dept}]`).prop("disabled", true);
+                        $(`input[name=workType][value!=${dept}]`).prop("checked", false);
+                    }
+                })
+            }
         })
     </script>
 </body>

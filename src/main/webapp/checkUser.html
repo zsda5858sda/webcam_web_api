@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="uidDiv">
+        <label>員編: </label>
+    </div>
+    <div id="deptDiv">
+        <label>部門 / 分行: </label>
+    </div>
+
+    <div id="branchDiv">
+        <label>派駐單位: </label>
+    </div>
+    <div id="managerDiv">
+        <label>主管: </label>
+    </div>
+
+    <div id="securityDiv">
+        <label>安控人員: </label>
+    </div>
+    <div id="workTypeDiv">
+        <label>業務種類: </label>
+    </div>
+    <div>
+        <button type="button" onclick="history.back()">返回</button>
+        <button type="button" id="submitBtn">確定</button>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function () {
+            var dataNameJSON = JSON.parse(localStorage.getItem("checkDataName"));
+            $("#uidDiv").append(`<label>${dataNameJSON.userId}</label>`);
+            $("#deptDiv").append(`<label>${dataNameJSON.dept}</label>`);
+            $("#branchDiv").append(`<label>${dataNameJSON.branch}</label>`);
+            $("#managerDiv").append(`<label>${dataNameJSON.manager}</label>`);
+            $("#securityDiv").append(`<label>${dataNameJSON.security}</label>`);
+            $("#workTypeDiv").append(`<label>${dataNameJSON.workName}</label>`);
+
+            if (dataNameJSON.type == "R") {
+                $("#submitBtn").click(function () {
+                    submit();
+                })
+            } else {
+                $("#submitBtn").click(function () {
+                    updateUser();
+                })
+            }
+
+            localStorage.removeItem("checkDataName");
+        })
+    </script>
+</body>

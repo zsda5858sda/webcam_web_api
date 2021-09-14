@@ -23,7 +23,7 @@
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
-            if (security == "U") {
+            if (localStorage.getItem("security") == "U") {
                 history.go(-1);
             }
         })
