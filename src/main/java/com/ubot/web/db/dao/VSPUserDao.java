@@ -100,6 +100,7 @@ public class VSPUserDao extends BaseDao {
 				ps.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
 		});
 
@@ -144,6 +145,29 @@ public class VSPUserDao extends BaseDao {
 			conn.close();
 		}
 		return user.getUserId() == null ? Optional.empty() : Optional.of(user);
+	}
+
+	public void updateQuery(VSPUser user) throws Exception {
+		Connection conn = getConnection();
+		String sql = "update vspuser set MANAGER = ?, SECURITY = ?, DEPT = ?, BRANCH = ?, WORKTYPE = ?, SUBORDINATE = ? where USERID = ?";
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setString(1, user.getManager());
+			ps.setString(2, user.getSecurity());
+			ps.setString(3, user.getDept());
+			ps.setString(4, user.getBranch());
+			ps.setString(5, user.getWorkType());
+			ps.setString(6, user.getSubordinate());
+			ps.setString(7, user.getUserId());
+
+			logger.info(ps.toString());
+			ps.execute();
+			ps.close();
+		} catch (SQLException e) {
+			throw new Exception(e.getMessage());
+		} finally {
+			conn.close();
+		}
 	}
 
 }
