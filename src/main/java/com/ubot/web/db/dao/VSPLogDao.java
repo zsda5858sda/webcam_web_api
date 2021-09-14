@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +65,11 @@ public class VSPLogDao extends BaseDao {
 				builder.append("  |  ");
 				builder.append(ip);
 
+				DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseLenient()
+						.appendPattern("yyyyMMddHHmmss").appendValue(ChronoField.MILLI_OF_SECOND, 2).toFormatter();
+				createDatetime = LocalDateTime.parse(createDatetime, formatter)
+						.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
+
 				log.setAction(action);
 				log.setCreateDatetime(createDatetime);
 				log.setIp(ip);
@@ -103,6 +112,11 @@ public class VSPLogDao extends BaseDao {
 				builder.append(action);
 				builder.append("  |  ");
 				builder.append(ip);
+
+				DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseLenient()
+						.appendPattern("yyyyMMddHHmmss").appendValue(ChronoField.MILLI_OF_SECOND, 2).toFormatter();
+				createDatetime = LocalDateTime.parse(createDatetime, formatter)
+						.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
 
 				log.setAction(action);
 				log.setUserType(userType);
