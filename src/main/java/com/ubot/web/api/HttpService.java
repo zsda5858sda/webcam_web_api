@@ -136,7 +136,6 @@ public class HttpService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			e.printStackTrace();
 			message = "更新驗證狀態失敗";
 			logger.info(message);
 			result.put("message", message);

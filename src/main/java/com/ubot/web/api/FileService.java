@@ -85,8 +85,9 @@ public class FileService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = String.format("檔案查詢失敗, 原因 %s", e.getMessage());
+			message = "檔案查詢失敗, 原因: 請聯繫管理人員";
 			logger.error(message);
+			logger.error(e.getMessage());
 			result.put("message", message);
 			result.put("code", 1);
 		}

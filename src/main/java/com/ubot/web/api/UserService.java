@@ -44,7 +44,6 @@ public class UserService {
 
 	@GET
 	@Path("/{userId}")
-	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	public Response getById(@PathParam("userId") String userId) throws JsonProcessingException {
 		ObjectNode result = mapper.createObjectNode();
@@ -64,7 +63,15 @@ public class UserService {
 			result.put("message", message);
 			result.put("code", 1);
 		} catch (Exception e) {
-			message = String.format("查詢使用者資料錯誤, 原因: %s", e.getMessage());
+			message = "查詢使用者資料錯誤, 原因: 請聯繫管理人員";
+			logger.error(message);
+			logger.error(e.getMessage());
+			result.put("message", message);
+			result.put("code", 1);
+		}
+
+		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
+	}
 			logger.error(message);
 			result.put("message", message);
 			result.put("code", 1);
