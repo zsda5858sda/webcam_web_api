@@ -168,7 +168,8 @@ public class UserService {
 	}
 
 	// 撈出同部門同分行之行員並寫進subordinate中
-	private void setSubordinateByManager(VSPUser user, StringBuilder builder, String workType) throws Exception {
+	private void setSubordinateForManagerAndAppointed(VSPUser user, StringBuilder builder, String workType)
+			throws Exception {
 		String sql = "select * from vspuser where BRANCH = %s and USERID <> %s and (%s)";
 		userDao.selectQuery(String.format(sql, user.getBranch(), user.getUserId(), workType)).stream()
 				.forEach(u -> builder.append(u.getUserId().concat(";")));
@@ -176,7 +177,7 @@ public class UserService {
 	}
 
 	// 撈出同部門之行員並寫進subordinate中
-	private void setSubordinateByHeadquarter(VSPUser user, StringBuilder builder, String workType) throws Exception {
+	private void setSubordinateForHeadquarter(VSPUser user, StringBuilder builder, String workType) throws Exception {
 		String sql = "select * from vspuser where %s";
 		userDao.selectQuery(String.format(sql, workType)).stream()
 				.forEach(u -> builder.append(u.getUserId().concat(";")));
@@ -207,10 +208,12 @@ public class UserService {
 				JSONObject json = new JSONObject();
 				String message = status.equals("U") ? "更新使用者" : "新增使用者";
 				VSPUser user = eventQueue.poll();
+				boolean isHeadquarter = user.getBranch().equals(user.getDept());
 
 				logger.info("使用者處理程序開始");
 
 				try {
+					// 若為使用者更新會先移除所有可以看見該使用者的權限
 					if (status.equals("U")) {
 						String sql = "select * from vspuser where SUBORDINATE like '%%%s%%'";
 						List<VSPUser> userList = userDao.selectQuery(String.format(sql, user.getUserId())).stream()
@@ -220,10 +223,28 @@ public class UserService {
 								}).collect(Collectors.toList());
 						userDao.updateSubordinate(userList);
 					}
-					if (user.getBranch().equals(user.getDept()) && user.getBranch().matches("800|100|600")) {
+					if (isHeadquarter && user.getBranch().matches("800|100|600")) {
 						user.setSubordinate("ALL");
 						userDao.insertQuery(user);
 					} else {
+						// 檢查主管是否已超過人數
+						if (user.getManager().equals("Y") && !isHeadquarter) {
+							List<VSPUser> list = userDao.selectQuery(String.format(
+									"select * from vspuser where DEPT = %s and BRANCH = %s and MANAGER = 'Y'",
+									user.getDept(), user.getBranch()));
+							if (list.size() > 0) {
+								throw new Exception("manager existed");
+							}
+						}
+						// 檢查指定人員是否已超過人數
+						if (user.getAppointed().equals("Y") && !isHeadquarter) {
+							List<VSPUser> list = userDao.selectQuery(String.format(
+									"select * from vspuser where DEPT = %s and BRANCH = %s and APPOINTED = 'Y'",
+									user.getDept(), user.getBranch()));
+							if (list.size() > 0) {
+								throw new Exception("appointed existed");
+							}
+						}
 
 						String newUserId = user.getUserId().concat(";");
 						user.setSubordinate(newUserId);
@@ -240,10 +261,11 @@ public class UserService {
 						}
 
 						// 設定總行或主管之下屬
-						if (user.getBranch().equals(user.getDept()) && !user.getBranch().matches("0(.*)")) {
-							setSubordinateByHeadquarter(user, subordinate, sqlWorkType);
-						} else if (user.getManager().equalsIgnoreCase("y")) {
-							setSubordinateByManager(user, subordinate, sqlWorkType);
+						if (isHeadquarter && !user.getBranch().matches("0(.*)")) {
+							setSubordinateForHeadquarter(user, subordinate, sqlWorkType);
+						} else if (user.getManager().equalsIgnoreCase("y")
+								|| user.getAppointed().equalsIgnoreCase("y")) {
+							setSubordinateForManagerAndAppointed(user, subordinate, sqlWorkType);
 						}
 
 						if (status.equals("U")) {
@@ -253,7 +275,7 @@ public class UserService {
 						}
 
 						// 查詢需要更新名單
-						sql = "select * from vspuser where USERID <> %s and (((%s) and (DEPT = BRANCH and BRANCH not like '0%%' and WORKTYPE <> 'ALL' or BRANCH = %s and MANAGER = 'Y')));";
+						sql = "select * from vspuser where USERID <> %s and (((%s) and (DEPT = BRANCH and BRANCH not like '0%%' and WORKTYPE <> 'ALL' or BRANCH = %s and (MANAGER = 'Y' or APPOINTED = 'Y'))));";
 
 						userList = userDao
 								.selectQuery(String.format(sql, user.getUserId(), sqlWorkType, user.getBranch()))
@@ -272,6 +294,10 @@ public class UserService {
 				} catch (Exception e) {
 					if (e.getMessage().contains("PRIMARY")) {
 						message += "失敗, 原因: 此ID已被註冊";
+					} else if (e.getMessage().contains("manager")) {
+						message += "失敗, 原因: 該分行主管已達上限";
+					} else if (e.getMessage().contains("appointed")) {
+						message += "失敗, 原因: 該分行指定人員已達上限";
 					} else {
 						message += "失敗, 原因: 請聯繫管理人員";
 					}
