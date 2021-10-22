@@ -4,6 +4,7 @@ package com.ubot.web.db.vo;
 public class VSPUser {
 	private String userId;
 	private String manager;
+	private String appointed;
 	private String security;
 	private String dept;
 	private String branch;
@@ -64,5 +65,13 @@ public class VSPUser {
 
 	public void setSecurity(String security) {
 		this.security = security;
+	}
+
+	public String getAppointed() {
+		return appointed;
+	}
+
+	public void setAppointed(String appointed) {
+		this.appointed = appointed;
 	}
 }

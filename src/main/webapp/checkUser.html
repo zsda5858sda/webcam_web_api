@@ -20,7 +20,9 @@
     <div id="managerDiv">
         <label>主管: </label>
     </div>
-
+    <div id="appointedDiv">
+        <label>指定人員: </label>
+    </div>
     <div id="securityDiv">
         <label>安控人員: </label>
     </div>
@@ -35,11 +37,15 @@
     <script src="js/main.js"></script>
     <script>
         $(function () {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
             var dataNameJSON = JSON.parse(localStorage.getItem("checkDataName"));
             $("#uidDiv").append(`<label>${dataNameJSON.userId}</label>`);
             $("#deptDiv").append(`<label>${dataNameJSON.dept}</label>`);
             $("#branchDiv").append(`<label>${dataNameJSON.branch}</label>`);
             $("#managerDiv").append(`<label>${dataNameJSON.manager}</label>`);
+            $("#appointedDiv").append(`<label>${dataNameJSON.appointed}</label>`);
             $("#securityDiv").append(`<label>${dataNameJSON.security}</label>`);
             $("#workTypeDiv").append(`<label>${dataNameJSON.workName}</label>`);
 

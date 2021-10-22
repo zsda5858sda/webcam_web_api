@@ -263,6 +263,7 @@ function goCheckPage(type) {
     }
     var workType = "", workName = "";
     var manager = $('input[name=manager]:checked').val();
+    var appointed = $('input[name=appointed]:checked').val();
     var security = $('input[name=security]:checked').val();
     $('input[name=workType]:checked').each(function () {
         workType += this.value + ";"
@@ -281,6 +282,7 @@ function goCheckPage(type) {
     let dataJSON = {
         "userId": userId,
         "manager": manager,
+        "appointed": appointed,
         "security": security,
         "dept": dept,
         "branch": branch,
@@ -289,6 +291,7 @@ function goCheckPage(type) {
     let dataNameJSON = {
         "userId": userId,
         "manager": manager == "N" ? "否" : "是",
+        "appointed": appointed == "N" ? "否" : "是",
         "security": security == "U" ? "否" : "是",
         "dept": $('#dept :selected').text(),
         "branch": $('#branch :selected').text(),
