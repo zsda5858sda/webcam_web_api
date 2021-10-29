@@ -1,10 +1,8 @@
 package com.ubot.web.api;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,7 +51,7 @@ public class UserService {
 
 		try {
 			logger.info(userId);
-			VSPUser user = userDao.findById(userId).orElseThrow(() -> new NotFoundException("此ID尚未註冊, 請聯絡該部門安控人員"));
+			VSPUser user = userDao.findById(userId).orElseThrow(() -> new NotFoundException());
 			message = "查詢使用者資料成功";
 			logger.info(message);
 			result.putPOJO("data", user);
@@ -61,7 +59,6 @@ public class UserService {
 			result.put("code", 0);
 		} catch (NotFoundException nfe) {
 			message = nfe.getMessage();
-			logger.error(message);
 			result.put("message", message);
 			result.put("code", 1);
 		} catch (Exception e) {
@@ -168,21 +165,8 @@ public class UserService {
 	}
 
 	// 撈出同部門同分行之行員並寫進subordinate中
-	private void setSubordinateForManagerAndAppointed(VSPUser user, StringBuilder builder, String workType)
-			throws Exception {
-		String sql = "select * from vspuser where BRANCH = %s and USERID <> %s and (%s)";
-		userDao.selectQuery(String.format(sql, user.getBranch(), user.getUserId(), workType)).stream()
-				.forEach(u -> builder.append(u.getUserId().concat(";")));
-		user.setSubordinate(builder.toString());
-	}
 
 	// 撈出同部門之行員並寫進subordinate中
-	private void setSubordinateForHeadquarter(VSPUser user, StringBuilder builder, String workType) throws Exception {
-		String sql = "select * from vspuser where %s";
-		userDao.selectQuery(String.format(sql, workType)).stream()
-				.forEach(u -> builder.append(u.getUserId().concat(";")));
-		user.setSubordinate(builder.toString());
-	}
 
 	private static boolean isThreadStart() {
 		return isStart;
@@ -214,59 +198,34 @@ public class UserService {
 
 				try {
 					// 若為使用者更新會先移除所有可以看見該使用者的權限
-					if (status.equals("U")) {
-						String sql = "select * from vspuser where SUBORDINATE like '%%%s%%'";
-						List<VSPUser> userList = userDao.selectQuery(String.format(sql, user.getUserId())).stream()
-								.map(u -> {
-									u.setSubordinate(u.getSubordinate().replace(user.getUserId() + ";", ""));
-									return u;
-								}).collect(Collectors.toList());
-						userDao.updateSubordinate(userList);
-					}
 					if (isHeadquarter && user.getBranch().matches("800|100|600")) {
-						user.setSubordinate("ALL");
 						userDao.insertQuery(user);
 					} else {
 						// 檢查主管是否已超過人數
-						if (user.getManager().equals("Y") && !isHeadquarter) {
+						if (user.getManager().equals("Y")) {
 							List<VSPUser> list = userDao.selectQuery(String.format(
 									"select * from vspuser where DEPT = %s and BRANCH = %s and MANAGER = 'Y'",
 									user.getDept(), user.getBranch()));
 							if (list.size() > 0) {
-								throw new Exception("manager existed");
+								if (!list.get(0).getUserId().equals(user.getUserId())) {
+									throw new Exception("manager existed");
+								}
 							}
 						}
 						// 檢查指定人員是否已超過人數
-						if (user.getAppointed().equals("Y") && !isHeadquarter) {
+						if (user.getAppointed().equals("Y")) {
 							List<VSPUser> list = userDao.selectQuery(String.format(
 									"select * from vspuser where DEPT = %s and BRANCH = %s and APPOINTED = 'Y'",
 									user.getDept(), user.getBranch()));
 							if (list.size() > 0) {
-								throw new Exception("appointed existed");
+								if (!list.get(0).getUserId().equals(user.getUserId())) {
+									throw new Exception("appointed existed");
+								}
 							}
 						}
 
-						String newUserId = user.getUserId().concat(";");
-						user.setSubordinate(newUserId);
-						List<VSPUser> userList = new ArrayList<VSPUser>();
-						StringBuilder subordinate = new StringBuilder(newUserId);
-						String sql, sqlWorkType = "";
-						// 將worktype轉成sql判斷式
-						String[] workTypeArr = user.getWorkType().split(";");
-						for (String wt : workTypeArr) {
-							sqlWorkType += String.format("WORKTYPE like '%%%s%%'", wt);
-							if (!wt.equals(workTypeArr[workTypeArr.length - 1])) {
-								sqlWorkType += " or ";
-							}
-						}
 
 						// 設定總行或主管之下屬
-						if (isHeadquarter && !user.getBranch().matches("0(.*)")) {
-							setSubordinateForHeadquarter(user, subordinate, sqlWorkType);
-						} else if (user.getManager().equalsIgnoreCase("y")
-								|| user.getAppointed().equalsIgnoreCase("y")) {
-							setSubordinateForManagerAndAppointed(user, subordinate, sqlWorkType);
-						}
 
 						if (status.equals("U")) {
 							userDao.updateQuery(user);
@@ -275,16 +234,6 @@ public class UserService {
 						}
 
 						// 查詢需要更新名單
-						sql = "select * from vspuser where USERID <> %s and (((%s) and (DEPT = BRANCH and BRANCH not like '0%%' and WORKTYPE <> 'ALL' or BRANCH = %s and (MANAGER = 'Y' or APPOINTED = 'Y'))));";
-
-						userList = userDao
-								.selectQuery(String.format(sql, user.getUserId(), sqlWorkType, user.getBranch()))
-								.stream().map(u -> {
-									u.setSubordinate(u.getSubordinate() + newUserId);
-									return u;
-								}).collect(Collectors.toList());
-						userDao.updateSubordinate(userList);
-						logger.info("更新可查看之下屬");
 
 					}
 					message += "成功";

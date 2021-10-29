@@ -16,6 +16,9 @@ public class RequestBody {
 	@QueryParam("workType")
 	private String workType;
 
+	@QueryParam("branch")
+	private String branch;
+
 	public String getMinDate() {
 		return minDate;
 	}
@@ -32,6 +35,10 @@ public class RequestBody {
 		return workType;
 	}
 
+	public String getBranch() {
+		return branch;
+	}
+
 	@Override
 	public String toString() {
 		String result = "";
@@ -46,6 +53,9 @@ public class RequestBody {
 		}
 		if (workType != null && !workType.equals("")) {
 			result += ", workType=" + workType;
+		}
+		if (branch != null && !branch.equals("")) {
+			result += ", branch=" + branch;
 		}
 		return result;
 	}

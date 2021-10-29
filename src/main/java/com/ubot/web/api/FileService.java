@@ -49,24 +49,24 @@ public class FileService {
 		try {
 			String minDate = requestBody.getMinDate();
 			String maxDate = requestBody.getMaxDate();
-			String canSeeUserId = requestBody.getUserId();
+			String userId = requestBody.getUserId();
 			String workType = requestBody.getWorkType();
-			String[] userIdArr = canSeeUserId.split(";");
-			String sqlFileName = "";
-			for (String uid : userIdArr) {
-				sqlFileName += String.format("FILENAME like '%s%%.webm' or FILENAME like '%s%%.jpg'", uid, uid);
-				if (!uid.equals(userIdArr[userIdArr.length - 1])) {
-					sqlFileName += " or ";
-				}
-			}
-			String sql = "select * from vspfile where WORKDATE <= %s and WORKDATE >= %s and (%s)";
-			if (workType.equals("ALL")) {
-				result.putPOJO("data", fileDao.selectQuery(
-						String.format(sql, maxDate, minDate, "FILENAME like '%.webm' or FILENAME like '%.jpg'")));
-			} else if (workType.equals("null")) {
-				result.putPOJO("data", fileDao.selectQuery(String.format(sql, maxDate, minDate, sqlFileName)));
+			String branch = requestBody.getBranch();
+			String sql = "select * from vspfile where WORKDATE <= %s and WORKDATE >= %s ";
+
+			if (!userId.equals("")) {
+				sql += " and (FILENAME like '%s%%.webm' or FILENAME like '%s%%.jpg')";
+				sql = String.format(sql, maxDate, minDate, userId, userId);
 			} else {
-				sql += " and (%s)";
+				sql += " and (FILENAME like '%%.webm' or FILENAME like '%%.jpg')";
+				sql = String.format(sql, maxDate, minDate);
+			}
+			if (workType.equals("ALL") || workType.equals("")) {
+				// 一般行員及可全查部門
+				result.putPOJO("data", fileDao.selectQuery(sql));
+			}
+			else {
+
 				String sqlWorkType = "";
 				// 將worktype轉成sql判斷式
 				String[] workTypeArr = workType.split(";");
@@ -76,9 +76,8 @@ public class FileService {
 						sqlWorkType += " or ";
 					}
 				}
-
-				result.putPOJO("data",
-						fileDao.selectQuery(String.format(sql, maxDate, minDate, sqlFileName, sqlWorkType)));
+				sql += String.format(" and BRANCH = %s and (%s)", branch, sqlWorkType);
+				result.putPOJO("data", fileDao.selectQuery(sql));
 			}
 			message = "檔案查詢成功";
 			logger.info(message);
