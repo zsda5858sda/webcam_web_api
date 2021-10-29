@@ -2,14 +2,14 @@ body {
     background-color: #01859a;
 }
 
-#inner {
+.inner {
     display: table;
     margin: 0 auto;
     margin-top: 5%;
     /* border: 1px solid black; */
 }
 
-#inner img{
+.inner img{
     margin-top: 5%;
     max-width: 100%;
 }

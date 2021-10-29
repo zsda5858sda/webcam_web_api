@@ -2,7 +2,7 @@ body {
     background-color: #01859a;
 }
 
-#inner {
+.inner {
     display: table;
     margin: 0 auto;
     margin-top: 5%;
@@ -27,12 +27,12 @@ label{
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }
 
-#inner img{
+.inner img{
     margin-top: 5%;
     max-width: 100%;
 }
 
-#inner label{
+.inner label{
     font-size: 30px;
 }
 

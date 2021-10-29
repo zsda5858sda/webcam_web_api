@@ -2,7 +2,7 @@ body {
     background-color: #01859a;
 }
 
-#inner {
+.inner {
     display: table;
     margin-top: 5%;
     margin-left: 25%;
