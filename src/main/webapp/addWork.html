@@ -3,18 +3,31 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/add.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div>
-        <label>業務種類名稱: </label><input id="workName" type="text">
-    </div>
-    <div>
-        <label>業務種類代碼: </label><input id="workType" type="text">
-    </div>
-    <div>
-        <button type="button" id="addWorkBtn" onclick="addWork()">新增</button>
+    <div id="outer">
+        <div id="title">
+            <label>新增業務</label>
+        </div>
+        <div id="inner">
+            <div class="input-icons">
+                <i class="fa fa-user icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">業務種類名稱：</label>
+                <input id="workName" type="text" placeholder="請輸入業務種類名稱">
+            </div>
+        </div>
+        <div id="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">業務種類代號：</label>
+                <input id="workType" type="password" placeholder="請輸入業務種類代號">
+            </div>
+        </div>
+        <div id="inner">
+            <button id="loginBtn" type="button" onclick="addWork()">新增</button>
+        </div>
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>

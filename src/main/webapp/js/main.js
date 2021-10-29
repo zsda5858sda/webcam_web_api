@@ -1,5 +1,5 @@
-// var ip = "http://172.16.45.245:8080/"
-var ip = "http://localhost:8080/";
+var ip = "http://172.16.45.245:8080/"
+// var ip = "http://192.168.141.207:8080/";
 
 //新增使用者api
 function submit() {
@@ -216,14 +216,14 @@ async function searchLog(isApp) {
     $("#logList").jqGrid({
         colNames: ['員編 / 客戶電話', '時間', '事件描述', '來源IP'],
         colModel: [
-            { name: 'userId', index: 'userId' },
-            { name: 'createDatetime', index: 'createDatetime' },
-            { name: 'action', index: 'action' },
-            { name: 'ip', index: 'ip' },
+            { name: 'userId', index: 'userId',with:200 },
+            { name: 'createDatetime', index: 'createDatetime' ,width:250},
+            { name: 'action', index: 'action' ,width:550},
+            { name: 'ip', index: 'ip' ,width:200},
         ],
         datatype: "local",
         data: responseData,
-        width: null,
+        width: $(window).width() - 300,
         shrinkToFit: false,
         rowNum: 10,
         rowList: [10, 20, 30],

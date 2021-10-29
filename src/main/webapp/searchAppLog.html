@@ -4,19 +4,36 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.css" />
-    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/log.css" rel="stylesheet" />
     <link href="css/jqGrid/ui.jqgrid.css" rel="stylesheet" type="text/css" />
     <style>
         .grid {
-            position: absolute;
             bottom: 100px;
+            margin-top: 5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
 
 <body>
-
-    <div id="uidDiv">
+    <div id="outer">
+        <div id="title">
+            <label>對保LOG查詢</label>
+        </div>
+        <div id="inner" style="margin-left: 25%;">
+            <div id="uidDiv">
+                <label>員編: </label><input id="uid" type="text">
+            </div>
+            <label>日期區間: </label>
+            <input type="text" id="minDate" />&nbsp;&nbsp;~&nbsp;&nbsp;<input type="text" id="maxDate" />
+        </div>
+        <div id="inner">
+            <button type="button" onclick="searchLog(true)">查詢</button>
+        </div>
+    </div>
+    <!-- <div id="uidDiv">
         <label>查詢ID(員編或客戶電話): </label><input id="uid" type="text">
     </div>
     <div>
@@ -24,7 +41,7 @@
     </div>
     <div>
         <button type="button" onclick="searchLog(true)">查詢</button>
-    </div>
+    </div> -->
     <div class="grid">
         <table id="logList"></table>
         <div id="logPage"></div>

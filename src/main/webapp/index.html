@@ -3,38 +3,32 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div>
-        <button type="button" onclick="location.href = 'file.html'">查詢對保資料</button>
-    </div>
-    <div>
-        <br>
-        <button type="button" onclick="location.href = 'searchAppLog.html'">查詢對保log</button>
-    </div>
-    <div>
-        <br>
-        <button type="button" onclick="location.href = 'searchLog.html'">查詢後台log</button>
-    </div>
-    <div id="changeValidDiv">
-    </div>
-    <div id="addBranchDiv">
-        <br>
-        <button type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
-    </div>
-    <div id="addWorkDiv">
-        <br>
-        <button type="button" onclick="location.href = 'addWork.html'">新增業務種類</button>
-    </div>
-    <div id="addUserDiv">
-        <br>
-        <button type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
-    </div>
-    <div id="updateUserDiv">
-        <br>
-        <button type="button" onclick="location.href = 'updateUser.html'">更新使用者</button>
+    <div id="outer">
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'file.html'">查詢對保資料</button>
+        </div>
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'searchAppLog.html'">查詢對保log</button>
+        </div>
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'searchLog.html'">查詢後台log</button>
+        </div>
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
+        </div>
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'addWork.html'">新增業務種類</button>
+        </div>
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
+        </div>
+        <div id="inner">
+            <button class="select" type="button" onclick="location.href = 'updateUser.html'">更新使用者</button>
+        </div>
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>

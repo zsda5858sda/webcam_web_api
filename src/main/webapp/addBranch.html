@@ -3,19 +3,31 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/add.css" rel="stylesheet" />
 </head>
 
 <body>
-
-    <div>
-        <label>分行名稱: </label><input id="branchName" type="text">
-    </div>
-    <div>
-        <label>分行代碼: </label><input id="branchCode" type="text">
-    </div>
-    <div>
-        <button type="button" id="addBranchBtn" onclick="addBranch()">新增</button>
+    <div id="outer">
+        <div id="title">
+            <label>新增分行代碼</label>
+        </div>
+        <div id="inner">
+            <div class="input-icons">
+                <i class="fa fa-user icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">分行名稱：</label>
+                <input id="branchName" type="text" placeholder="請輸入分行名稱">
+            </div>
+        </div>
+        <div id="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">分行代號：</label>
+                <input id="branchCode" type="password" placeholder="請輸入分行代號">
+            </div>
+        </div>
+        <div id="inner">
+            <button id="loginBtn" type="button" onclick="addBranch()">新增</button>
+        </div>
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>

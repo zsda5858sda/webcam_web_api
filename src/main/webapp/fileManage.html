@@ -17,6 +17,14 @@
             display: block
         }
 
+        .container {
+            margin-top: 10%;
+            max-width: 60%;
+            background-color: rgb(61, 61, 61);
+            border-radius: 15px;
+            box-sizing: border-box;
+        }
+
         .file_manager .file {
             padding: 0 !important
         }
@@ -92,6 +100,10 @@
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
         }
 
+        #insertContainer{
+            margin:0px auto;
+        }
+
         a:hover {
             text-decoration: none;
         }
@@ -101,6 +113,17 @@
             right: 10px;
             top: 80px;
         }
+
+        .folder{
+            margin-left: 60%;
+        }
+
+        .title {
+            font-size: 20px;
+            color: white;
+            padding: 1%;
+        }
+        
     </style>
 </head>
 
@@ -108,6 +131,7 @@
 
     <div id="main-content" class="file_manager">
         <div class="container">
+            <div class="title">行員：</div>
             <div id="insertContainer" class="row clearfix">
             </div>
         </div>
@@ -196,7 +220,7 @@
                             <i class="fas fa-folder fa-9x"></i>
                         </div>
                         <div class="file-name">
-                            <p class="m-b-5 text-muted">${folderName}</p>
+                            <p style="color:white; text-decoration:none;">${folderName}</p>
                         </div>
                     </a>
                 </div>

@@ -4,18 +4,23 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.css" />
-    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/file.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div class="search_container">
-        <div>
-            <label>員編: </label><input type="text" id="uid" disabled="disabled" />
+    <div id="outer">
+        <div id="title">
+            <label>對保資料查詢</label>
         </div>
-        <div>
-            <label>日期區間: </label><input type="text" id="minDate" />~<input type="text" id="maxDate" />
+        <div id="inner">
+            <label>員編: </label>
+            <input type="text" id="uid" />
         </div>
-        <div class="button">
+        <div id="inner" style="margin-left: 25%;">
+            <label>日期區間: </label>
+            <input type="text" id="minDate" />&nbsp;&nbsp;~&nbsp;&nbsp;<input type="text" id="maxDate" />
+        </div>
+        <div id="inner">
             <button type="button" onclick="searchFile()">查詢</button>
         </div>
     </div>
@@ -42,7 +47,7 @@
             }
         })
 
-       
+
     </script>
 </body>
 

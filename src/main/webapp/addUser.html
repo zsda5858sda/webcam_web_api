@@ -3,43 +3,54 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/user.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div>
-        <label>員編: </label><input id="uid" type="text">
-    </div>
-    <div>
-        <label>主管: </label>
-        <input id="managerY" name="manager" type="radio" value="Y"><label>是</label>
-        <input id="managerN" name="manager" type="radio" value="N" checked><label>否</label>
-    </div>
-    <div>
-        <label>指定人員: </label>
-        <input id="appointedY" name="appointed" type="radio" value="Y"><label>是</label>
-        <input id="appointedN" name="appointed" type="radio" value="N" checked><label>否</label>
-    </div>
-
-    <div id="securityDiv">
-        <label>安控人員: </label>
-        <input name="security" type="radio" value="SU"><label>是</label>
-        <input name="security" type="radio" value="U" checked><label>否</label>
-    </div>
-
-    <div id="deptDiv">
-        <label>部門 / 分行: </label><select id="dept"></select>
-    </div>
-
-    <div id="branchDiv">
-        <label>派駐單位: </label><select id="branch"></select>
-    </div>
-    <div id="workTypeDiv">
-        <label>業務種類: </label>
-        <div id="cblist"></div>
-    </div>
-    <div>
-        <button type="button" id="submitBtn" onclick="goCheckPage('R')">確定</button>
+    <div id="outer">
+        <div id="title">
+            <label>新增使用者</label>
+        </div>
+        <div id="inner">
+            <div id="uidDiv">
+                <label style="font-size: x-large;">員編: </label>
+                <input id="uid" type="text" style="width: 280px;">
+            </div>
+        </div>
+        <div id="inner">
+            <label style="font-size: x-large;">主管: </label>
+            <input id="managerY" name="manager" type="radio" value="Y" style="width: 30px; margin-left: 35px;"><label
+                style="margin-right: 30px; font-size: larger;">是</label>
+            <input id="managerN" name="manager" type="radio" value="N" style="width: 30px;margin-left: 55px;" checked><label
+                style="font-size: larger;">否</label>
+        </div>
+        <div id="inner">
+            <label style="font-size: x-large;">指定人員: </label>
+            <input id="appointedY" name="appointed" type="radio" value="Y" style="width: 30px;"><label
+                style="margin-right: 80px; font-size: larger;">是</label>
+            <input id="appointedN" name="appointed" type="radio" value="N" style="width: 30px;" checked><label
+                style="margin-right: 15px; font-size: larger;">否</label>
+        </div>
+        <div id="inner">
+            <label style="font-size: x-large;">安控人員: </label>
+            <input name="security" type="radio" value="SU" style="width: 30px;"><label
+                style="margin-right: 80px; font-size: larger;">是</label>
+            <input name="security" type="radio" value="U" style="width: 30px;" checked><label
+                style="margin-right: 15px; font-size: larger;">否</label>
+        </div>
+        <div id="inner">
+            <label style="font-size: x-large; margin-right: 40px;">部門 / 分行: </label><select id="dept"></select>
+        </div>
+        <div id="inner">
+            <label style="font-size: x-large; margin-right: 60px;">派駐單位: </label><select id="branch"></select>
+        </div>
+        <div id="inner">
+            <label style="font-size: x-large;">業務種類: </label>
+            <div id="cblist"></div>
+        </div>
+        <div id="inner">
+            <button type="button" onclick="goCheckPage('R')">新增</button>
+        </div>
     </div>
 
     <script src="js/jquery-3.6.0.min.js"></script>
@@ -76,7 +87,7 @@
                         for (var i = 0; i < dataList.length; i++) {
                             let workType = dataList[i]["workType"];
                             if (workType == dept) {
-                                $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked" }));
+                                $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked"  }));
                             } else {
                                 if (dept == branch && !dept.match("100|800|600")) {
                                     $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], disabled: "disabled" }));

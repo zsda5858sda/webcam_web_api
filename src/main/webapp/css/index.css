@@ -1,0 +1,37 @@
+body {
+    background-color: #01859a;
+}
+
+#inner {
+    display: table;
+    margin: 0 auto;
+    margin-top: 5%;
+    /* border: 1px solid black; */
+}
+
+#outer {
+    padding-top: 1%;
+    padding-bottom: 2%;
+    border-radius: 20px;
+    background-color: white;
+    width: 50%;
+    margin: 8% 25% 0 25%;
+    box-sizing: border-box;
+}
+
+.select{
+    width: 300px;
+    height: 50px;
+}
+
+button{
+    background-color: #01859a;
+    color: white;
+    font-size: 30px;
+    border: none;
+    border-radius: 20px;
+}
+
+button:hover{
+    background-color: #4cafbe;
+}
