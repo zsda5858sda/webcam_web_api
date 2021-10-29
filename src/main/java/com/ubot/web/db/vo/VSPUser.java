@@ -9,7 +9,6 @@ public class VSPUser {
 	private String dept;
 	private String branch;
 	private String workType;
-	private String subordinate;
 
 	public String getUserId() {
 		return userId;
@@ -33,14 +32,6 @@ public class VSPUser {
 
 	public void setWorkType(String workType) {
 		this.workType = workType;
-	}
-
-	public String getSubordinate() {
-		return subordinate;
-	}
-
-	public void setSubordinate(String subordinate) {
-		this.subordinate = subordinate;
 	}
 
 	public String getManager() {

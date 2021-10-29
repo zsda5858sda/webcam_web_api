@@ -20,7 +20,7 @@ public class VSPUserDao extends BaseDao {
 
 	public void insertQuery(VSPUser user) throws Exception {
 		Connection conn = getConnection();
-		String sql = "insert into vspuser(USERID, MANAGER, APPOINTED, SECURITY, DEPT, BRANCH, WORKTYPE, SUBORDINATE) values(?,?,?,?,?,?,?,?)";
+		String sql = "insert into vspuser(USERID, MANAGER, APPOINTED, SECURITY, DEPT, BRANCH, WORKTYPE) values(?,?,?,?,?,?,?)";
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			ps.setString(1, user.getUserId());
@@ -30,7 +30,6 @@ public class VSPUserDao extends BaseDao {
 			ps.setString(5, user.getDept());
 			ps.setString(6, user.getBranch());
 			ps.setString(7, user.getWorkType());
-			ps.setString(8, user.getSubordinate());
 
 			logger.info(ps.toString());
 			ps.execute();
@@ -60,13 +59,11 @@ public class VSPUserDao extends BaseDao {
 				String dept = resultSet.getString("DEPT");
 				String branch = resultSet.getString("BRANCH");
 				String workType = resultSet.getString("WORKTYPE");
-				String subordinate = resultSet.getString("SUBORDINATE");
 
 				user.setUserId(userId);
 				user.setBranch(branch);
 				user.setManager(manager);
 				user.setAppointed(appointed);
-				user.setSubordinate(subordinate);
 				user.setWorkType(workType);
 				user.setDept(dept);
 				user.setSecurity(security);
@@ -82,33 +79,6 @@ public class VSPUserDao extends BaseDao {
 			conn.close();
 		}
 		return result;
-	}
-
-	public void updateSubordinate(List<VSPUser> userList) throws Exception {
-		Connection conn = getConnection();
-
-		StringBuilder builder = new StringBuilder();
-
-		userList.forEach(u -> {
-
-			String sql = "update `vspuser` set SUBORDINATE = ? where USERID = ?;";
-
-			try (PreparedStatement ps = conn.prepareStatement(sql)) {
-
-				ps.setString(1, u.getSubordinate());
-				ps.setString(2, u.getUserId());
-
-				builder.append(ps.toString().split(": ")[1]);
-
-				ps.executeUpdate();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				logger.error(e.getMessage());
-			}
-		});
-
-		logger.info(builder.toString());
-		conn.close();
 	}
 
 	public Optional<VSPUser> findById(String id) throws Exception {
@@ -130,13 +100,11 @@ public class VSPUserDao extends BaseDao {
 				String dept = resultSet.getString("DEPT");
 				String branch = resultSet.getString("BRANCH");
 				String workType = resultSet.getString("WORKTYPE");
-				String subordinate = resultSet.getString("SUBORDINATE");
 
 				user.setUserId(userId);
 				user.setBranch(branch);
 				user.setManager(manager);
 				user.setAppointed(appointed);
-				user.setSubordinate(subordinate);
 				user.setWorkType(workType);
 				user.setDept(dept);
 				user.setSecurity(security);
@@ -154,7 +122,7 @@ public class VSPUserDao extends BaseDao {
 
 	public void updateQuery(VSPUser user) throws Exception {
 		Connection conn = getConnection();
-		String sql = "update vspuser set MANAGER = ?, APPOINTED = ?, SECURITY = ?, DEPT = ?, BRANCH = ?, WORKTYPE = ?, SUBORDINATE = ? where USERID = ?";
+		String sql = "update vspuser set MANAGER = ?, APPOINTED = ?, SECURITY = ?, DEPT = ?, BRANCH = ?, WORKTYPE = ? where USERID = ?";
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			ps.setString(1, user.getManager());
@@ -163,8 +131,7 @@ public class VSPUserDao extends BaseDao {
 			ps.setString(4, user.getDept());
 			ps.setString(5, user.getBranch());
 			ps.setString(6, user.getWorkType());
-			ps.setString(7, user.getSubordinate());
-			ps.setString(8, user.getUserId());
+			ps.setString(7, user.getUserId());
 
 			logger.info(ps.toString());
 			ps.execute();

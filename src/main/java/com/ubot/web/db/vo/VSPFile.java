@@ -7,6 +7,7 @@ public class VSPFile {
 	private String filePath;
 	private String workType;
 	private String workDate;
+	private String branch;
 
 	public Integer getVid() {
 		return vid;
@@ -46,6 +47,14 @@ public class VSPFile {
 
 	public void setWorkDate(String workDate) {
 		this.workDate = workDate;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
 	}
 
 }

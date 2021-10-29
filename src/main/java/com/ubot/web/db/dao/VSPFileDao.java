@@ -33,6 +33,7 @@ public class VSPFileDao extends BaseDao {
 				vspFile.setFilePath(resultSet.getString("FILEPATH"));
 				vspFile.setWorkDate(resultSet.getString("WORKDATE"));
 				vspFile.setWorkType(resultSet.getString("WORKTYPE"));
+				vspFile.setBranch(resultSet.getString("BRANCH"));
 
 				result.add(vspFile);
 			}
