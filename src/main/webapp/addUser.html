@@ -25,9 +25,9 @@
                 <label style="font-size: x-large;">主管: </label>
             </div>
             <div id="DIV2">
-                <input id="managerY" name="manager" type="radio" value="Y"><label>是</label>
+                <input id="managerY" name="manager" type="radio" value="Y"><label style="font-size: x-large;">是</label>
                 <input id="managerN" name="manager" type="radio" value="N" checked
-                    style="margin-left: 40%;"><label>否</label>
+                    style="margin-left: 35%;"><label style="font-size: x-large;">否</label>
             </div>
         </div>
         <div class="inner">
@@ -35,9 +35,9 @@
                 <label style="font-size: x-large;">指定人員: </label>
             </div>
             <div id="DIV2">
-                <input id="appointedY" name="appointed" type="radio" value="Y"><label>是</label>
+                <input id="appointedY" name="appointed" type="radio" value="Y"><label style="font-size: x-large;">是</label>
                 <input id="appointedN" name="appointed" type="radio" value="N" checked
-                    style="margin-left: 40%;"><label>否</label>
+                    style="margin-left: 35%;"><label style="font-size: x-large;">否</label>
             </div>
         </div>
         <div class="inner">
@@ -45,8 +45,8 @@
                 <label style="font-size: x-large;">安控人員: </label>
             </div>
             <div id="DIV2">
-                <input name="security" type="radio" value="SU"><label>是</label>
-                <input name="security" type="radio" value="U" checked style="margin-left: 40%;"><label>否</label>
+                <input name="security" type="radio" value="SU"><label style="font-size: x-large;">是</label>
+                <input name="security" type="radio" value="U" checked style="margin-left: 35%;"><label style="font-size: x-large;">否</label>
             </div>
         </div>
         <div class="inner">
@@ -54,7 +54,7 @@
                 <label style="font-size: x-large; ">部門 / 分行: </label>
             </div>
             <div id="DIV2">
-                <select id="dept" style="width: 200px;"></select>
+                <select id="dept" style="width: 220px;height: 30px;"></select>
             </div>
         </div>
         <div class="inner">
@@ -62,7 +62,7 @@
                 <label style="font-size: x-large;">派駐單位: </label>
             </div>
             <div id="DIV2">
-                <select id="branch" style="width: 200px;"></select>
+                <select id="branch" style="width: 220px;height: 30px;"></select>
             </div>
         </div>
         <div class="inner">
@@ -114,16 +114,36 @@
                         var dataList = returnData['data'];
                         for (var i = 0; i < dataList.length; i++) {
                             let workType = dataList[i]["workType"];
+                            var idiv = document.createElement('div');
+                            idiv.id = "group"+(i+1);
+                            idiv.style = "width:33%; float:left;"
+                            document.getElementById('cblist').appendChild(idiv)
                             if (workType == dept) {
-                                $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked"  }));
+                                var input = document.createElement('input')
+                                input.setAttribute('type','checkbox');
+                                input.setAttribute('name','workType');
+                                input.setAttribute('value',dataList[i]["workType"]);
+                                idiv.appendChild(input)
+                                // $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked"  }));
                             } else {
+                                var checkbox = document.createElement('input');
                                 if (dept == branch && !dept.match("100|800|600")) {
-                                    $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], disabled: "disabled" }));
+                                    checkbox.setAttribute('type','checkbox');
+                                    checkbox.setAttribute('name','workType');
+                                    checkbox.setAttribute('value',dataList[i]['workType']);
+                                    checkbox.setAttribute('disabled',"disabled");
+                                    idiv.appendChild(checkbox);
                                 } else {
-                                    $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"],}));
-                                }
+                                    checkbox.setAttribute('type','checkbox');
+                                    checkbox.setAttribute('name','workType');
+                                    checkbox.setAttribute('value',dataList[i]['workType']);
+                                    idiv.appendChild(checkbox);                                }
                             }
-                            $('#cblist').append($('<label />', { text: dataList[i]["workName"], for: `${workType}` }));
+                            var label = document.createElement('label');
+                            label.setAttribute('text',dataList[i]["workName"]);
+                            label.innerHTML = dataList[i]["workName"];
+                            label.setAttribute('for',workType);
+                            idiv.appendChild(label)
                         }
                     } else {
                         alert(returnData.message);

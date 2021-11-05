@@ -81,3 +81,14 @@ button{
 #cblist input {
     margin-left: 5%;
 }
+
+[type="radio"]
+{
+    width: 13%;
+    vertical-align:middle;
+}
+
+[type="checkbox"],[type="radio"]
+{
+    vertical-align:middle;
+}

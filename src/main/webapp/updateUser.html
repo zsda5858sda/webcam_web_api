@@ -56,7 +56,7 @@
                 <label style="font-size: x-large; ">部門 / 分行: </label>
             </div>
             <div id="DIV2">
-                <select id="dept" style="width: 200px;"></select>
+                <select id="dept" style="width: 220px;height: 30px;"></select>
             </div>
         </div>
         <div class="inner">
@@ -64,7 +64,7 @@
                 <label style="font-size: x-large;">派駐單位: </label>
             </div>
             <div id="DIV2">
-                <select id="branch" style="width: 200px;"></select>
+                <select id="branch" style="width: 220px; height: 30px;"></select>
             </div>
         </div>
         <div class="inner">
@@ -131,8 +131,25 @@
                         var dataList = returnData['data'];
                         for (var i = 0; i < dataList.length; i++) {
                             let workType = dataList[i]["workType"];
-                            $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"] }));
-                            $('#cblist').append($('<label />', { text: dataList[i]["workName"], for: `${workType}` }));
+
+                            var idiv = document.createElement('div');
+                            var checkbox = document.createElement('input');
+                            var label = document.createElement('label');
+
+
+                            idiv.id = "group" + (i + 1);
+                            idiv.style = "width:33%; float:left;"
+                            document.getElementById('cblist').appendChild(idiv)
+
+                            checkbox.setAttribute('type', 'checkbox');
+                            checkbox.setAttribute('name', 'workType');
+                            checkbox.setAttribute('value', dataList[i]['workType']);
+                            idiv.appendChild(checkbox);
+
+                            label.setAttribute('text',dataList[i]["workName"]);
+                            label.innerHTML = dataList[i]["workName"];
+                            label.setAttribute('for',workType);
+                            idiv.appendChild(label);
                         }
                     } else {
                         alert(returnData.message);
