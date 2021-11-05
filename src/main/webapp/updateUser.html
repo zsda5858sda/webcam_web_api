@@ -12,44 +12,70 @@
         <div id="title">
             <label>更新使用者</label>
         </div>
-        <div class="inner">
-            <div id="uidDiv">
+        <div id="inner">
+            <div id="DIV1">
                 <label style="font-size: x-large;">員編: </label>
+            </div>
+            <div id="DIV2">
                 <select class="uid-select" id="uid" style="width: 200px;">
                     <option value="">請選擇</option>
                 </select>
             </div>
         </div>
         <div class="inner">
-            <label style="font-size: x-large;">主管: </label>
-            <input id="managerY" name="manager" type="radio" value="Y" style="width: 30px; margin-left: 35px;"><label
-                style="margin-right: 30px; font-size: larger;">是</label>
-            <input id="managerN" name="manager" type="radio" value="N" style="width: 30px;margin-left: 55px;" checked><label
-                style="font-size: larger;">否</label>
+            <div id="DIV1">
+                <label style="font-size: x-large;">主管: </label>
+            </div>
+            <div id="DIV2">
+                <input id="managerY" name="manager" type="radio" value="Y"><label>是</label>
+                <input id="managerN" name="manager" type="radio" value="N" checked
+                    style="margin-left: 40%;"><label>否</label>
+            </div>
         </div>
         <div class="inner">
-            <label style="font-size: x-large;">指定人員: </label>
-            <input id="appointedY" name="appointed" type="radio" value="Y" style="width: 30px;"><label
-                style="margin-right: 80px; font-size: larger;">是</label>
-            <input id="appointedN" name="appointed" type="radio" value="N" style="width: 30px;" checked><label
-                style="margin-right: 15px; font-size: larger;">否</label>
+            <div id="DIV1">
+                <label style="font-size: x-large;">指定人員: </label>
+            </div>
+            <div id="DIV2">
+                <input id="appointedY" name="appointed" type="radio" value="Y"><label>是</label>
+                <input id="appointedN" name="appointed" type="radio" value="N" checked
+                    style="margin-left: 40%;"><label>否</label>
+            </div>
         </div>
         <div class="inner">
-            <label style="font-size: x-large;">安控人員: </label>
-            <input name="security" type="radio" value="SU" style="width: 30px;"><label
-                style="margin-right: 80px; font-size: larger;">是</label>
-            <input name="security" type="radio" value="U" style="width: 30px;" checked><label
-                style="margin-right: 15px; font-size: larger;">否</label>
+            <div id="DIV1">
+                <label style="font-size: x-large;">安控人員: </label>
+            </div>
+            <div id="DIV2">
+                <input name="security" type="radio" value="SU"><label>是</label>
+                <input name="security" type="radio" value="U" checked style="margin-left: 40%;"><label>否</label>
+            </div>
         </div>
         <div class="inner">
-            <label style="font-size: x-large; margin-right: 40px;">部門 / 分行: </label><select id="dept"></select>
+            <div id="DIV1">
+                <label style="font-size: x-large; ">部門 / 分行: </label>
+            </div>
+            <div id="DIV2">
+                <select id="dept" style="width: 200px;"></select>
+            </div>
         </div>
         <div class="inner">
-            <label style="font-size: x-large; margin-right: 60px;">派駐單位: </label><select id="branch"></select>
+            <div id="DIV1">
+                <label style="font-size: x-large;">派駐單位: </label>
+            </div>
+            <div id="DIV2">
+                <select id="branch" style="width: 200px;"></select>
+            </div>
         </div>
         <div class="inner">
-            <label style="font-size: x-large;">業務種類: </label>
-            <div id="cblist"></div>
+            <div id="DIV1">
+                <label style="font-size: x-large;">業務種類: </label>
+            </div>
+        </div>
+        <div class="inner">
+            <div id="DIV3">
+                <div id="cblist"></div>
+            </div>
         </div>
         <div class="inner">
             <button type="button" onclick="goCheckPage('U')">更新</button>
