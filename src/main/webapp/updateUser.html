@@ -112,6 +112,7 @@
                     if (returnData.code == 0) {
                         var dataList = returnData['data'];
                         for (var i = 0; i < dataList.length; i++) {
+                            if (dataList[i]["userId"] == localStorage.getItem("userId") && security != "AU") continue;
                             $('#uid').append($('<option />', { value: JSON.stringify(dataList[i]), text: dataList[i]["userId"] }));
                         }
                     } else {
@@ -205,6 +206,18 @@
                             $(`input[name=workType][value!=${data.dept}]`).prop("checked", false);
                         }
                     }
+                }
+            })
+
+            $("input[name=manager]").change(function () {
+                if ($(this).val() == "Y") {
+                    $("#appointedN").prop("checked", true);
+                }
+            })
+
+            $("input[name=appointed]").change(function () {
+                if ($(this).val() == "Y") {
+                    $("#managerN").prop("checked", true);
                 }
             })
 

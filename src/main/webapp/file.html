@@ -12,12 +12,12 @@
         <div id="title">
             <label>對保資料查詢</label>
         </div>
-        <div class="inner">
+        <div id="uidDiv" class="inner">
             <label>員編: </label>
-            <input type="text" id="uid" />
+            <input type="text" id="uid"/>
         </div>
         <div class="inner" style="margin-left: 25%;">
-            <label>日期區間: </label>
+            <label id="dateLabel">日期區間: </label>
             <input type="text" id="minDate" />&nbsp;&nbsp;~&nbsp;&nbsp;<input type="text" id="maxDate" />
         </div>
         <div class="inner">
@@ -38,11 +38,12 @@
             localStorage.removeItem("fileData");
             $("#minDate").datepicker({ dateFormat: "yy-mm-dd" });
             $("#maxDate").datepicker({ dateFormat: "yy-mm-dd" });
-            var subordinate = localStorage.getItem("subordinate");
             var userId = localStorage.getItem("userId");
-            if (subordinate != null) {
-                $("#uid").val(subordinate);
-            } else {
+            var manager = localStorage.getItem("manager");
+            var appointed = localStorage.getItem("appointed");
+            var workType = localStorage.getItem("workType");
+            if ((manager != "Y" || appointed != "Y") && workType != 'ALL') {
+                $("#uidDiv").hide();
                 $("#uid").val(userId);
             }
         })

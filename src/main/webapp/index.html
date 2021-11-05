@@ -17,16 +17,16 @@
         <div class="inner">
             <button class="select" type="button" onclick="location.href = 'searchLog.html'">查詢後台log</button>
         </div>
-        <div class="inner">
+        <div id="addBranchDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
         </div>
-        <div class="inner">
+        <div id="addWorkDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addWork.html'">新增業務種類</button>
         </div>
-        <div class="inner">
+        <div id="addUserDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
         </div>
-        <div class="inner">
+        <div id="updateUserDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'updateUser.html'">更新使用者</button>
         </div>
     </div>
@@ -35,10 +35,11 @@
     <script>
         $(function() {
             var userId = localStorage.getItem("userId");
-            if (localStorage.getItem("userId") == null) {
+            var security = localStorage.getItem("security");
+            if (userId == null) {
                 location.href = "login.html";
             }
-            if (localStorage.getItem("security") == "U" || localStorage.getItem("validate") != "Y") {
+            if (security == null || security == "U") {
                 $("#addBranchDiv").hide();
                 $("#addWorkDiv").hide();
                 $("#addUserDiv").hide();

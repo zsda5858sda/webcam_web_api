@@ -9,7 +9,18 @@ body {
     /* border: 1px solid black; */
 }
 
-label{
+#uidDiv {
+    width: 70%;
+    margin-left: 25%;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+#dateLabel {
     display: block;
     position: relative;
 }
@@ -40,7 +51,7 @@ label{
 #outer {
     border-radius: 20px;
     background-color: white;
-    max-width: 50%;
+    max-width: 75%;
     margin: 8% 25% 0 25%;
     box-sizing: border-box;
 }
@@ -49,7 +60,8 @@ label{
     margin-bottom: 5%;
     border: 1px solid #ccc;
     border-radius: 10px;
-    width: 350px;
+    margin-left: 50px;
+    padding-left: 5%;
     height: 50px;
 }
 

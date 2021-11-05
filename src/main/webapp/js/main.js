@@ -32,7 +32,6 @@ function login() {
         "loginId": userId,
         "loginP_ss": pwd
     }
-    localStorage.removeItem("subordinate");
     localStorage.removeItem("workType");
     $.ajax({
         url: loginURL,
@@ -41,37 +40,28 @@ function login() {
         type: "POST",
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
-            var isRegister = false;
-            var validate = response["validate"];
-            localStorage.setItem("validate", validate);
             await sendLog(userId, response.message);
             if (response["code"] == 0) {
-                if (validate == "Y") {
-                    let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
-
-                    $.ajax({
-                        url: getUserURL,
-                        type: "GET",
-                        dataType: "json",
-                        async: false,
-                        success: function (responseUserData) {
-                            if (responseUserData.code == 0) {
-                                localStorage.setItem("subordinate", responseUserData.data["subordinate"])
-                                localStorage.setItem("workType", responseUserData.data["workType"])
-                                localStorage.setItem("security", responseUserData.data["security"])
-                                localStorage.setItem("dept", responseUserData.data["dept"])
-                                localStorage.setItem("branch", responseUserData.data["branch"])
-                                isRegister = true;
-                            } else {
-                                alert(responseUserData.message);
-                            }
+                let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
+                localStorage.clear();
+                $.ajax({
+                    url: getUserURL,
+                    type: "GET",
+                    dataType: "json",
+                    async: false,
+                    success: function (responseUserData) {
+                        if (responseUserData.code == 0) {
+                            localStorage.setItem("workType", responseUserData.data["workType"])
+                            localStorage.setItem("security", responseUserData.data["security"])
+                            localStorage.setItem("dept", responseUserData.data["dept"])
+                            localStorage.setItem("branch", responseUserData.data["branch"])
+                            localStorage.setItem("manager", responseUserData.data["manager"])
+                            localStorage.setItem("appointed", responseUserData.data["appointed"])
                         }
-                    })
-                }
-                if ((validate == "Y") == isRegister) {
-                    localStorage.setItem("userId", userId);
-                    location.href = "index.html";
-                }
+                    }
+                })
+                localStorage.setItem("userId", userId);
+                location.href = "index.html";
             } else {
                 alert(response.message);
             }
@@ -110,9 +100,18 @@ function updateValid() {
 function searchFile() {
     var minDate = $("#minDate").val().replace(/-/g, "");
     var maxDate = $("#maxDate").val().replace(/-/g, "");
+    if (minDate == "") {
+        alert("請輸入最小日期")
+        return;
+    }
+    if (maxDate == "") {
+        alert("請輸入最大日期")
+        return;
+    }
     var userId = $("#uid").val();
+    var branch = localStorage.getItem("branch");
     var workType = localStorage.getItem("workType");
-    let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&workType=${workType}`;
+    let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&branch=${branch || ""}&workType=${workType || ""}`;
     $.ajax({
         url: requestURL,
         dataType: "json",
@@ -125,7 +124,6 @@ function searchFile() {
                     location.href = "fileManage.html";
                     localStorage.setItem("fileData", JSON.stringify(responseData));
                 } else {
-                    location.reload();
                     alert("查無資料")
                 }
             } else {
@@ -138,10 +136,20 @@ function searchFile() {
 //新增分行、部門代碼api
 function addBranch() {
     $("#addBranchBtn").attr("disabled", true);
+    var branchName = $("#branchName").val();
+    var branchCode = $("#branchCode").val();
+    if (branchName.replace(" ", "") == "") {
+        alert("請輸入分行名稱")
+        return;
+    }
+    if (branchCode.replace(" ", "") == "") {
+        alert("請輸入分行代號")
+        return;
+    }
     let requestURL = `${ip}webcam_web_api/api/Branch`;
     let dataJSON = {
-        "branchName": $("#branchName").val(),
-        "branchCode": $("#branchCode").val()
+        "branchName": branchName,
+        "branchCode": branchCode
     }
     $.ajax({
         url: requestURL,
@@ -160,10 +168,20 @@ function addBranch() {
 //新增業務種類代碼api
 function addWork() {
     $("#addWorkBtn").attr("disabled", true);
+    var workName = $("#workName").val();
+    var workType = $("#workType").val();
+    if (workName.replace(" ", "") == "") {
+        alert("請輸入業務種類名稱")
+        return;
+    }
+    if (workType.replace(" ", "") == "") {
+        alert("請輸入業務種類代號")
+        return;
+    }
     let requestURL = `${ip}webcam_web_api/api/WorkReference`;
     let dataJSON = {
-        "workName": $("#workName").val(),
-        "workType": $("#workType").val()
+        "workName": workName,
+        "workType": workType
     }
     $.ajax({
         url: requestURL,
@@ -259,6 +277,10 @@ function goCheckPage(type) {
     }
     if (branch == "") {
         alert("請選擇派駐單位");
+        return;
+    }
+    if ($('input[name=workType]:checked').val() == null && dept == branch && dept == '600') {
+        alert("請勾選業務種類");
         return;
     }
     var workType = "", workName = "";
