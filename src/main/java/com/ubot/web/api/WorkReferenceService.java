@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import com.ubot.web.db.vo.WorkReference;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -74,6 +76,31 @@ public class WorkReferenceService {
 		} catch (Exception e) {
 			message = String.format("新增業務種類失敗, 原因: %s", e.getMessage());
 			logger.error(message);
+	@PATCH
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response update(String requestJson) throws IOException {
+		ObjectNode result = mapper.createObjectNode();
+		String message = "";
+		logger.info(requestJson);
+		try {
+			JSONObject json = new JSONObject(requestJson);
+			String sql = String.format(
+					"update workreference set WORKTYPE = '%s', WORKNAME = '%s' where WORKTYPE = '%s';",
+					json.get("workType"), json.get("workName"), json.get("oldKey"));
+			workReferenceDao.updateQuery(sql);
+			message = "更新業務種類成功";
+			logger.info(message);
+			result.put("message", message);
+			result.put("code", 0);
+		} catch (Exception e) {
+			if (e.getMessage().contains("PRIMARY")) {
+				message = "更新業務種類失敗, 原因: 此ID已被註冊";
+			} else {
+				message = "更新業務種類失敗, 原因: 請聯繫管理人員";
+			}
+			logger.error(message);
+			logger.error(e.getMessage());
 			result.put("message", message);
 			result.put("code", 1);
 		}
