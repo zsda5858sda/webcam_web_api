@@ -31,6 +31,7 @@ public class FileService {
 	private final Logger logger;
 	private final VSPFileDao fileDao;
 	private final ObjectMapper mapper;
+	private final String IP = "172.16.45.245:8080";
 	@Context
 	private HttpServletResponse response;
 
@@ -53,7 +54,7 @@ public class FileService {
 			String userId = requestBody.getUserId();
 			String workType = requestBody.getWorkType();
 			String branch = requestBody.getBranch();
-			String sql = "select * from vspfile where WORKDATE <= %s and WORKDATE >= %s ";
+			String sql = "select * from vspfile where WORKDATE <= '%s' and WORKDATE >= '%s' ";
 
 			if (!userId.equals("")) {
 				sql += " and (FILENAME like '%s%%.webm' or FILENAME like '%s%%.jpg')";
@@ -71,12 +72,12 @@ public class FileService {
 				// 將worktype轉成sql判斷式
 				String[] workTypeArr = workType.split(";");
 				for (String wt : workTypeArr) {
-					sqlWorkType += String.format("WORKTYPE = %s", wt);
+					sqlWorkType += String.format("WORKTYPE = '%s'", wt);
 					if (!wt.equals(workTypeArr[workTypeArr.length - 1])) {
 						sqlWorkType += " or ";
 					}
 				}
-				sql += String.format(" and BRANCH = %s and (%s)", branch, sqlWorkType);
+				sql += String.format(" and BRANCH = '%s' and ('%s')", branch, sqlWorkType);
 				result.putPOJO("data", fileDao.selectQuery(sql));
 			}
 			message = "檔案查詢成功";
@@ -99,7 +100,7 @@ public class FileService {
 	public Response downloadFile(@QueryParam("filePath") String filePath) {
 		logger.info(filePath);
 		Client client = ClientBuilder.newClient();
-		WebTarget webTarget = client.target("http://192.168.198.130:8080/file_api/File/download?filePath=" + filePath);
+		WebTarget webTarget = client.target(String.format("http://%s/file_api/File/download?filePath=" + filePath, IP));
 		Invocation.Builder invocaBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		return invocaBuilder.get();
 	}
@@ -110,7 +111,7 @@ public class FileService {
 		logger.info(filePath);
 
 		Client client = ClientBuilder.newClient();
-		WebTarget webTarget = client.target("http://192.168.198.130:8080/file_api/File/preview?filePath=" + filePath);
+		WebTarget webTarget = client.target(String.format("http://%s/file_api/File/preview?filePath=" + filePath, IP));
 		Invocation.Builder invocaBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		return invocaBuilder.get();
 	}

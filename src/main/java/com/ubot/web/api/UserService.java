@@ -83,7 +83,7 @@ public class UserService {
 		try {
 			String sql = "select * from vspuser";
 			if (!branch.matches("100|800|600") && !dept.matches("100|800|600")) {
-				sql += String.format(" where BRANCH = %s and DEPT = %s", branch, dept);
+				sql += String.format(" where BRANCH = '%s' and DEPT = '%s'", branch, dept);
 			}
 			List<VSPUser> userList = userDao.selectQuery(sql);
 			message = "查詢使用者資料成功";
@@ -199,7 +199,7 @@ public class UserService {
 						// 檢查主管是否已超過人數
 						if (user.getManager().equals("Y")) {
 							List<VSPUser> list = userDao.selectQuery(String.format(
-									"select * from vspuser where DEPT = %s and BRANCH = %s and MANAGER = 'Y'",
+									"select * from vspuser where DEPT = '%s' and BRANCH = '%s' and MANAGER = 'Y'",
 									user.getDept(), user.getBranch()));
 							if (list.size() > 0) {
 								if (!list.get(0).getUserId().equals(user.getUserId())) {
@@ -210,7 +210,7 @@ public class UserService {
 						// 檢查指定人員是否已超過人數
 						if (user.getAppointed().equals("Y")) {
 							List<VSPUser> list = userDao.selectQuery(String.format(
-									"select * from vspuser where DEPT = %s and BRANCH = %s and APPOINTED = 'Y'",
+									"select * from vspuser where DEPT = '%s' and BRANCH = '%s' and APPOINTED = 'Y'",
 									user.getDept(), user.getBranch()));
 							if (list.size() > 0) {
 								if (!list.get(0).getUserId().equals(user.getUserId())) {
