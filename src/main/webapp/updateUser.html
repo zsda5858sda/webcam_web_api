@@ -17,7 +17,7 @@
                 <label style="font-size: x-large;">員編: </label>
             </div>
             <div id="DIV2">
-                <select class="uid-select" id="uid" style="width: 200px;">
+                <select class="uid-select" id="uid" style="width: 80%;">
                     <option value="">請選擇</option>
                 </select>
             </div>
@@ -56,7 +56,7 @@
                 <label style="font-size: x-large; ">部門 / 分行: </label>
             </div>
             <div id="DIV2">
-                <select id="dept" style="width: 220px;height: 30px;"></select>
+                <select id="dept" style="width: 80%;height: 30px;"></select>
             </div>
         </div>
         <div class="inner">
@@ -64,7 +64,7 @@
                 <label style="font-size: x-large;">派駐單位: </label>
             </div>
             <div id="DIV2">
-                <select id="branch" style="width: 220px; height: 30px;"></select>
+                <select id="branch" style="width: 80%; height: 30px;"></select>
             </div>
         </div>
         <div class="inner">
@@ -86,7 +86,7 @@
     <script src="js/main.js"></script>
     <script>
         $(function () {
-
+            
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }

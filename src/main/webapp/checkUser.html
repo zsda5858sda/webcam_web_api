@@ -5,33 +5,88 @@
     <meta charset="utf-8">
     <link href="css/main.css" rel="stylesheet" />
 </head>
+<style>
+    #title {
+        width: 100%;
+        height: 50px;
+        background-color: #41b1c2;
+        border-radius: 10px 10px 0 0;
+        font-size: 40px;
+        color: white;
+        text-align: center;
+        padding: 3% 0 2% 0;
+        letter-spacing: 8px;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+    }
+
+    #inner {
+        width: 40%;
+        margin: 5% 5% 5% 30%;
+    }
+
+    .data {
+        font-size: x-large;
+        margin-left: 10%;
+        color: red;
+    }
+
+    button {
+        border: none;
+        background-color: #01859a;
+        color: white;
+        width: 30%;
+        font-size: 30px;
+        border-radius: 20px;
+        margin: 3% 0 5% 0%;
+    }
+</style>
 
 <body>
-    <div id="uidDiv">
-        <label>員編: </label>
-    </div>
-    <div id="deptDiv">
-        <label>部門 / 分行: </label>
-    </div>
+    <div id="outer">
+        <div id="title">
+            <label>確認使用者</label>
+        </div>
+        <div id="inner">
+            <div id="uidDiv">
+                <label style="font-size: x-large;">員編: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="deptDiv">
+                <label style="font-size: x-large;">部門 / 分行: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="branchDiv">
+                <label style="font-size: x-large;">派駐單位: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="managerDiv">
+                <label style="font-size: x-large;">主管: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="appointedDiv">
+                <label style="font-size: x-large;">指定人員: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="securityDiv">
+                <label style="font-size: x-large;">安控人員: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="workTypeDiv">
+                <label style="font-size: x-large;">業務種類: </label>
+            </div>
+        </div>
+        <div id="inner" style="padding-bottom: 5%;">
+            <button type="button" onclick="history.back()">返回</button>
+            <button type="button" id="submitBtn" style="margin-left: 20%;">確定</button>
+        </div>
 
-    <div id="branchDiv">
-        <label>派駐單位: </label>
-    </div>
-    <div id="managerDiv">
-        <label>主管: </label>
-    </div>
-    <div id="appointedDiv">
-        <label>指定人員: </label>
-    </div>
-    <div id="securityDiv">
-        <label>安控人員: </label>
-    </div>
-    <div id="workTypeDiv">
-        <label>業務種類: </label>
-    </div>
-    <div>
-        <button type="button" onclick="history.back()">返回</button>
-        <button type="button" id="submitBtn">確定</button>
+
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
@@ -41,13 +96,13 @@
                 location.href = "login.html";
             }
             var dataNameJSON = JSON.parse(localStorage.getItem("checkDataName"));
-            $("#uidDiv").append(`<label>${dataNameJSON.userId}</label>`);
-            $("#deptDiv").append(`<label>${dataNameJSON.dept}</label>`);
-            $("#branchDiv").append(`<label>${dataNameJSON.branch}</label>`);
-            $("#managerDiv").append(`<label>${dataNameJSON.manager}</label>`);
-            $("#appointedDiv").append(`<label>${dataNameJSON.appointed}</label>`);
-            $("#securityDiv").append(`<label>${dataNameJSON.security}</label>`);
-            $("#workTypeDiv").append(`<label>${dataNameJSON.workName}</label>`);
+            $("#uidDiv").append(`<label class="data">${dataNameJSON.userId}</label>`);
+            $("#deptDiv").append(`<label class="data">${dataNameJSON.dept}</label>`);
+            $("#branchDiv").append(`<label class="data">${dataNameJSON.branch}</label>`);
+            $("#managerDiv").append(`<label class="data">${dataNameJSON.manager}</label>`);
+            $("#appointedDiv").append(`<label class="data">${dataNameJSON.appointed}</label>`);
+            $("#securityDiv").append(`<label class="data">${dataNameJSON.security}</label>`);
+            $("#workTypeDiv").append(`<label class="data">${dataNameJSON.workName}</label>`);
 
             if (dataNameJSON.type == "R") {
                 $("#submitBtn").click(function () {

@@ -22,7 +22,7 @@
             <div class="input-icons">
                 <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
                 <label style="font-size: larger;">業務種類代號：</label>
-                <input id="workType" type="password" placeholder="請輸入業務種類代號">
+                <input id="workType" type="password" placeholder="請輸入業務種類代號" oninput="value=value.match(/-?[0-9]*\.?[0-9]*/)">
             </div>
         </div>
         <div class="inner">
