@@ -164,10 +164,6 @@ public class UserService {
 		}
 	}
 
-	// 撈出同部門同分行之行員並寫進subordinate中
-
-	// 撈出同部門之行員並寫進subordinate中
-
 	private static boolean isThreadStart() {
 		return isStart;
 	}
@@ -197,7 +193,6 @@ public class UserService {
 				logger.info("使用者處理程序開始");
 
 				try {
-					// 若為使用者更新會先移除所有可以看見該使用者的權限
 					if (isHeadquarter && user.getBranch().matches("800|100|600")) {
 						userDao.insertQuery(user);
 					} else {
@@ -224,16 +219,11 @@ public class UserService {
 							}
 						}
 
-
-						// 設定總行或主管之下屬
-
 						if (status.equals("U")) {
 							userDao.updateQuery(user);
 						} else {
 							userDao.insertQuery(user);
 						}
-
-						// 查詢需要更新名單
 
 					}
 					message += "成功";
