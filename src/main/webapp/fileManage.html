@@ -128,6 +128,7 @@
     <div id="main-content" class="file_manager">
         <div class="container">
             <div class="title">
+                <img src="./img/back-arrow.png" style="width: 5%; float: left;" onclick="goBack()">
                 <label id="title"></label>
             </div>
             <div id="insertContainer" class="row clearfix">
@@ -166,10 +167,36 @@
             } else {
                 $("#title").append("請選擇員編")
                 userArr.forEach(function (data) {
-                    appendFolderContainer(data)
+                    appendUserContainer(data)
                 })
             }
         })
+        function goBack() {
+            var title = document.getElementById("title").textContent;
+            if (title == "請選擇日期") {
+                window.location.reload();
+            } else if (title == "") {
+                $("#insertContainer").empty();
+                $("#title").empty();
+                $("#title").append("請選擇日期");
+                var incomingData = localStorage.getItem('selectedUser')
+                let tmpDateArr = [];
+                for (i = 0; i < fileData.length; i++) {
+                    let data = fileData[i];
+                    if (data["fileName"].includes(incomingData)) {
+                        tmpDateArr.push(data["workDate"]);
+                    }
+                }
+                dateArr = tmpDateArr.filter(function (data, index, arr) {
+                    return arr.indexOf(data) === index;
+                })
+                console.log(dateArr);
+                dateArr.forEach(function (data) {
+                    appendFolderContainer(data)
+                })
+            }
+
+        }
         function selectFolder(incomingData) {
             $("#insertContainer").empty();
             $("#title").empty();
@@ -211,6 +238,23 @@
 
         function download(incomingData) {
             window.open(`${ip}webcam_web_api/api/File/download?filePath=${incomingData}`);
+        }
+
+        function appendUserContainer(folderName) {
+            $("#insertContainer").append(`
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="folder">
+                    <a href="javascript:selectFolder('${folderName}');">
+                        <div class="icon">
+                            <i class="fas fa-user fa-9x"></i>
+                        </div>
+                        <div class="file-name">
+                            <p style="color:white; text-decoration:none;">${folderName}</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            `)
         }
 
         function appendFolderContainer(folderName) {
