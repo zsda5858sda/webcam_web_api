@@ -20,8 +20,14 @@
         <div id="addBranchDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
         </div>
+        <div id="updateBranchDiv" class="inner">
+            <button class="select" type="button" onclick="location.href = 'updateBranch.html'">更新分行代碼</button>
+        </div>
         <div id="addWorkDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addWork.html'">新增業務種類</button>
+        </div>
+        <div id="updateWorkDiv" class="inner">
+            <button class="select" type="button" onclick="location.href = 'updateWork.html'">更新業務種類</button>
         </div>
         <div id="addUserDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addUser.html'">新增使用者</button>
@@ -42,6 +48,8 @@
             if (security == null || security == "U") {
                 $("#addBranchDiv").hide();
                 $("#addWorkDiv").hide();
+                $("#updateBranchDiv").hide();
+                $("#updateWorkDiv").hide();
                 $("#addUserDiv").hide();
                 $("#updateUserDiv").hide();
             }
