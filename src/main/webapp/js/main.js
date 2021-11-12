@@ -33,43 +33,50 @@ function login() {
         "loginP_ss": pwd
     }
     localStorage.removeItem("workType");
-    $.ajax({
-        url: loginURL,
-        data: JSON.stringify(dataJSON),
-        dataType: "json",
-        type: "POST",
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
-            await sendLog(userId, response.message);
-            if (response["code"] == 0) {
-                let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
-                localStorage.clear();
-                $.ajax({
-                    url: getUserURL,
-                    type: "GET",
-                    dataType: "json",
-                    async: false,
-                    success: function (responseUserData) {
-                        if (responseUserData.code == 0) {
-                            localStorage.setItem("workType", responseUserData.data["workType"])
-                            localStorage.setItem("security", responseUserData.data["security"])
-                            localStorage.setItem("dept", responseUserData.data["dept"])
-                            localStorage.setItem("branch", responseUserData.data["branch"])
-                            localStorage.setItem("manager", responseUserData.data["manager"])
-                            localStorage.setItem("appointed", responseUserData.data["appointed"])
+    if (userId == "") {
+        alert("請輸入員工編號！")
+    } else if (pwd == "") {
+        alert("請輸入密碼！")
+    } else {
+        $.ajax({
+            url: loginURL,
+            data: JSON.stringify(dataJSON),
+            dataType: "json",
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            success: async function (response) {
+                await sendLog(userId, response.message);
+                if (response["code"] == 0) {
+                    let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
+                    localStorage.clear();
+                    $.ajax({
+                        url: getUserURL,
+                        type: "GET",
+                        dataType: "json",
+                        async: false,
+                        success: function (responseUserData) {
+                            if (responseUserData.code == 0) {
+                                localStorage.setItem("workType", responseUserData.data["workType"])
+                                localStorage.setItem("security", responseUserData.data["security"])
+                                localStorage.setItem("dept", responseUserData.data["dept"])
+                                localStorage.setItem("branch", responseUserData.data["branch"])
+                                localStorage.setItem("manager", responseUserData.data["manager"])
+                                localStorage.setItem("appointed", responseUserData.data["appointed"])
+                            }
                         }
-                    }
-                })
-                localStorage.setItem("userId", userId);
-                location.href = "index.html";
-            } else {
-                alert(response.message);
+                    })
+                    localStorage.setItem("userId", userId);
+                    location.href = "index.html";
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr) {
+                alert(xhr.responseJSON.message);
             }
-        },
-        error: function (xhr) {
-            alert(xhr.responseJSON.message);
-        }
-    });
+        });
+    }
+
 }
 
 //更新後台使用者驗證api
@@ -230,18 +237,21 @@ async function searchLog(isApp) {
     var appendPath = isApp ? "/app" : "";
     let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
     var responseData = (await $.getJSON(requestURL)).data;
+    console.log(responseData.length);
     $.jgrid.gridUnload("#logList");
     $("#logList").jqGrid({
         colNames: ['員編 / 客戶電話', '時間', '事件描述', '來源IP'],
         colModel: [
-            { name: 'userId', index: 'userId',with:200 },
-            { name: 'createDatetime', index: 'createDatetime' ,width:250},
-            { name: 'action', index: 'action' ,width:550},
-            { name: 'ip', index: 'ip' ,width:200},
+            { name: 'userId', index: 'userId', with: 200, height: 40 },
+            { name: 'createDatetime', index: 'createDatetime', width: 250, height: 40 },
+            { name: 'action', index: 'action', width: 550, height: 40 },
+            { name: 'ip', index: 'ip', width: 200, height: 40 },
         ],
         datatype: "local",
         data: responseData,
         width: $(window).width() - 300,
+        rowheight: 300,
+        height: 'auto',
         shrinkToFit: false,
         rowNum: 10,
         rowList: [10, 20, 30],
@@ -251,6 +261,13 @@ async function searchLog(isApp) {
         sortorder: "desc",
     });
     $("#logList").jqGrid('navGrid', '#logPage', { edit: false, add: false, del: false });
+    if (responseData.length != 0) {
+        document.getElementById('grid').style.display = 'block';
+        document.getElementById('fade').style.display = 'block';
+    } else {
+        alert("查無資料！！")
+    }
+
 }
 
 function goCheckPage(type) {
