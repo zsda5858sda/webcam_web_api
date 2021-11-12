@@ -14,7 +14,7 @@
         </div>
         <div id="uidDiv" class="inner">
             <label>員編: </label>
-            <input type="text" id="uid"/>
+            <input type="text" id="uid" oninput="value=value.match(/-?[0-9]*\.?[0-9]*/)"/>
         </div>
         <div class="inner" style="margin-left: 25%;">
             <label id="dateLabel">日期區間: </label>
