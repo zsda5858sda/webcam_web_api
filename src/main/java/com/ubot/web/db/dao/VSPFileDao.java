@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +33,13 @@ public class VSPFileDao extends BaseDao {
 				vspFile.setVid(resultSet.getInt("VID"));
 				vspFile.setFileName(resultSet.getString("FILENAME"));
 				vspFile.setFilePath(resultSet.getString("FILEPATH"));
-				vspFile.setWorkDate(resultSet.getString("WORKDATE"));
 				vspFile.setWorkType(resultSet.getString("WORKTYPE"));
 				vspFile.setBranch(resultSet.getString("BRANCH"));
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+				LocalDate date = LocalDate.parse(resultSet.getString("WORKDATE"), formatter);
+
+				vspFile.setWorkDate(date.toString());
 
 				result.add(vspFile);
 			}
