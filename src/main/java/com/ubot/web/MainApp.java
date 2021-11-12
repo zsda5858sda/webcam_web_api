@@ -4,7 +4,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import com.ubot.web.config.Config;
 import com.ubot.web.config.XSSFilter;
-import com.ubot.web.exception.MissingFileException;
 import com.ubot.web.exception.NotFoundException;
 
 import jakarta.ws.rs.ApplicationPath;
@@ -18,7 +17,6 @@ public class MainApp extends ResourceConfig {
 		packages("com.ubot.web.api");
 		register(Config.class);
 		register(XSSFilter.class);
-		register(MissingFileException.class);
 		register(NotFoundException.class);
 	}
 
