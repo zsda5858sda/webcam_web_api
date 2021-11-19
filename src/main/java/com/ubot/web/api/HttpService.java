@@ -90,10 +90,8 @@ public class HttpService {
 								jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
 						logger.info(message);
 						try {
-							VSPValidate validate = validateDao.selectQuery("select * from vspvalidate;");
 							result.put("message", message);
 							result.put("code", "0");
-							result.put("validate", validate.getValidate());
 						} catch (Exception e) {
 							errMessage = errMessageBuffer.append(e.getMessage()).toString();
 							logger.error(errMessage);
