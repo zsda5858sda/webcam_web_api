@@ -81,30 +81,6 @@ function login() {
 
 }
 
-//更新後台使用者驗證api
-function updateValid() {
-    $("#updateValidBtn").attr("disabled", true);
-    $.ajax({
-        url: `${ip}webcam_web_api/api/updateValid`,
-        type: "PATCH",
-        dataType: "json",
-        data: JSON.stringify({
-            "validate": $("#validate").val()
-        }),
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
-            if (response.code == 0) {
-                await sendLog(localStorage.getItem("userId"), response.message);
-                alert(response.message);
-                $("#updateValidBtn").attr("disabled", false);
-            } else {
-                alert(response.message);
-                $("#updateValidBtn").attr("disabled", false);
-            }
-        }
-    })
-}
-
 //查詢檔案api
 function searchFile() {
     var minDate = $("#minDate").val().replace(/-/g, "");
@@ -360,28 +336,6 @@ function goCheckPage(type) {
     location.href = "checkUser.html";
 }
 
-// 更新使用者api
-function updateUser() {
-    $("#submitBtn").attr("disabled", true);
-    let requestURL = `${ip}webcam_web_api/api/User`;
-    let dataJSON = localStorage.getItem("checkData");
-    $.ajax({
-        url: requestURL,
-        data: dataJSON,
-        type: "PATCH",
-        dataType: "json",
-        async: false,
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
-            await sendLog(localStorage.getItem("userId"), response.message);
-            alert(response.message);
-            $("#submitBtn").attr("disabled", false);
-            localStorage.removeItem("checkData");
-            history.back();
-        },
-    });
-}
-
 // 搜尋分行、部門代碼api
 function searchBranch() {
     $.ajax({
@@ -402,6 +356,83 @@ function searchBranch() {
             } else {
                 alert(returnData.message);
             }
+        },
+    });
+}
+
+function goCheckWork(type) {
+
+    var workType = $("#workType").val().replaceAll(" ", "");
+    var workName = $("#workName").val().replaceAll(" ", "");
+    if (workType == "") {
+        alert("請輸入業務種類代號")
+        return;
+    }
+    if (workName == "") {
+        alert("請輸入業務種類名稱")
+        return;
+    }
+    var dataJSON = {
+        "workType": workType,
+        "workName": workName,
+    }
+    if (type == 'U') {
+        var oldKey = $("#oldWorkType").val();
+        var oldName = $("#oldWorkName").select2('data')[0].text;
+        dataJSON["oldKey"] = oldKey;
+        dataJSON["oldName"] = oldName;
+    }
+
+    localStorage.setItem("checkData", JSON.stringify(dataJSON));
+
+
+}
+
+function goCheckBranch(type) {
+    var branchCode = $("#branchCode").val().replaceAll(" ", "");
+    var branchName = $("#branchName").val().replaceAll(" ", "");
+    if (branchCode == "") {
+        alert("請輸入分行代號")
+        return;
+    }
+    if (branchName == "") {
+        alert("請輸入分行名稱")
+        return;
+    }
+    var dataJSON = {
+        "branchCode": branchCode,
+        "branchName": branchName,
+    }
+    if (type == 'U') {
+        var oldKey = $("#oldBranchCode").val();
+        var oldName = $("#oldBranchName").select2('data')[0].text;
+        dataJSON["oldKey"] = oldKey;
+        dataJSON["oldName"] = oldName;
+    }
+
+    localStorage.setItem("checkData", JSON.stringify(dataJSON));
+}
+
+
+// 更新資料api，type為欲更改之類型，用來連接api
+function update(type) {
+
+    $("#submitBtn").attr("disabled", true);
+    let requestURL = `${ip}webcam_web_api/api/${type}`;
+    let dataJSON = localStorage.getItem("checkData");
+    $.ajax({
+        url: requestURL,
+        data: dataJSON,
+        type: "PATCH",
+        dataType: "json",
+        async: false,
+        contentType: "application/json;charset=utf-8",
+        success: async function (response) {
+            await sendLog(localStorage.getItem("userId"), response.message);
+            alert(response.message);
+            $("#submitBtn").attr("disabled", false);
+            localStorage.removeItem("checkData");
+            history.back();
         },
     });
 }

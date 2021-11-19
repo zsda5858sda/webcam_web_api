@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/add.css" rel="stylesheet" />
+    <link href="css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="outer">
+        <div id="title">
+            <label>更新分行代碼</label>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-user icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">原分行名稱：</label>
+                <select class="branch-select" id="oldBranchName" style="width: 250px;">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">原分行代碼：</label>
+                <input id="oldBranchCode" type="text" disabled>
+            </div>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">更改後的分行名稱：</label>
+                <input id="branchName" type="text">
+            </div>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">更改後的分行代碼：</label>
+                <input id="branchCode" type="text">
+            </div>
+        </div>
+        <div class="inner">
+            <button type="button" onclick="goCheckBranch('U')">確定</button>
+        </div>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function() {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+            if (localStorage.getItem("security") == "U") {
+                history.go(-1);
+            }
+            $.ajax({
+                url: `${ip}webcam_web_api/api/Branch`,
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (returnData) {
+                    if (returnData.code == 0) {
+                        var dataList = returnData['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            let branchCode = dataList[i]["branchCode"];
+                            let branchName = dataList[i]["branchName"];
+                            $('#oldBranchName').append($('<option />', { value: branchCode, text: branchName }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            })
+            $(".branch-select").select2();
+
+            $("#oldBranchName").change(() => {
+                var code = $("#oldBranchName").val();
+                $("#oldBranchCode").val(code);
+                $("#branchName").val($("#oldBranchName").select2('data')[0].text);
+                $("#branchCode").val(code);
+            })
+        })
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/add.css" rel="stylesheet" />
+    <link href="css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="outer">
+        <div id="title">
+            <label>新增業務</label>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-user icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">原業務種類名稱：</label>
+                <select class="work-select" id="oldWorkName" style="width: 250px;">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">原業務種類代號：</label>
+                <input id="oldWorkType" type="text" disabled>
+            </div>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">更改後的業務種類名稱：</label>
+                <input id="workName" type="text" placeholder="請輸入業務種類名稱">
+            </div>
+        </div>
+        <div class="inner">
+            <div class="input-icons">
+                <i class="fa fa-key icon" style="font-size: 1.5em;"></i>
+                <label style="font-size: larger;">更改後的業務種類代號：</label>
+                <input id="workType" type="text" placeholder="請輸入業務種類代號">
+            </div>
+        </div>
+        <div class="inner">
+            <button type="button" onclick="goCheckWork('U')">確定</button>
+        </div>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function() {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+            if (localStorage.getItem("security") == "U") {
+                history.go(-1);
+            }
+            $.ajax({
+                url: `${ip}webcam_web_api/api/WorkReference`,
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (returnData) {
+                    if (returnData.code == 0) {
+                        var dataList = returnData['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            let workType = dataList[i]["workType"];
+                            let workName = dataList[i]["workName"];
+                            $('#oldWorkName').append($('<option />', { value: workType, text: workName }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            })
+            $(".work-select").select2();
+
+            $("#oldWorkName").change(() => {
+                var code = $("#oldWorkName").val();
+                $("#oldWorkType").val(code);
+                $("#workName").val($("#oldWorkName").select2('data')[0].text);
+                $("#workType").val(code);
+            })
+        })
+    </script>
+</body>
+
+</html>

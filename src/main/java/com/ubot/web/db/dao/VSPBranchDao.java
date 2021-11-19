@@ -67,4 +67,17 @@ public class VSPBranchDao extends BaseDao {
 			conn.close();
 		}
 	}
+
+	public void updateQuery(String sql) throws Exception {
+		Connection conn = getConnection();
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+			logger.info(ps.toString());
+			ps.execute();
+			ps.close();
+		} catch (SQLException e) {
+			throw new Exception(e.getMessage());
+		} finally {
+			conn.close();
+		}
+	}
 }

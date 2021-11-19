@@ -83,7 +83,7 @@ public class UserService {
 		try {
 			String sql = "select * from vspuser";
 			if (!branch.matches("100|800|600") && !dept.matches("100|800|600")) {
-				sql += String.format(" where BRANCH = %s and DEPT = %s", branch, dept);
+				sql += String.format(" where BRANCH = '%s' and DEPT = '%s'", branch, dept);
 			}
 			List<VSPUser> userList = userDao.selectQuery(sql);
 			message = "查詢使用者資料成功";
@@ -164,10 +164,6 @@ public class UserService {
 		}
 	}
 
-	// 撈出同部門同分行之行員並寫進subordinate中
-
-	// 撈出同部門之行員並寫進subordinate中
-
 	private static boolean isThreadStart() {
 		return isStart;
 	}
@@ -197,14 +193,13 @@ public class UserService {
 				logger.info("使用者處理程序開始");
 
 				try {
-					// 若為使用者更新會先移除所有可以看見該使用者的權限
 					if (isHeadquarter && user.getBranch().matches("800|100|600")) {
 						userDao.insertQuery(user);
 					} else {
 						// 檢查主管是否已超過人數
 						if (user.getManager().equals("Y")) {
 							List<VSPUser> list = userDao.selectQuery(String.format(
-									"select * from vspuser where DEPT = %s and BRANCH = %s and MANAGER = 'Y'",
+									"select * from vspuser where DEPT = '%s' and BRANCH = '%s' and MANAGER = 'Y'",
 									user.getDept(), user.getBranch()));
 							if (list.size() > 0) {
 								if (!list.get(0).getUserId().equals(user.getUserId())) {
@@ -215,7 +210,7 @@ public class UserService {
 						// 檢查指定人員是否已超過人數
 						if (user.getAppointed().equals("Y")) {
 							List<VSPUser> list = userDao.selectQuery(String.format(
-									"select * from vspuser where DEPT = %s and BRANCH = %s and APPOINTED = 'Y'",
+									"select * from vspuser where DEPT = '%s' and BRANCH = '%s' and APPOINTED = 'Y'",
 									user.getDept(), user.getBranch()));
 							if (list.size() > 0) {
 								if (!list.get(0).getUserId().equals(user.getUserId())) {
@@ -224,16 +219,11 @@ public class UserService {
 							}
 						}
 
-
-						// 設定總行或主管之下屬
-
 						if (status.equals("U")) {
 							userDao.updateQuery(user);
 						} else {
 							userDao.insertQuery(user);
 						}
-
-						// 查詢需要更新名單
 
 					}
 					message += "成功";
