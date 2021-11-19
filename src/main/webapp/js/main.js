@@ -19,8 +19,8 @@ function submit() {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#submitBtn").attr("disabled", false);
-            localStorage.removeItem("checkData");
-            history.back();
+            if (response.code == 0) location.href = "index.html";
+            else history.back();
         },
     });
 }
@@ -120,17 +120,7 @@ function searchFile() {
 
 //新增分行、部門代碼api
 function addBranch() {
-    $("#addBranchBtn").attr("disabled", true);
-    // var branchName = $("#branchName").val();
-    // var branchCode = $("#branchCode").val();
-    // if (branchName.replace(" ", "") == "") {
-    //     alert("請輸入分行名稱")
-    //     return;
-    // }
-    // if (branchCode.replace(" ", "") == "") {
-    //     alert("請輸入分行代號")
-    //     return;
-    // }
+    $("#submitBtn").attr("disabled", true);
     var dataNameJSON = JSON.parse(localStorage.getItem("checkData"));
     let requestURL = `${ip}webcam_web_api/api/Branch`;
     let dataJSON = {
@@ -146,15 +136,16 @@ function addBranch() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
-            location.href = "index.html"
             $("#addBranchBtn").attr("disabled", false);
+            if (response.code == 0) location.href = "index.html";
+            else history.back();
         }
     })
 }
 
 //新增業務種類代碼api
 function addWork() {
-    $("#addWorkBtn").attr("disabled", true);
+    $("#submitBtn").attr("disabled", true);
     var dataNameJSON = JSON.parse(localStorage.getItem("checkData"));
     let requestURL = `${ip}webcam_web_api/api/WorkReference`;
     let dataJSON = {
@@ -170,8 +161,10 @@ function addWork() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
-            location.href = "index.html"
             $("#addWorkBtn").attr("disabled", false);
+            
+            if (response.code == 0) location.href = "index.html";
+            else history.back();
         }
     })
 }
@@ -242,34 +235,12 @@ async function searchLog(isApp) {
 
 }
 
-function goCheckBranch(){
-    var branchName = $("#branchName").val();
-    var branchCode = $("#branchCode").val();
-    let dataJSON = {
-        'branchName' : branchName,
-        'branchCode' : branchCode
-    }
-    localStorage.setItem("checkData", JSON.stringify(dataJSON));
-    location.href = "checkBranch.html"
-}
-
-function goCheckWork(){
-    var workName = $("#workName").val();
-    var workType = $("#workType").val();
-    let dataJSON = {
-        'workName' : workName,
-        'workType' : workType
-    }
-    localStorage.setItem("checkData", JSON.stringify(dataJSON));
-    location.href = "checkWork.html"
-}
-
 function goCheckPage(type) {
 
     var userId;
     var branch = $("#branch").val();
     var dept = $("#dept").val();
-    if (type == "R") {
+    if (type == "C") {
         userId = $("#uid").val().replaceAll(" ", "");
         if (userId == "") {
             alert("請輸入員編");
@@ -290,7 +261,8 @@ function goCheckPage(type) {
         alert("請選擇派駐單位");
         return;
     }
-    if ($('input[name=workType]:checked').val() == null && dept == branch && dept == '600') {
+    if ($('input[name=workType]:checked').val() == null && !(dept == branch && (dept == '600' || dept == '100' || dept == '800'))) {
+        console.log(dept)
         alert("請勾選業務種類");
         return;
     }
@@ -375,6 +347,7 @@ function goCheckWork(type) {
     var dataJSON = {
         "workType": workType,
         "workName": workName,
+        "type": type
     }
     if (type == 'U') {
         var oldKey = $("#oldWorkType").val();
@@ -385,6 +358,7 @@ function goCheckWork(type) {
 
     localStorage.setItem("checkData", JSON.stringify(dataJSON));
 
+    location.href = "checkWork.html"
 
 }
 
@@ -402,6 +376,7 @@ function goCheckBranch(type) {
     var dataJSON = {
         "branchCode": branchCode,
         "branchName": branchName,
+        "type": type
     }
     if (type == 'U') {
         var oldKey = $("#oldBranchCode").val();
@@ -411,6 +386,8 @@ function goCheckBranch(type) {
     }
 
     localStorage.setItem("checkData", JSON.stringify(dataJSON));
+    
+    location.href = "checkBranch.html"
 }
 
 
@@ -431,8 +408,8 @@ function update(type) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#submitBtn").attr("disabled", false);
-            localStorage.removeItem("checkData");
-            history.back();
+            if (response.code == 0) location.href = "index.html";
+            else history.back();
         },
     });
 }

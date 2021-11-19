@@ -104,7 +104,7 @@
             $("#securityDiv").append(`<label class="data">${dataNameJSON.security}</label>`);
             $("#workTypeDiv").append(`<label class="data">${dataNameJSON.workName}</label>`);
 
-            if (dataNameJSON.type == "R") {
+            if (dataNameJSON.type == "C") {
                 $("#submitBtn").click(function () {
                     submit();
                 })
@@ -113,8 +113,9 @@
                     update("User");
                 })
             }
-
             localStorage.removeItem("checkDataName");
+            localStorage.removeItem("checkData");
+
         })
     </script>
 </body>

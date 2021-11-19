@@ -74,9 +74,13 @@
             $("#workName").append(`<label class="data">${dataNameJSON.workName}</label>`);
             $("#workType").append(`<label class="data">${dataNameJSON.workType}</label>`);
             $("#submitBtn").click(function () {
-                    addBranch();
-                })
-            localStorage.removeItem("checkDataName");
+                if (dataNameJSON.type == 'C') {
+                    addWork();
+                } else {
+                    update("WorkReference");
+                }
+                localStorage.removeItem("checkData");
+            })
         })
     </script>
 </body>

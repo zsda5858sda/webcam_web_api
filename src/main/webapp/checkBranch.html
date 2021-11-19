@@ -71,12 +71,17 @@
                 location.href = "login.html";
             }
             var dataNameJSON = JSON.parse(localStorage.getItem("checkData"));
+            console.log(dataNameJSON);
             $("#branchName").append(`<label class="data">${dataNameJSON.branchName}</label>`);
             $("#branchCode").append(`<label class="data">${dataNameJSON.branchCode}</label>`);
             $("#submitBtn").click(function () {
+                if (dataNameJSON.type == 'C') {
                     addBranch();
-                })
-            localStorage.removeItem("checkDataName");
+                } else {
+                    update("Branch");
+                }
+                localStorage.removeItem("checkData");
+            })
         })
     </script>
 </body>
