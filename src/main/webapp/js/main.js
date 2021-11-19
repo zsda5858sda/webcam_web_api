@@ -1,7 +1,9 @@
-var ip = "http://172.16.45.245:8080/"
-// var ip = "http://192.168.141.207:8080/";
+// var ip = "http://172.16.45.245:8080/"
+var ip = "http://192.168.123.207:8080/";
 
 //新增使用者api
+
+
 function submit() {
     $("#submitBtn").attr("disabled", true);
     let requestURL = `${ip}webcam_web_api/api/User`;
@@ -143,20 +145,21 @@ function searchFile() {
 //新增分行、部門代碼api
 function addBranch() {
     $("#addBranchBtn").attr("disabled", true);
-    var branchName = $("#branchName").val();
-    var branchCode = $("#branchCode").val();
-    if (branchName.replace(" ", "") == "") {
-        alert("請輸入分行名稱")
-        return;
-    }
-    if (branchCode.replace(" ", "") == "") {
-        alert("請輸入分行代號")
-        return;
-    }
+    // var branchName = $("#branchName").val();
+    // var branchCode = $("#branchCode").val();
+    // if (branchName.replace(" ", "") == "") {
+    //     alert("請輸入分行名稱")
+    //     return;
+    // }
+    // if (branchCode.replace(" ", "") == "") {
+    //     alert("請輸入分行代號")
+    //     return;
+    // }
+    var dataNameJSON = JSON.parse(localStorage.getItem("checkData"));
     let requestURL = `${ip}webcam_web_api/api/Branch`;
     let dataJSON = {
-        "branchName": branchName,
-        "branchCode": branchCode
+        "branchName": dataNameJSON.branchName,
+        "branchCode": dataNameJSON.branchCode
     }
     $.ajax({
         url: requestURL,
@@ -167,6 +170,7 @@ function addBranch() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
+            location.href = "index.html"
             $("#addBranchBtn").attr("disabled", false);
         }
     })
@@ -175,20 +179,11 @@ function addBranch() {
 //新增業務種類代碼api
 function addWork() {
     $("#addWorkBtn").attr("disabled", true);
-    var workName = $("#workName").val();
-    var workType = $("#workType").val();
-    if (workName.replace(" ", "") == "") {
-        alert("請輸入業務種類名稱")
-        return;
-    }
-    if (workType.replace(" ", "") == "") {
-        alert("請輸入業務種類代號")
-        return;
-    }
+    var dataNameJSON = JSON.parse(localStorage.getItem("checkData"));
     let requestURL = `${ip}webcam_web_api/api/WorkReference`;
     let dataJSON = {
-        "workName": workName,
-        "workType": workType
+        "workName": dataNameJSON.workName,
+        "workType": dataNameJSON.workType
     }
     $.ajax({
         url: requestURL,
@@ -199,6 +194,7 @@ function addWork() {
         success: async function (response) {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
+            location.href = "index.html"
             $("#addWorkBtn").attr("disabled", false);
         }
     })
@@ -268,6 +264,28 @@ async function searchLog(isApp) {
         alert("查無資料！！")
     }
 
+}
+
+function goCheckBranch(){
+    var branchName = $("#branchName").val();
+    var branchCode = $("#branchCode").val();
+    let dataJSON = {
+        'branchName' : branchName,
+        'branchCode' : branchCode
+    }
+    localStorage.setItem("checkData", JSON.stringify(dataJSON));
+    location.href = "checkBranch.html"
+}
+
+function goCheckWork(){
+    var workName = $("#workName").val();
+    var workType = $("#workType").val();
+    let dataJSON = {
+        'workName' : workName,
+        'workType' : workType
+    }
+    localStorage.setItem("checkData", JSON.stringify(dataJSON));
+    location.href = "checkWork.html"
 }
 
 function goCheckPage(type) {

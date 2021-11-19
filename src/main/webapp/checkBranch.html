@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="css/main.css" rel="stylesheet" />
+</head>
+<style>
+    #title {
+        width: 100%;
+        height: 50px;
+        background-color: #41b1c2;
+        border-radius: 10px 10px 0 0;
+        font-size: 40px;
+        color: white;
+        text-align: center;
+        padding: 3% 0 2% 0;
+        letter-spacing: 8px;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+    }
+
+    #inner {
+        width: 40%;
+        margin: 5% 5% 5% 30%;
+    }
+
+    .data {
+        font-size: x-large;
+        margin-left: 10%;
+        color: red;
+    }
+
+    button {
+        border: none;
+        background-color: #01859a;
+        color: white;
+        width: 30%;
+        font-size: 30px;
+        border-radius: 20px;
+        margin: 3% 0 5% 0%;
+    }
+</style>
+
+<body>
+    <div id="outer">
+        <div id="title">
+            <label>確認分行</label>
+        </div>
+        <div id="inner">
+            <div id="branchName">
+                <label style="font-size: x-large;">分行名稱: </label>
+            </div>
+        </div>
+        <div id="inner">
+            <div id="branchCode">
+                <label style="font-size: x-large;">分行代號: </label>
+            </div>
+        </div>
+        <div id="inner" style="padding-bottom: 5%;">
+            <button type="button" onclick="history.back()">返回</button>
+            <button type="button" id="submitBtn" style="margin-left: 20%;">確定</button>
+        </div>
+
+
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(function () {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+            var dataNameJSON = JSON.parse(localStorage.getItem("checkData"));
+            $("#branchName").append(`<label class="data">${dataNameJSON.branchName}</label>`);
+            $("#branchCode").append(`<label class="data">${dataNameJSON.branchCode}</label>`);
+            $("#submitBtn").click(function () {
+                    addBranch();
+                })
+            localStorage.removeItem("checkDataName");
+        })
+    </script>
+</body>
