@@ -8,12 +8,16 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.regex.Pattern;
 
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.message.internal.MediaTypes;
 import org.glassfish.jersey.message.internal.ReaderWriter;
 import org.glassfish.jersey.server.ContainerException;
+import org.glassfish.jersey.server.ContainerRequest;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.Provider;
 
 // 過濾跨網站指令碼
@@ -24,6 +28,16 @@ public class XSSFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext request) throws IOException {
 		request.getHeaders().add("X-XSS-Protection", "1; mode=block");
 		if (!request.getMethod().equals("GET")) {
+			ContainerRequest containerRequest = (ContainerRequest) request;
+
+			// formdata過濾
+			if (request.hasEntity()
+					&& MediaTypes.typeEqual(MediaType.MULTIPART_FORM_DATA_TYPE, request.getMediaType())) {
+				containerRequest.bufferEntity();
+				FormDataMultiPart f = containerRequest.readEntity(FormDataMultiPart.class);
+				return;
+			}
+
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			InputStream in = request.getEntityStream();
 			String result = null;

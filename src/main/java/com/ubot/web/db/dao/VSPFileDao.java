@@ -1,6 +1,7 @@
 package com.ubot.web.db.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,5 +53,25 @@ public class VSPFileDao extends BaseDao {
 			conn.close();
 		}
 		return result;
+	}
+
+	public void insertQuery(VSPFile file) throws Exception {
+		Connection conn = getConnection();
+		String sql = "insert into vspfile(FILENAME, FILEPATH, WORKTYPE, BRANCH, WORKDATE) values(?,?,?,?,?)";
+		try (PreparedStatement ps = conn.prepareStatement(sql);) {
+
+			ps.setString(1, file.getFileName());
+			ps.setString(2, file.getFilePath());
+			ps.setString(3, file.getWorkType());
+			ps.setString(4, file.getBranch());
+			ps.setString(5, file.getWorkDate());
+
+			logger.info(ps.toString());
+			ps.execute();
+		} catch (SQLException e) {
+			throw new Exception(e.getMessage());
+		} finally {
+			conn.close();
+		}
 	}
 }

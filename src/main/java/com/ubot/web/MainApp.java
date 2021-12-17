@@ -1,5 +1,6 @@
 package com.ubot.web;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.ubot.web.config.Config;
@@ -18,6 +19,7 @@ public class MainApp extends ResourceConfig {
 		register(Config.class);
 		register(XSSFilter.class);
 		register(NotFoundException.class);
+		register(MultiPartFeature.class);
 	}
 
 }
