@@ -62,7 +62,7 @@ public class UserService {
 			result.put("message", message);
 			result.put("code", 1);
 		} catch (Exception e) {
-			message = "查詢使用者資料錯誤, 原因: 請聯繫管理人員";
+			message = "查詢使用者資料錯誤, 請聯繫管理人員";
 			logger.error(message);
 			logger.error(e.getMessage());
 			result.put("message", message);
@@ -92,7 +92,7 @@ public class UserService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "查詢使用者資料錯誤, 原因: 請聯繫管理人員";
+			message = "查詢使用者資料錯誤, 請聯繫管理人員";
 			logger.error(message);
 			logger.error(e.getMessage());
 			result.put("message", message);
@@ -238,7 +238,7 @@ public class UserService {
 					} else if (e.getMessage().contains("appointed")) {
 						message += "失敗, 原因: 該分行指定人員已達上限";
 					} else {
-						message += "失敗, 原因: 請聯繫管理人員";
+						message += "失敗, 請聯繫管理人員";
 					}
 					logger.error(message);
 					logger.error(e.getMessage());

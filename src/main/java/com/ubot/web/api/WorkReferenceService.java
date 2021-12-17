@@ -50,7 +50,7 @@ public class WorkReferenceService {
 			result.put("code", 0);
 			result.putPOJO("data", workReferenceList);
 		} catch (Exception e) {
-			message = String.format("查詢業務種類失敗, 原因: 請聯繫管理人員");
+			message = String.format("查詢業務種類失敗, 請聯繫管理人員");
 			logger.error(message);
 			logger.error(e.getMessage());
 			result.put("message", message);
@@ -78,7 +78,7 @@ public class WorkReferenceService {
 			if (e.getMessage().contains("PRIMARY")) {
 				message = "新增業務種類失敗, 原因: 此ID已被註冊";
 			} else {
-				message = "新增業務種類失敗, 原因: 請聯繫管理人員";
+				message = "新增業務種類失敗, 請聯繫管理人員";
 			}
 			logger.error(message);
 			logger.error(e.getMessage());
@@ -110,7 +110,7 @@ public class WorkReferenceService {
 			if (e.getMessage().contains("PRIMARY")) {
 				message = "更新業務種類失敗, 原因: 此ID已被註冊";
 			} else {
-				message = "更新業務種類失敗, 原因: 請聯繫管理人員";
+				message = "更新業務種類失敗, 請聯繫管理人員";
 			}
 			logger.error(message);
 			logger.error(e.getMessage());

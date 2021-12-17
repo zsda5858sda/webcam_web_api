@@ -55,7 +55,7 @@ public class LogService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "查詢log失敗, 原因: 請聯繫管理人員";
+			message = "查詢log失敗, 請聯繫管理人員";
 			logger.error(message);
 			logger.error(e.getMessage());
 			result.put("message", message);
@@ -83,7 +83,7 @@ public class LogService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "查詢log失敗, 原因: 請聯繫管理人員";
+			message = "查詢log失敗, 請聯繫管理人員";
 			logger.error(message);
 			logger.error(e.getMessage());
 			result.put("message", message);
@@ -108,7 +108,7 @@ public class LogService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "新增log失敗, 原因: 請聯繫管理人員";
+			message = "新增log失敗, 請聯繫管理人員";
 			logger.error(message);
 			logger.error(e.getMessage());
 			result.put("message", message);
