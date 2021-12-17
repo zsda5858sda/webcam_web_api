@@ -17,6 +17,9 @@
         <div class="inner">
             <button class="select" type="button" onclick="location.href = 'searchLog.html'">查詢後台log</button>
         </div>
+        <div class="inner">
+            <button class="select" type="button" onclick="location.href = 'fileUpload.html'">上傳對保影片</button>
+        </div>
         <div id="addBranchDiv" class="inner">
             <button class="select" type="button" onclick="location.href = 'addBranch.html'">新增分行代碼</button>
         </div>
@@ -52,9 +55,6 @@
                 $("#updateWorkDiv").hide();
                 $("#addUserDiv").hide();
                 $("#updateUserDiv").hide();
-            }
-            if (userId == "0913634") {
-                $("#changeValidDiv").append(`<br><button type="button" onclick="location.href='changeValid.html'">更改驗證狀態</button>`);
             }
         })
     </script>
