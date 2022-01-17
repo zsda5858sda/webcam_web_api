@@ -3,32 +3,56 @@
 
 <head>
     <meta charset="utf-8">
-
+    <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.css" />
+    <link href="css/upload.css" rel="stylesheet" />
 </head>
 
 <body>
-    <h1>Upload File with RESTFul WebService</h1>
-    <form id="uploadForm" action="http://localhost:8080/webcam_web_api/api/File/upload" method="post" enctype="multipart/form-data">
-        <p>
+    <div id="outer">
+        <form id="uploadForm" enctype="multipart/form-data">
             <input type="text" id="uid" name="uid" hidden />
-        </p>
-        <p>
-            選擇檔案: <input type="file" name="file" id="file" />
-        </p>
-        <p>
-            客戶身分證: <input type="text" name="cid" />
-        </p>
-        <p>
-            業務種類: <input type="text" name="workType" />
-        </p>
-        <p>
-            派駐單位: <select id="branch" name="branch" style="width: 70%;height: 30px;"></select>
-        </p>
-        <input type="submit" value="Upload File" id="uploadBtn" />
-    </form>
+            <div id="title">
+                <label>對保資料上傳</label>
+            </div>
+            <div class="inner">
+                <div id="DIV1">
+                    <label>選擇檔案: </label>
+                </div>
+                <div id="DIV2">
+                    <input type="file" name="file" id="file" accept="video/*" />
+                </div>
+            </div>
+            <div class="inner">
+                <div id="DIV1">
+                    <label>客戶身分證: </label>
+                </div>
+                <div id="DIV2">
+                    <input type="text" name="cid" id="cid" class="text-input" />
+                </div>
+            </div>
+            <div class="inner">
+                <div id="DIV1">
+                    <label>業務種類: </label>
+                </div>
+                <div id="DIV2">
+                    <select id="workType" name="workType" style="width: 70%;height: 30px;"></select>
+                </div>
+            </div>
+            <div class="inner">
+                <div id="DIV1">
+                    <label>派駐單位: </label>
+                </div>
+                <div id="DIV2">
+                    <select id="branch" name="branch" style="width: 70%;height: 30px;"></select>
+                </div>
+            </div>
+        </form>
+        <div class="inner">
+            <button type="button" onclick="upload()">上傳檔案</button>
+        </div>
+    </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/ajaxfileupload.js"></script>
     <script>
         $(function () {
             var userId = localStorage.getItem("userId");
@@ -37,8 +61,56 @@
                 location.href = "login.html";
             }
             $("#uid").val(userId);
+            searchWorkType();
             searchBranch();
         })
+
+        function upload() {
+            let formdata = new FormData();
+            formdata.append('file', $('#file')[0].files[0]);
+            formdata.append('uid', $('#uid').val());
+            formdata.append('workType', $('#workType').val());
+            formdata.append('cid', $('#cid').val());
+            formdata.append('branch', $('#branch').val());
+
+            $.ajax({
+                type: 'post',
+                url: `${ip}webcam_web_api/api/File/upload`,
+                processData: false,
+                contentType: false,
+                data: formdata,
+                success: function (response) {
+                    alert(response.message);
+                    location.reload();
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function searchWorkType() {
+            $.ajax({
+                url: `${ip}webcam_web_api/api/WorkReference`,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                async: false,
+                success: function (response) {
+                    if (response.code == 0) {
+                        var dataList = response['data'];
+                        for (var i = 0; i < dataList.length; i++) {
+                            let workType = dataList[i]["workType"];
+                            let workName = dataList[i]["workName"];
+                            $('#workType').append($('<option />', { value: workType, text: workName }));
+                        }
+                    } else {
+                        alert(returnData.message);
+                    }
+                },
+            });
+        }
+
     </script>
 </body>
 

@@ -16,6 +16,7 @@ function submit() {
         async: false,
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
+            console.log(response);
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#submitBtn").attr("disabled", false);
@@ -162,7 +163,7 @@ function addWork() {
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#addWorkBtn").attr("disabled", false);
-            
+
             if (response.code == 0) location.href = "index.html";
             else history.back();
         }
@@ -202,7 +203,7 @@ async function searchLog(isApp) {
     var appendPath = isApp ? "/app" : "";
     let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
     var responseData = (await $.getJSON(requestURL)).data;
-    console.log(responseData.length);
+
     $.jgrid.gridUnload("#logList");
     $("#logList").jqGrid({
         colNames: ['員編 / 客戶電話', '時間', '事件描述', '來源IP'],
@@ -230,7 +231,7 @@ async function searchLog(isApp) {
         document.getElementById('grid').style.display = 'block';
         document.getElementById('fade').style.display = 'block';
     } else {
-        alert("查無資料！！")
+        alert("查無資料")
     }
 
 }
@@ -386,7 +387,7 @@ function goCheckBranch(type) {
     }
 
     localStorage.setItem("checkData", JSON.stringify(dataJSON));
-    
+
     location.href = "checkBranch.html"
 }
 
