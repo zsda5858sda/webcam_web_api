@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,6 +127,39 @@ public class FileService {
 		return invocaBuilder.get();
 	}
 
+	@GET
+	@Path("/searchURL")
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response searchURL(@BeanParam RequestBody requestBody) throws IOException, UnknownException {
+		ObjectNode result = mapper.createObjectNode();
+		logger.info(requestBody.toString());
+		String message = "";
+
+		try {
+			String userId = requestBody.getUserId();
+			String customerId = requestBody.getCustomerId();
+			String date = requestBody.getDate();
+
+			String fileName = userId + "-" + customerId + "%" + date + "%";
+			String sql = String.format("select * from vspfile where FILENAME like '%s'", fileName);
+
+			List<String> urlList = new ArrayList<String>();
+			fileDao.selectQuery(sql).forEach(e -> {
+				String url = String.format("http://172.16.45.168:8080/webcam_web_api/api/File/preview?filePath=%s",
+						e.getFilePath());
+				urlList.add(url);
+			});
+			result.putPOJO("data", urlList);
+			message = "連結查詢成功";
+			logger.info(message);
+			result.put("message", message);
+			result.put("code", 0);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			throw new UnknownException("連結查詢失敗, 請聯繫管理人員");
+		}
+		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
+	}
 	@POST
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
