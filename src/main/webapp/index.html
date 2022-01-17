@@ -11,9 +11,12 @@
         <div class="inner">
             <button class="select" type="button" onclick="location.href = 'file.html'">查詢對保資料</button>
         </div>
-        <div class="inner">
-            <button class="select" type="button" onclick="location.href = 'searchAppLog.html'">查詢對保log</button>
+        <div id="fileListDiv" class="inner">
+            <button class="select" type="button" onclick="location.href = 'fileList.html'">查詢對保資料清單</button>
         </div>
+        <!-- <div class="inner">
+            <button class="select" type="button" onclick="location.href = 'searchAppLog.html'">查詢對保log</button>
+        </div> -->
         <div class="inner">
             <button class="select" type="button" onclick="location.href = 'searchLog.html'">查詢後台log</button>
         </div>
@@ -55,6 +58,9 @@
                 $("#updateWorkDiv").hide();
                 $("#addUserDiv").hide();
                 $("#updateUserDiv").hide();
+            }
+            if (security == null || security != "AU") {
+                $("#fileListDiv").hide();
             }
         })
     </script>

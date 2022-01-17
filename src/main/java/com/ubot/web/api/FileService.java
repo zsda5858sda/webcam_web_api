@@ -160,6 +160,31 @@ public class FileService {
 		}
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
 	}
+
+	@GET
+	@Path("/searchByDate")
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response searchByDate(@BeanParam RequestBody requestBody) throws IOException, UnknownException {
+		ObjectNode result = mapper.createObjectNode();
+		String message = "";
+		logger.info(requestBody.toString());
+
+		try {
+			String date = requestBody.getDate();
+			String sql = String.format(
+					"select * from vspfile where WORKDATE = '%s' and (FILENAME like '%%.webm' or FILENAME like '%%.jpg')",
+					date);
+			result.putPOJO("data", fileDao.selectQuery(sql));
+			result.put("message", message);
+			result.put("code", 0);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			throw new UnknownException("檔案查詢失敗, 請聯繫管理人員");
+		}
+
+		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
+	}
+
 	@POST
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)

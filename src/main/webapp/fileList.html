@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.css" />
+    <link href="css/fileList.css" rel="stylesheet" />
+    <link href="css/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="css/jqGrid/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+    <style>
+        .grid {
+            display: none;
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 'auto';
+            height: 'auto';
+            padding: 16px;
+            background-color: white;
+            border-radius: 20px;
+            z-index: 1002;
+            overflow: auto;
+        }
+
+        .ui-jqgrid {
+            font-size: 1em;
+        }
+
+        .ui-jqgrid table.ui-jqgrid-htable {
+            height: 50px;
+            font-size: 1.1em;
+            line-height: 15px;
+        }
+
+        .ui-jqgrid .ui-jqgrid-htable th div {
+            height: auto;
+            overflow: hidden;
+            padding-right: 4px;
+            padding-top: 2px;
+            position: relative;
+            vertical-align: text-top;
+            white-space: normal !important;
+        }
+
+        .black_overlay {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1001;
+            -moz-opacity: 0.8;
+            opacity: .80;
+            filter: alpha(opacity=80);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="outer">
+        <div id="title">
+            <label>對保資料查詢</label>
+        </div>
+        <div class="inner">
+            <div id="DIV1">
+                <label>日期: </label>
+            </div>
+            <div id="DIV2">
+                <input type="text" id="date" readonly="readonly" />
+            </div>
+        </div>
+        <div class="inner">
+            <div id="DIV1">
+                <label>員編: </label>
+            </div>
+            <div id="DIV2">
+                <select id="uid" style="width: 70%;height: 30px;"></select>
+            </div>
+        </div>
+        <div class="inner">
+            <div id="DIV1">
+                <label>客戶身分證: </label>
+            </div>
+            <div id="DIV2">
+                <select id="cid" style="width: 70%;height: 30px;"></select>
+            </div>
+        </div>
+        <div class="inner">
+            <button type="button" onclick="searchFileList()">查詢</button>
+        </div>
+    </div>
+
+    <div class="grid" id="grid">
+        <div style="margin-bottom: 2%;">
+            <i class="fa fa-times-circle" style="font-size: 4em;"
+                onclick="document.getElementById('grid').style.display='none';document.getElementById('fade').style.display='none'"></i>
+        </div>
+        <table id="fileList"></table>
+        <div id="filePage"></div>
+    </div>
+    <div id="fade" class="black_overlay"></div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <script src='js/jqGrid/jquery.jqGrid.min.js' type="text/javascript"></script>
+    <script src='js/jqGrid/i18n/grid.locale-tw.js' type="text/javascript"></script>
+    <script src="js/main.js"></script>
+    <script>
+        var fileObject = {};
+        var userObject = {};
+        var allFileList = [];
+
+        $(function () {
+            if (localStorage.getItem("userId") == null) {
+                location.href = "login.html";
+            }
+            $("#date").datepicker({ dateFormat: "yy-mm-dd" });
+        })
+
+        $("#date").change(function () {
+            $("#uid").empty();
+            $("#cid").empty();
+            var userArr = [];
+            userObject = {};
+            fileObject = {};
+            let date = $("#date").val().replaceAll("-", "");
+            $.getJSON(`${ip}webcam_web_api/api/File/searchByDate?date=${date}`, function (response) {
+                dataArr = response.data;
+                allFileList = dataArr;
+
+                for (i = 0; i < dataArr.length; i++) {
+                    tempList = dataArr[i]["fileName"].split("-");
+                    uid = tempList[0];
+                    cid = tempList[1];
+                    if (userArr.indexOf(uid) == -1) userArr.push(uid);
+                    if (userObject[uid] == null) userObject[uid] = []
+                    if (userObject[uid].indexOf(cid) == -1) userObject[uid].push(cid);
+                    if (fileObject[`${uid}-${cid}`] == null) fileObject[`${uid}-${cid}`] = []
+                    fileObject[`${uid}-${cid}`].push(dataArr[i])
+                }
+                $('#uid').append($('<option />', { value: '', text: "全部" }));
+                for (var i = 0; i < userArr.length; i++) {
+                    $('#uid').append($('<option />', { value: userArr[i], text: userArr[i] }));
+                }
+            });
+        });
+
+        $("#uid").change(function () {
+            $("#cid").empty();
+            let uid = $(this).val();
+            let userList = userObject[uid]
+            $("#cid").append($('<option />', { value: '', text: "全部" }));
+            for (var i = 0; i < userList.length; i++) {
+                $('#cid').append($('<option />', { value: userList[i], text: userList[i] }));
+            }
+        })
+
+        function searchFileList() {
+            if ($("#date").val() == '') alert("請選擇日期!")
+            let uid = $("#uid").val();
+            let cid = $("#cid").val();
+            let result = [];
+            if (uid == "") {
+                console.log(allFileList);
+                showGrid(allFileList);
+            } else if (cid == "") {
+                for (const [key, value] of Object.entries(fileObject)) {
+                    if (key.indexOf(uid) !== -1) {
+                        result.push(value);
+                    }
+                }
+                result = [].concat.apply([], result);
+                console.log(result);
+                showGrid(result);
+            } else {
+                console.log(fileObject[`${uid}-${cid}`]);
+                showGrid(fileObject[`${uid}-${cid}`]);
+            }
+
+        }
+
+        function showGrid(dataList) {
+            $.jgrid.gridUnload("#fileList");
+            $("#fileList").jqGrid({
+                colNames: ['vid', '檔案名稱', '業務種類', '分行 / 部門', '對保日期', '預覽'],
+                colModel: [
+                    { name: 'vid', index: 'vid', align: 'center', hidden: true},
+                    { name: 'fileName', index: 'fileName', width: 420, align: 'center'},
+                    { name: 'workType', index: 'workType', align: 'center'},
+                    { name: 'branch', index: 'branch', align: 'center'},
+                    { name: 'preview', index: 'preview', width: 70, align: 'center', formatter: setPreviewButton},
+                ],
+                datatype: "local",
+                data: dataList,
+                width: $(window).width() - 300,
+                rowheight: 300,
+                height: 'auto',
+                shrinkToFit: true,
+                rowNum: 10,
+                rowList: [10, 20, 30],
+                pager: '#filePage',
+                sortname: 'createDatetime',
+                viewrecords: true,
+                sortorder: "desc",
+            });
+            $("#fileList").jqGrid('navGrid', '#filePage', { edit: false, add: false, del: false });
+            if (dataList.length != 0) {
+                document.getElementById('grid').style.display = 'block';
+                document.getElementById('fade').style.display = 'block';
+            } else {
+                alert("查無資料")
+            }
+        }
+
+        function setPreviewButton (cellvalue, options, rowObject) {
+            let previewBtn = `<button type='button' title='預覽' style='margin: 0' onclick='window.open("${ip}webcam_web_api/api/File/preview?filePath=${rowObject['filePath']}")'>預覽</button>`;
+            return previewBtn;
+        }
+    </script>
+</body>
+
+</html>
