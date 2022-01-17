@@ -183,7 +183,7 @@
                 let tmpDateArr = [];
                 for (i = 0; i < fileData.length; i++) {
                     let data = fileData[i];
-                    if (data["fileName"].includes(incomingData)) {
+                    if (data["fileName"].substring(0, 7).includes(incomingData)) {
                         tmpDateArr.push(data["workDate"]);
                     }
                 }
@@ -206,14 +206,13 @@
                 let tmpDateArr = [];
                 for (i = 0; i < fileData.length; i++) {
                     let data = fileData[i];
-                    if (data["fileName"].includes(incomingData)) {
+                    if (data["fileName"].substring(0, 7).includes(incomingData)) {
                         tmpDateArr.push(data["workDate"]);
                     }
                 }
                 dateArr = tmpDateArr.filter(function (data, index, arr) {
                     return arr.indexOf(data) === index;
                 })
-                console.log(dateArr);
                 dateArr.forEach(function (data) {
                     appendFolderContainer(data)
                 })
