@@ -104,17 +104,15 @@
             $("#securityDiv").append(`<label class="data">${dataNameJSON.security}</label>`);
             $("#workTypeDiv").append(`<label class="data">${dataNameJSON.workName}</label>`);
 
-            if (dataNameJSON.type == "C") {
-                $("#submitBtn").click(function () {
+            $("#submitBtn").click(function () {
+                if (dataNameJSON.type == "C") {
                     submit();
-                })
-            } else {
-                $("#submitBtn").click(function () {
+                } else {
                     update("User");
-                })
-            }
-            localStorage.removeItem("checkDataName");
-            localStorage.removeItem("checkData");
+                }
+                localStorage.removeItem("checkDataName");
+                localStorage.removeItem("checkData");
+            })
 
         })
     </script>
