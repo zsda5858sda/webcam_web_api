@@ -14,6 +14,7 @@ import com.ubot.web.db.dao.VSPLogDao;
 import com.ubot.web.db.vo.Log;
 import com.ubot.web.db.vo.RequestBody;
 import com.ubot.web.db.vo.VSPLog;
+import com.ubot.web.exception.UnknownException;
 
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
@@ -39,7 +40,7 @@ public class LogService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response search(@BeanParam RequestBody requestBody) throws IOException {
+	public Response search(@BeanParam RequestBody requestBody) throws IOException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		logger.info(requestBody.toString());
 		String message = "";
@@ -55,11 +56,8 @@ public class LogService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "查詢log失敗, 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("查詢log失敗, 請聯繫管理人員");
 		}
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
 	}
@@ -67,7 +65,7 @@ public class LogService {
 	@GET
 	@Path("/app")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response searchApp(@BeanParam RequestBody requestBody) throws IOException {
+	public Response searchApp(@BeanParam RequestBody requestBody) throws IOException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		logger.info(requestBody.toString());
 		String message = "";
@@ -83,11 +81,8 @@ public class LogService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "查詢log失敗, 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("查詢log失敗, 請聯繫管理人員");
 		}
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
 	}
@@ -95,7 +90,7 @@ public class LogService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response save(String requestJson) throws IOException {
+	public Response save(String requestJson) throws IOException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 		logger.info(requestJson);
@@ -108,11 +103,8 @@ public class LogService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "新增log失敗, 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("新增log失敗, 請聯繫管理人員");
 		}
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
 	}

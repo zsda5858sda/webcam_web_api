@@ -35,6 +35,10 @@ public class XSSFilter implements ContainerRequestFilter {
 					&& MediaTypes.typeEqual(MediaType.MULTIPART_FORM_DATA_TYPE, request.getMediaType())) {
 				containerRequest.bufferEntity();
 				FormDataMultiPart f = containerRequest.readEntity(FormDataMultiPart.class);
+//				ByteArrayOutputStream out = new ByteArrayOutputStream();
+//				ObjectOutputStream os = new ObjectOutputStream(out);
+//				os.writeObject(f);
+//				request.setEntityStream(new ByteArrayInputStream(out.toByteArray()));
 				return;
 			}
 

@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.VSPBranchDao;
 import com.ubot.web.db.vo.VSPBranch;
+import com.ubot.web.exception.PrimaryKeyException;
+import com.ubot.web.exception.UnknownException;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -36,7 +38,7 @@ public class BranchService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response search() throws IOException {
+	public Response search() throws IOException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 		try {
@@ -47,11 +49,8 @@ public class BranchService {
 			result.put("code", 0);
 			result.putPOJO("data", branchList);
 		} catch (Exception e) {
-			message = "查詢分行代碼失敗, 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("查詢分行代碼失敗, 請聯繫管理人員");
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
@@ -60,7 +59,7 @@ public class BranchService {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response save(String requestJson) throws IOException {
+	public Response save(String requestJson) throws IOException, UnknownException, PrimaryKeyException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 		logger.info(requestJson);
@@ -72,15 +71,12 @@ public class BranchService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			if (e.getMessage().contains("PRIMARY")) {
-				message = "新增分行代碼失敗, 原因: 此ID已被註冊";
-			} else {
-				message = "新增分行代碼失敗, 請聯繫管理人員";
-			}
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			if (e.getMessage().contains("PRIMARY")) {
+				throw new PrimaryKeyException("新增分行代碼失敗, 原因: 此ID已被註冊");
+			} else {
+				throw new UnknownException("新增分行代碼失敗, 請聯繫管理人員");
+			}
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
@@ -89,7 +85,7 @@ public class BranchService {
 	@PATCH
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response update(String requestJson) throws IOException {
+	public Response update(String requestJson) throws IOException, UnknownException, PrimaryKeyException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 		logger.info(requestJson);
@@ -104,15 +100,12 @@ public class BranchService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			if (e.getMessage().contains("PRIMARY")) {
-				message = "更新分行代碼失敗, 原因: 此ID已被註冊";
-			} else {
-				message = "更新分行代碼失敗, 請聯繫管理人員";
-			}
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			if (e.getMessage().contains("PRIMARY")) {
+				throw new PrimaryKeyException("更新分行代碼失敗, 原因: 此ID已被註冊");
+			} else {
+				throw new UnknownException("更新分行代碼失敗, 請聯繫管理人員");
+			}
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();

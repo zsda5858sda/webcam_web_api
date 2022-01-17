@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.WorkReferenceDao;
 import com.ubot.web.db.vo.WorkReference;
+import com.ubot.web.exception.PrimaryKeyException;
+import com.ubot.web.exception.UnknownException;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -38,7 +40,7 @@ public class WorkReferenceService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response search() throws JsonProcessingException {
+	public Response search() throws JsonProcessingException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 
@@ -50,11 +52,8 @@ public class WorkReferenceService {
 			result.put("code", 0);
 			result.putPOJO("data", workReferenceList);
 		} catch (Exception e) {
-			message = String.format("查詢業務種類失敗, 請聯繫管理人員");
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("檔案查詢失敗, 請聯繫管理人員");
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
@@ -63,7 +62,7 @@ public class WorkReferenceService {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response save(String requestJson) throws IOException {
+	public Response save(String requestJson) throws IOException, UnknownException, PrimaryKeyException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 		logger.info(requestJson);
@@ -75,15 +74,12 @@ public class WorkReferenceService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			if (e.getMessage().contains("PRIMARY")) {
-				message = "新增業務種類失敗, 原因: 此ID已被註冊";
-			} else {
-				message = "新增業務種類失敗, 請聯繫管理人員";
-			}
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			if (e.getMessage().contains("PRIMARY")) {
+				throw new PrimaryKeyException("新增業務種類失敗, 原因: 此ID已被註冊");
+			} else {
+				throw new UnknownException("新增業務種類失敗, 請聯繫管理人員");
+			}
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
@@ -92,7 +88,7 @@ public class WorkReferenceService {
 	@PATCH
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response update(String requestJson) throws IOException {
+	public Response update(String requestJson) throws IOException, UnknownException, PrimaryKeyException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 		logger.info(requestJson);
@@ -107,15 +103,12 @@ public class WorkReferenceService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			if (e.getMessage().contains("PRIMARY")) {
-				message = "更新業務種類失敗, 原因: 此ID已被註冊";
-			} else {
-				message = "更新業務種類失敗, 請聯繫管理人員";
-			}
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			if (e.getMessage().contains("PRIMARY")) {
+				throw new PrimaryKeyException("更新業務種類失敗, 原因: 此ID已被註冊");
+			} else {
+				throw new UnknownException("更新業務種類失敗, 請聯繫管理人員");
+			}
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();

@@ -118,30 +118,6 @@ public class HttpService {
 
 	}
 
-	@PATCH
-	@Path("/updateValid")
-	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response update(String requestJson) throws IOException {
-		ObjectNode result = mapper.createObjectNode();
-		String message = "";
-		logger.info(requestJson);
-		VSPValidate validate = mapper.readValue(requestJson, VSPValidate.class);
-		try {
-			validateDao.updateQuery(validate);
-			message = "更新驗證狀態成功，請重新登入";
-			logger.info(message);
-			result.put("message", message);
-			result.put("code", 0);
-		} catch (Exception e) {
-			message = "更新驗證狀態失敗";
-			logger.info(message);
-			result.put("message", message);
-			result.put("code", 1);
-		}
-		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
-	}
-
 	// 發送至AD之設定
 	private Response sendToAdHub(EaiVO entity) {
 

@@ -6,6 +6,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import com.ubot.web.config.Config;
 import com.ubot.web.config.XSSFilter;
 import com.ubot.web.exception.NotFoundException;
+import com.ubot.web.exception.PrimaryKeyException;
+import com.ubot.web.exception.UnknownException;
 
 import jakarta.ws.rs.ApplicationPath;
 
@@ -19,6 +21,8 @@ public class MainApp extends ResourceConfig {
 		register(Config.class);
 		register(XSSFilter.class);
 		register(NotFoundException.class);
+		register(UnknownException.class);
+		register(PrimaryKeyException.class);
 		register(MultiPartFeature.class);
 	}
 

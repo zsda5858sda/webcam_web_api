@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.VSPFileDao;
 import com.ubot.web.db.vo.RequestBody;
 import com.ubot.web.db.vo.VSPFile;
+import com.ubot.web.exception.UnknownException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BeanParam;
@@ -39,7 +40,10 @@ public class FileService {
 	private final Logger logger;
 	private final VSPFileDao fileDao;
 	private final ObjectMapper mapper;
-	private final String IP = "172.16.45.245:8080";
+	// production ip
+//	private final String IP = "172.16.45.245:8080";
+	private final String IP = "localhost:8081";
+
 	@Context
 	private HttpServletResponse response;
 
@@ -52,7 +56,7 @@ public class FileService {
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response search(@BeanParam RequestBody requestBody) throws IOException {
+	public Response search(@BeanParam RequestBody requestBody) throws IOException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		logger.info(requestBody.toString());
 		String message = "";
@@ -93,11 +97,8 @@ public class FileService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "檔案查詢失敗, 原因: 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("檔案查詢失敗, 請聯繫管理人員");
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
@@ -127,8 +128,8 @@ public class FileService {
 	@POST
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.TEXT_PLAIN + " ;charset=UTF-8")
-	public Response uploadFile(FormDataMultiPart multipart) throws IOException {
+	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+	public Response uploadFile(FormDataMultiPart multipart) throws IOException, UnknownException {
 		String workType = multipart.getField("workType").getValue();
 		String cid = multipart.getField("cid").getValue();
 		String uid = multipart.getField("uid").getValue();
@@ -155,7 +156,7 @@ public class FileService {
 				vspFile.setFileName(fileName);
 				vspFile.setBranch(branch);
 				vspFile.setFilePath(filePath);
-				vspFile.setWorkDate(datetime.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+				vspFile.setWorkDate(datetime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
 				vspFile.setWorkType(workType);
 
 				fileDao.insertQuery(vspFile);
@@ -174,8 +175,7 @@ public class FileService {
 			message = response.readEntity(String.class);
 			logger.error(response.getStatus());
 			logger.error(message);
-			result.put("code", 1);
-			result.put("message", message);
+			throw new UnknownException(message);
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();

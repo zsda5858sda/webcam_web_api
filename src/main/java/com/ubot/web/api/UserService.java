@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ubot.web.db.dao.VSPUserDao;
 import com.ubot.web.db.vo.VSPUser;
 import com.ubot.web.exception.NotFoundException;
+import com.ubot.web.exception.UnknownException;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -45,7 +46,7 @@ public class UserService {
 	@GET
 	@Path("/{userId}")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-	public Response getById(@PathParam("userId") String userId) throws JsonProcessingException {
+	public Response getById(@PathParam("userId") String userId) throws JsonProcessingException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 
@@ -57,16 +58,9 @@ public class UserService {
 			result.putPOJO("data", user);
 			result.put("message", message);
 			result.put("code", 0);
-		} catch (NotFoundException nfe) {
-			message = nfe.getMessage();
-			result.put("message", message);
-			result.put("code", 1);
 		} catch (Exception e) {
-			message = "查詢使用者資料錯誤, 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("查詢使用者資料錯誤, 請聯繫管理人員");
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
@@ -76,7 +70,7 @@ public class UserService {
 	@Path("/{branch}/{dept}")
 	@Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 	public Response searchUpdateList(@PathParam("branch") String branch, @PathParam("dept") String dept)
-			throws IOException {
+			throws IOException, UnknownException {
 		ObjectNode result = mapper.createObjectNode();
 		String message = "";
 
@@ -92,11 +86,8 @@ public class UserService {
 			result.put("message", message);
 			result.put("code", 0);
 		} catch (Exception e) {
-			message = "查詢使用者資料錯誤, 請聯繫管理人員";
-			logger.error(message);
 			logger.error(e.getMessage());
-			result.put("message", message);
-			result.put("code", 1);
+			throw new UnknownException("查詢使用者資料錯誤, 請聯繫管理人員");
 		}
 
 		return Response.status(200).entity(mapper.writeValueAsString(result)).build();
