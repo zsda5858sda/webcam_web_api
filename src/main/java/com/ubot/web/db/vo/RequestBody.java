@@ -19,6 +19,28 @@ public class RequestBody {
 	@QueryParam("branch")
 	private String branch;
 
+	@QueryParam("customerId")
+	private String customerId;
+
+	@QueryParam("date")
+	private String date;
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public String getMinDate() {
 		return minDate;
 	}
@@ -56,6 +78,15 @@ public class RequestBody {
 		}
 		if (branch != null && !branch.equals("")) {
 			result += ", branch=" + branch;
+		}
+		if (customerId != null && !customerId.equals("")) {
+			result += ", customerId=" + customerId;
+		}
+		if (date != null && !date.equals("")) {
+			result += ", date=" + date;
+		}
+		if (result.indexOf(",") == 0) {
+			result = result.substring(2);
 		}
 		return result;
 	}
