@@ -15,9 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ubot.web.db.dao.VSPValidateDao;
 import com.ubot.web.db.vo.EaiVO;
-import com.ubot.web.db.vo.VSPValidate;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.PATCH;
@@ -39,12 +37,10 @@ import jakarta.ws.rs.core.Response;
 public class HttpService {
 	private final ObjectMapper mapper;
 	private final Logger logger;
-	private final VSPValidateDao validateDao;
 
 	public HttpService() {
 		this.mapper = new ObjectMapper();
 		this.logger = LogManager.getLogger(this.getClass());
-		this.validateDao = new VSPValidateDao();
 	}
 
 	@POST
