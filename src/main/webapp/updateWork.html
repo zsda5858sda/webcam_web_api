@@ -50,7 +50,7 @@
     <script src="js/select2.min.js"></script>
     <script src="js/main.js"></script>
     <script>
-        $(function() {
+        $(function () {
             if (localStorage.getItem("userId") == null) {
                 location.href = "login.html";
             }
@@ -62,16 +62,19 @@
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 async: false,
-                success: function (returnData) {
-                    if (returnData.code == 0) {
-                        var dataList = returnData['data'];
+                success: function (response) {
+                    if (response.code == 0) {
+                        var dataList = response['data'];
                         for (var i = 0; i < dataList.length; i++) {
                             let workType = dataList[i]["workType"];
                             let workName = dataList[i]["workName"];
                             $('#oldWorkName').append($('<option />', { value: workType, text: workName }));
                         }
+                    } else if (response.code == 2) {
+                        sessionCheckFailed(response);
+                        return;
                     } else {
-                        alert(returnData.message);
+                        alert(response.message);
                     }
                 },
             })

@@ -16,18 +16,22 @@ import com.ubot.web.db.vo.RequestBody;
 import com.ubot.web.db.vo.VSPLog;
 import com.ubot.web.exception.UnknownException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 // 接收有關Log的所有請求
 @Path("/Log")
 public class LogService {
+	@Context
+	private HttpServletRequest httpRequest;
 	private final Logger logger;
 	private final ObjectMapper mapper;
 	private final VSPLogDao logDao;
@@ -96,6 +100,7 @@ public class LogService {
 		logger.info(requestJson);
 		try {
 			VSPLog log = mapper.readValue(requestJson, VSPLog.class);
+			log.setIp(httpRequest.getRemoteAddr());
 			log.setCreateDatetime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS")));
 			logDao.insertQuery(log);
 			message = "新增log成功";

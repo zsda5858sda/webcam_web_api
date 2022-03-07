@@ -64,6 +64,15 @@
     </div> -->
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        $(function() {
+            window.addEventListener('popstate', preventBack, true);
+        })
+
+        function preventBack() {
+            history.go();
+        }
+    </script>
 </body>
 
 </html>

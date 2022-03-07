@@ -16,7 +16,10 @@ function submit() {
         async: false,
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
-            console.log(response);
+            if (response.code == 2) {
+                sessionCheckFailed(response);
+                return;
+            }
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#submitBtn").attr("disabled", false);
@@ -103,6 +106,10 @@ function searchFile() {
         dataType: "json",
         type: "GET",
         success: async function (response) {
+            if (response.code == 2) {
+                sessionCheckFailed(response);
+                return;
+            }
             await sendLog(localStorage.getItem("userId"), response.message);
             if (response.code == 0) {
                 let responseData = response.data;
@@ -135,6 +142,10 @@ function addBranch() {
         data: JSON.stringify(dataJSON),
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
+            if (response.code == 2) {
+                sessionCheckFailed(response);
+                return;
+            }
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#addBranchBtn").attr("disabled", false);
@@ -160,6 +171,10 @@ function addWork() {
         data: JSON.stringify(dataJSON),
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
+            if (response.code == 2) {
+                sessionCheckFailed(response);
+                return;
+            }
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#addWorkBtn").attr("disabled", false);
@@ -172,12 +187,10 @@ function addWork() {
 
 //新增後台log api
 async function sendLog(userId, action) {
-    var userIp = (await $.getJSON("https://api.ipify.org/?format=json")).ip;
     let requestURL = `${ip}webcam_web_api/api/Log`
     var dataJSON = {
         "userId": userId,
         "action": action,
-        "ip": userIp
     }
     $.ajax({
         url: requestURL,
@@ -202,7 +215,12 @@ async function searchLog(isApp) {
     var userId = $("#uid").val();
     var appendPath = isApp ? "/app" : "";
     let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
-    var responseData = (await $.getJSON(requestURL)).data;
+    var responseData = (await $.getJSON(requestURL).done(function (response) {
+        if (response.code == 2) {
+            sessionCheckFailed(response);
+            return;
+        }
+    })).data;
 
     $.jgrid.gridUnload("#logList");
     $("#logList").jqGrid({
@@ -317,17 +335,20 @@ function searchBranch() {
         dataType: "json",
         contentType: "application/json;charset=utf-8",
         async: false,
-        success: function (returnData) {
-            if (returnData.code == 0) {
-                var dataList = returnData['data'];
+        success: function (response) {
+            if (response.code == 0) {
+                var dataList = response['data'];
                 for (var i = 0; i < dataList.length; i++) {
                     let branchCode = dataList[i]["branchCode"];
                     let branchName = dataList[i]["branchName"];
                     $('#dept').append($('<option />', { value: branchCode, text: branchName }));
                     $('#branch').append($('<option />', { value: branchCode, text: branchName }));
                 }
+            } else if (response.code == 2) {
+                sessionCheckFailed(response);
+                return;
             } else {
-                alert(returnData.message);
+                alert(response.message);
             }
         },
     });
@@ -406,6 +427,10 @@ function update(type) {
         async: false,
         contentType: "application/json;charset=utf-8",
         success: async function (response) {
+            if (response.code == 2) {
+                sessionCheckFailed(response);
+                return;
+            }
             await sendLog(localStorage.getItem("userId"), response.message);
             alert(response.message);
             $("#submitBtn").attr("disabled", false);
@@ -413,4 +438,10 @@ function update(type) {
             else history.back();
         },
     });
+}
+
+function sessionCheckFailed(response) {
+    alert(response.message);
+    localStorage.clear();
+    location.href = "login.html";
 }

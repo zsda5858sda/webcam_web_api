@@ -126,6 +126,11 @@
             fileObject = {};
             let date = $("#date").val().replaceAll("-", "");
             $.getJSON(`${ip}webcam_web_api/api/File/searchByDate?date=${date}`, function (response) {
+                if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                }
+
                 dataArr = response.data;
                 allFileList = dataArr;
 

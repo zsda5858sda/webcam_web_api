@@ -1,6 +1,5 @@
 package com.ubot.web.api;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,11 +13,13 @@ import org.json.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ubot.web.db.dao.UserSessionDao;
 import com.ubot.web.db.vo.EaiVO;
+import com.ubot.web.db.vo.UserSession;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -29,18 +30,23 @@ import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 // 接收打到AD驗證及更新人員驗證之請求
 @Path("")
 public class HttpService {
+	@Context
+	private HttpServletRequest httpRequest;
 	private final ObjectMapper mapper;
 	private final Logger logger;
+	private final UserSessionDao userSessionDao;
 
 	public HttpService() {
 		this.mapper = new ObjectMapper();
 		this.logger = LogManager.getLogger(this.getClass());
+		this.userSessionDao = new UserSessionDao();
 	}
 
 	@POST
@@ -64,6 +70,7 @@ public class HttpService {
 				String errMessage = "AD驗證登入失敗, 原因: 連線超時";
 				json.put("message", errMessage);
 				json.put("code", "1");
+				logger.error("AD connection timeout");
 				asyncResponse.resume(Response.status(408).entity(json.toString()).build());
 			}
 		}, new Date(endTime));
@@ -74,37 +81,38 @@ public class HttpService {
 				String errMessage = "";
 				StringBuffer errMessageBuffer = new StringBuffer("AD驗證登入失敗, 原因: ");
 				JSONObject result = new JSONObject();
-				Response clientResponse = sendToAdHub(eaiVO);
+				HttpSession session = httpRequest.getSession();
+				UserSession userSession = new UserSession();
 
-				if (clientResponse.getStatus() == 200) {
-					String responseString = clientResponse.readEntity(String.class);
-					JSONObject jsonResult = new JSONObject(responseString);
-					String rc2 = jsonResult.getString("rc2");
-					logger.info(responseString);
-					if (rc2.equals("M000")) {
-						message = String.format(message,
-								jsonResult.getJSONObject("result").getJSONObject("data").getString("loginID"));
-						logger.info(message);
-						try {
+				try {
+					Response clientResponse = sendToAdHub(eaiVO);
+					if (clientResponse.getStatus() == 200) {
+						String responseString = clientResponse.readEntity(String.class);
+						JSONObject jsonResult = new JSONObject(responseString);
+						String rc2 = jsonResult.getString("rc2");
+						logger.info(responseString);
+						if (rc2.equals("M000")) {
+							message = String.format(message, eaiVO.getLoginId());
+							userSession.setSessionId(session.getId());
+							userSession.setUserId(eaiVO.getLoginId());
+							userSession.setIp(httpRequest.getRemoteAddr());
+
+							userSessionDao.deleteBeforeInsertQuery(userSession);
+							logger.info(message);
 							result.put("message", message);
 							result.put("code", "0");
-						} catch (Exception e) {
-							errMessage = errMessageBuffer.append(e.getMessage()).toString();
-							logger.error(errMessage);
+						} else {
+							errMessage = errMessageBuffer.append(jsonResult.get("msg2")).toString();
 							setErrResult(result, errMessage);
 						}
-
 					} else {
-						errMessage = errMessageBuffer.append(jsonResult.get("msg2")).toString();
-						logger.error(errMessage);
+						errMessage = errMessageBuffer
+								.append(String.format("http status code %d", clientResponse.getStatus())).toString();
 						setErrResult(result, errMessage);
 					}
-
-				} else {
-					errMessage = errMessageBuffer
-							.append(String.format("http status code %d", clientResponse.getStatus())).toString();
-					logger.error(errMessage);
-					setErrResult(result, errMessage);
+					timer.cancel();
+				} catch (Exception e) {
+					setErrResult(result, e.getMessage());
 				}
 				asyncResponse.resume(Response.status(200).entity(result.toString()).build());
 			}

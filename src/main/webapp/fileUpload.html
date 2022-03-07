@@ -80,12 +80,15 @@
                 contentType: false,
                 data: formdata,
                 success: function (response) {
+                    if (response.code == 2) {
+                        sessionCheckFailed(response);
+                        return;
+                    }
                     alert(response.message);
-                    location.reload();
+                    if (response.code == 0) {
+                        location.reload();
+                    }
                 },
-                error: function (err) {
-                    console.log(err);
-                }
             });
         }
 
@@ -104,6 +107,9 @@
                             let workName = dataList[i]["workName"];
                             $('#workType').append($('<option />', { value: workType, text: workName }));
                         }
+                    } else if (response.code == 2) {
+                        sessionCheckFailed(response);
+                        return;
                     } else {
                         alert(returnData.message);
                     }
