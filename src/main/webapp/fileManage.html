@@ -156,7 +156,7 @@
                 $("#title").append("請選擇日期")
                 localStorage.setItem("selectedUser", userArr[0]);
                 for (i = 0; i < fileData.length; i++) {
-                    dateArr.push(fileData[i]["workDate"]);
+                    dateArr.push(fileData[i]["workDate"].substring(0, 10));
                 }
                 dateArr = dateArr.filter(function (data, index, arr) {
                     return arr.indexOf(data) === index;
@@ -184,7 +184,7 @@
                 for (i = 0; i < fileData.length; i++) {
                     let data = fileData[i];
                     if (data["fileName"].substring(0, 7).includes(incomingData)) {
-                        tmpDateArr.push(data["workDate"]);
+                        tmpDateArr.push(data["workDate"].substring(0, 10));
                     }
                 }
                 dateArr = tmpDateArr.filter(function (data, index, arr) {
@@ -207,7 +207,7 @@
                 for (i = 0; i < fileData.length; i++) {
                     let data = fileData[i];
                     if (data["fileName"].substring(0, 7).includes(incomingData)) {
-                        tmpDateArr.push(data["workDate"]);
+                        tmpDateArr.push(data["workDate"].substring(0, 10));
                     }
                 }
                 dateArr = tmpDateArr.filter(function (data, index, arr) {
@@ -219,7 +219,7 @@
             } else {
                 localStorage.setItem("selectedDate", incomingData);
                 var filterData = fileData.filter(function (data) {
-                    return data["fileName"].includes(localStorage.getItem("selectedUser")) && data["workDate"] == incomingData;
+                    return data["fileName"].includes(localStorage.getItem("selectedUser")) && data["workDate"].includes(incomingData);
                 })
 
                 filterData.forEach(function (data) {
