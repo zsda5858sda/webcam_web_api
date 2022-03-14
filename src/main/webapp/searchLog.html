@@ -95,11 +95,12 @@
             $("#minDate").datepicker({ dateFormat: "yy-mm-dd" });
             $("#maxDate").datepicker({ dateFormat: "yy-mm-dd" });
             var userId = localStorage.getItem("userId");
+            var security = localStorage.getItem("security");
             if (userId == null) {
                 location.href = "login.html";
             }
             $("#uid").val(userId);
-            if (!localStorage.getItem("security").match("SP|AU")) {
+            if (security == null || !security.match("SP|AU")) {
                 $("#uidDiv").hide();
                 $("#uid").val(userId);
             }
