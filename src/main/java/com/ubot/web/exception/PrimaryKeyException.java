@@ -27,7 +27,7 @@ public class PrimaryKeyException extends Exception implements ExceptionMapper<Pr
 		logger.error(message);
 		result.put("message", message);
 		result.put("code", 1);
-		return Response.status(500).entity(result.toString()).type(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+		return Response.status(200).entity(result.toString()).type(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 				.build();
 	}
 }

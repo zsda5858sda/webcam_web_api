@@ -30,7 +30,7 @@ public class NotFoundException extends Exception implements ExceptionMapper<NotF
 		logger.error(message);
 		result.put("message", message);
 		result.put("code", 1);
-		return Response.status(404).entity(result.toString()).type(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+		return Response.status(200).entity(result.toString()).type(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
 				.build();
 	}
 }
