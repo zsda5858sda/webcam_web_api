@@ -227,6 +227,7 @@
                     appendFileContainer(fileName, data)
                 })
 
+                $("[data-toggle='tooltip']").tooltip();
             }
 
         }
@@ -278,7 +279,7 @@
             $("#insertContainer").append(`
                 <div class="col-lg-3 col-md-4 col-sm-12">
                     <div class="card">
-                        <div class="file">
+                        <div class="file" data-toggle="tooltip" data-placement="top" title="備註: ${fileData.memo}">
                             <div class="icon">
                                 ${fileIcon}
                             </div>
