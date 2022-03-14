@@ -188,13 +188,15 @@
         function showGrid(dataList) {
             $.jgrid.gridUnload("#fileList");
             $("#fileList").jqGrid({
-                colNames: ['vid', '檔案名稱', '業務種類', '分行 / 部門', '對保日期', '預覽'],
+                colNames: ['vid', '檔案名稱', '業務種類', '分行 / 部門', '對保日期', '備註', '預覽'],
                 colModel: [
-                    { name: 'vid', index: 'vid', align: 'center', hidden: true},
-                    { name: 'fileName', index: 'fileName', width: 420, align: 'center'},
-                    { name: 'workType', index: 'workType', align: 'center'},
-                    { name: 'branch', index: 'branch', align: 'center'},
-                    { name: 'preview', index: 'preview', width: 70, align: 'center', formatter: setPreviewButton},
+                    { name: 'vid', index: 'vid', align: 'center', hidden: true },
+                    { name: 'fileName', index: 'fileName', width: 420, align: 'center' },
+                    { name: 'workType', index: 'workType', align: 'center' },
+                    { name: 'branch', index: 'branch', align: 'center' },
+                    { name: 'workDate', index: 'workDate', align: 'center' },
+                    { name: 'memo', index: 'memo', align: 'center' },
+                    { name: 'preview', index: 'preview', width: 70, align: 'center', formatter: setPreviewButton },
                 ],
                 datatype: "local",
                 data: dataList,
@@ -205,7 +207,7 @@
                 rowNum: 10,
                 rowList: [10, 20, 30],
                 pager: '#filePage',
-                sortname: 'createDatetime',
+                sortname: 'workDate',
                 viewrecords: true,
                 sortorder: "desc",
             });
@@ -218,7 +220,7 @@
             }
         }
 
-        function setPreviewButton (cellvalue, options, rowObject) {
+        function setPreviewButton(cellvalue, options, rowObject) {
             let previewBtn = `<button type='button' title='預覽' style='margin: 0' onclick='window.open("${ip}webcam_web_api/api/File/preview?filePath=${rowObject['filePath']}")'>預覽</button>`;
             return previewBtn;
         }

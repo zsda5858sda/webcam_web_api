@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +36,13 @@ public class VSPFileDao extends BaseDao {
 				vspFile.setFilePath(resultSet.getString("FILEPATH"));
 				vspFile.setWorkType(resultSet.getString("WORKTYPE"));
 				vspFile.setBranch(resultSet.getString("BRANCH"));
+				vspFile.setMemo(resultSet.getString("MEMO"));
 
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-				LocalDate date = LocalDate.parse(resultSet.getString("WORKDATE"), formatter);
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+				String datetime = LocalDateTime.parse(resultSet.getString("WORKDATE"), formatter)
+						.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-				vspFile.setWorkDate(date.toString());
+				vspFile.setWorkDate(datetime);
 
 				result.add(vspFile);
 			}
@@ -57,7 +59,7 @@ public class VSPFileDao extends BaseDao {
 
 	public void insertQuery(VSPFile file) throws Exception {
 		Connection conn = getConnection();
-		String sql = "insert into vspfile(FILENAME, FILEPATH, WORKTYPE, BRANCH, WORKDATE) values(?,?,?,?,?)";
+		String sql = "insert into vspfile(FILENAME, FILEPATH, WORKTYPE, BRANCH, WORKDATE, MEMO) values(?,?,?,?,?,?)";
 		try (PreparedStatement ps = conn.prepareStatement(sql);) {
 
 			ps.setString(1, file.getFileName());
@@ -65,6 +67,7 @@ public class VSPFileDao extends BaseDao {
 			ps.setString(3, file.getWorkType());
 			ps.setString(4, file.getBranch());
 			ps.setString(5, file.getWorkDate());
+			ps.setString(6, file.getMemo());
 
 			logger.info(ps.toString());
 			ps.execute();

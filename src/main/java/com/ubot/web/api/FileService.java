@@ -190,6 +190,7 @@ public class FileService {
 		String cid = multipart.getField("cid").getValue();
 		String uid = multipart.getField("uid").getValue();
 		String branch = multipart.getField("branch").getValue();
+		String memo = multipart.getField("memo").getValue();
 		List<FormDataBodyPart> imageList = multipart.getFields("image");
 		FormDataBodyPart video = multipart.getField("video");
 		List<Integer> fileNumList = new ArrayList<Integer>();
@@ -237,6 +238,7 @@ public class FileService {
 					vspFile.setFilePath(filePath);
 					vspFile.setWorkDate(datetime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
 					vspFile.setWorkType(workType);
+					vspFile.setMemo(memo);
 
 					fileDao.insertQuery(vspFile);
 					message = "上傳檔案成功";

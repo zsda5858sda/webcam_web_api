@@ -16,10 +16,18 @@
             </div>
             <div class="inner">
                 <div id="DIV1">
-                    <label>選擇檔案: </label>
+                    <label>選擇照片: </label>
                 </div>
                 <div id="DIV2">
-                    <input type="file" name="file" id="file" accept="video/*" />
+                    <input type="file" name="image" id="image" accept="image/*" multiple="multiple" />
+                </div>
+            </div>
+            <div class="inner">
+                <div id="DIV1">
+                    <label>選擇影片: </label>
+                </div>
+                <div id="DIV2">
+                    <input type="file" name="video" id="video" accept="video/*" />
                 </div>
             </div>
             <div class="inner">
@@ -46,9 +54,17 @@
                     <select id="branch" name="branch" style="width: 70%;height: 30px;"></select>
                 </div>
             </div>
+            <div class="inner">
+                <div id="DIV1">
+                    <label>備註: </label>
+                </div>
+                <div id="DIV2">
+                    <textarea id="memo" rows="6" cols="30"></textarea>
+                </div>
+            </div>
         </form>
         <div class="inner">
-            <button type="button" onclick="upload()">上傳檔案</button>
+            <button type="button" id="uploadBtn" onclick="upload()">上傳檔案</button>
         </div>
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
@@ -63,16 +79,27 @@
             $("#uid").val(userId);
             searchWorkType();
             searchBranch();
+            $("#image").on("change", function () {
+                if ($("#image")[0].files.length > 3) {
+                    alert("最多只能選三張圖片");
+                    $("#uploadBtn").prop("disabled", "disabled")
+                } else {
+                    $("#uploadBtn").prop("disabled", false)
+                }
+            });
         })
 
         function upload() {
             let formdata = new FormData();
-            formdata.append('file', $('#file')[0].files[0]);
+            let image = $('#image')[0].files;
+            let video = $('#video')[0].files;
             formdata.append('uid', $('#uid').val());
             formdata.append('workType', $('#workType').val());
             formdata.append('cid', $('#cid').val());
             formdata.append('branch', $('#branch').val());
-
+            formdata.append('memo', $('#memo').val());
+            for (var i = 0; i < image.length; i++) formdata.append('image', image[i]);
+            for (var i = 0; i < video.length; i++) formdata.append('video', video[i]);
             $.ajax({
                 type: 'post',
                 url: `${ip}webcam_web_api/api/File/upload`,
