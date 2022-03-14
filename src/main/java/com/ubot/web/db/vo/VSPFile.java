@@ -8,6 +8,7 @@ public class VSPFile {
 	private String workType;
 	private String workDate;
 	private String branch;
+	private String memo;
 
 	public Integer getVid() {
 		return vid;
@@ -55,6 +56,14 @@ public class VSPFile {
 
 	public void setBranch(String branch) {
 		this.branch = branch;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
 	}
 
 }
