@@ -42,7 +42,7 @@
             var manager = localStorage.getItem("manager");
             var appointed = localStorage.getItem("appointed");
             var workType = localStorage.getItem("workType");
-            if ((manager != "Y" || appointed != "Y") && workType != 'ALL') {
+            if ((manager != "Y" && appointed != "Y") && workType != 'ALL') {
                 $("#uidDiv").hide();
                 $("#uid").val(userId);
             }
