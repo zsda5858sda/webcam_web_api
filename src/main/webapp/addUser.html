@@ -78,7 +78,7 @@
         <div class="inner">
             <button type="button" onclick="goCheckPage('C')">新增</button>
         </div>
-        
+
     </div>
 
     <script src="js/jquery-3.6.0.min.js"></script>
@@ -108,45 +108,49 @@
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 async: false,
-                success: function (returnData) {
-                    console.log(returnData);
-                    if (returnData.code == 0) {
-                        var dataList = returnData['data'];
+                success: function (response) {
+                    console.log(response);
+                    if (response.code == 0) {
+                        var dataList = response['data'];
                         for (var i = 0; i < dataList.length; i++) {
                             let workType = dataList[i]["workType"];
                             var idiv = document.createElement('div');
-                            idiv.id = "group"+(i+1);
+                            idiv.id = "group" + (i + 1);
                             idiv.style = "width:33%; float:left;"
                             document.getElementById('cblist').appendChild(idiv)
                             if (workType == dept) {
                                 var input = document.createElement('input')
-                                input.setAttribute('type','checkbox');
-                                input.setAttribute('name','workType');
-                                input.setAttribute('value',dataList[i]["workType"]);
+                                input.setAttribute('type', 'checkbox');
+                                input.setAttribute('name', 'workType');
+                                input.setAttribute('value', dataList[i]["workType"]);
                                 idiv.appendChild(input)
                                 // $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked"  }));
                             } else {
                                 var checkbox = document.createElement('input');
                                 if (dept == branch && !dept.match("100|800|600")) {
-                                    checkbox.setAttribute('type','checkbox');
-                                    checkbox.setAttribute('name','workType');
-                                    checkbox.setAttribute('value',dataList[i]['workType']);
-                                    checkbox.setAttribute('disabled',"disabled");
+                                    checkbox.setAttribute('type', 'checkbox');
+                                    checkbox.setAttribute('name', 'workType');
+                                    checkbox.setAttribute('value', dataList[i]['workType']);
+                                    checkbox.setAttribute('disabled', "disabled");
                                     idiv.appendChild(checkbox);
                                 } else {
-                                    checkbox.setAttribute('type','checkbox');
-                                    checkbox.setAttribute('name','workType');
-                                    checkbox.setAttribute('value',dataList[i]['workType']);
-                                    idiv.appendChild(checkbox);                                }
+                                    checkbox.setAttribute('type', 'checkbox');
+                                    checkbox.setAttribute('name', 'workType');
+                                    checkbox.setAttribute('value', dataList[i]['workType']);
+                                    idiv.appendChild(checkbox);
+                                }
                             }
                             var label = document.createElement('label');
-                            label.setAttribute('text',dataList[i]["workName"]);
+                            label.setAttribute('text', dataList[i]["workName"]);
                             label.innerHTML = dataList[i]["workName"];
-                            label.setAttribute('for',workType);
+                            label.setAttribute('for', workType);
                             idiv.appendChild(label)
                         }
+                    } else if (response.code == 2) {
+                        sessionCheckFailed(response);
+                        return;
                     } else {
-                        alert(returnData.message);
+                        alert(response.message);
                     }
                 },
             });
