@@ -49,6 +49,7 @@
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/select2.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/HttpUtils.js"></script>
     <script>
         $(function () {
             if (localStorage.getItem("userId") == null) {
@@ -57,26 +58,20 @@
             if (localStorage.getItem("security") == "U") {
                 history.go(-1);
             }
-            $.ajax({
-                url: `${ip}webcam_web_api/api/WorkReference`,
-                type: "GET",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (response) {
-                    if (response.code == 0) {
-                        var dataList = response['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            let workType = dataList[i]["workType"];
-                            let workName = dataList[i]["workName"];
-                            $('#oldWorkName').append($('<option />', { value: workType, text: workName }));
-                        }
-                    } else if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    } else {
-                        alert(response.message);
+            HttpUtils.get(`${ip}webcam_web_api/api/WorkReference`).then((response) => {
+                if (response.code == 0) {
+                    var dataList = response['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        let workType = dataList[i]["workType"];
+                        let workName = dataList[i]["workName"];
+                        $('#oldWorkName').append($('<option />', { value: workType, text: workName }));
                     }
-                },
+                } else if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                } else {
+                    alert(response.message);
+                }
             })
             $(".work-select").select2();
 

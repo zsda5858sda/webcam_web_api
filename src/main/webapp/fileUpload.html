@@ -69,6 +69,7 @@
     </div>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/HttpUtils.js"></script>
     <script>
         $(function () {
             var userId = localStorage.getItem("userId");
@@ -100,48 +101,35 @@
             formdata.append('memo', $('#memo').val());
             for (var i = 0; i < image.length; i++) formdata.append('image', image[i]);
             for (var i = 0; i < video.length; i++) formdata.append('video', video[i]);
-            $.ajax({
-                type: 'post',
-                url: `${ip}webcam_web_api/api/File/upload`,
-                processData: false,
-                contentType: false,
-                data: formdata,
-                success: function (response) {
-                    if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    }
-                    alert(response.message);
-                    if (response.code == 0) {
-                        location.reload();
-                    }
-                },
-            });
+            HttpUtils.postFormdata(`${ip}webcam_web_api/api/File/upload`, formdata).then(async (response) => {
+                if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                }
+                await sendLog(localStorage.getItem("userId"), response.message);
+                alert(response.message);
+                if (response.code == 0) {
+                    location.reload();
+                }
+            })
         }
 
         function searchWorkType() {
-            $.ajax({
-                url: `${ip}webcam_web_api/api/WorkReference`,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (response) {
-                    if (response.code == 0) {
-                        var dataList = response['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            let workType = dataList[i]["workType"];
-                            let workName = dataList[i]["workName"];
-                            $('#workType').append($('<option />', { value: workType, text: workName }));
-                        }
-                    } else if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    } else {
-                        alert(returnData.message);
+            HttpUtils.get(`${ip}webcam_web_api/api/WorkReference`).then((response) => {
+                if (response.code == 0) {
+                    var dataList = response['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        let workType = dataList[i]["workType"];
+                        let workName = dataList[i]["workName"];
+                        $('#workType').append($('<option />', { value: workType, text: workName }));
                     }
-                },
-            });
+                } else if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                } else {
+                    alert(returnData.message);
+                }
+            })
         }
 
     </script>

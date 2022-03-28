@@ -84,6 +84,7 @@
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/select2.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/HttpUtils.js"></script>
     <script>
         $(function () {
 
@@ -103,66 +104,53 @@
                     $("#branchDiv").hide();
                 }
             }
-            $.ajax({
-                url: `${ip}webcam_web_api/api/User/${branch}/${dept}`,
-                type: "GET",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (response) {
-                    if (response.code == 0) {
-                        var dataList = response['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            if (dataList[i]["userId"] == localStorage.getItem("userId") && security != "AU") continue;
-                            $('#uid').append($('<option />', { value: JSON.stringify(dataList[i]), text: dataList[i]["userId"] }));
-                        }
-                    } else if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    } else {
-                        alert(response.message);
+            HttpUtils.get(`${ip}webcam_web_api/api/User/${branch}/${dept}`).then((response) => {
+                if (response.code == 0) {
+                    var dataList = response['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        if (dataList[i]["userId"] == localStorage.getItem("userId") && security != "AU") continue;
+                        $('#uid').append($('<option />', { value: JSON.stringify(dataList[i]), text: dataList[i]["userId"] }));
                     }
-                },
+                } else if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                } else {
+                    alert(response.message);
+                }
             })
-            $.ajax({
-                url: `${ip}webcam_web_api/api/WorkReference`,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (response) {
-                    console.log(response);
-                    if (response.code == 0) {
-                        var dataList = response['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            let workType = dataList[i]["workType"];
+            HttpUtils.get(`${ip}webcam_web_api/api/WorkReference`).then((response) => {
+                console.log(response);
+                if (response.code == 0) {
+                    var dataList = response['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        let workType = dataList[i]["workType"];
 
-                            var idiv = document.createElement('div');
-                            var checkbox = document.createElement('input');
-                            var label = document.createElement('label');
+                        var idiv = document.createElement('div');
+                        var checkbox = document.createElement('input');
+                        var label = document.createElement('label');
 
 
-                            idiv.id = "group" + (i + 1);
-                            idiv.style = "width:33%; float:left;"
-                            document.getElementById('cblist').appendChild(idiv)
+                        idiv.id = "group" + (i + 1);
+                        idiv.style = "width:33%; float:left;"
+                        document.getElementById('cblist').appendChild(idiv)
 
-                            checkbox.setAttribute('type', 'checkbox');
-                            checkbox.setAttribute('name', 'workType');
-                            checkbox.setAttribute('value', dataList[i]['workType']);
-                            idiv.appendChild(checkbox);
+                        checkbox.setAttribute('type', 'checkbox');
+                        checkbox.setAttribute('name', 'workType');
+                        checkbox.setAttribute('value', dataList[i]['workType']);
+                        idiv.appendChild(checkbox);
 
-                            label.setAttribute('text', dataList[i]["workName"]);
-                            label.innerHTML = dataList[i]["workName"];
-                            label.setAttribute('for', workType);
-                            idiv.appendChild(label);
-                        }
-                    } else if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    } else {
-                        alert(response.message);
+                        label.setAttribute('text', dataList[i]["workName"]);
+                        label.innerHTML = dataList[i]["workName"];
+                        label.setAttribute('for', workType);
+                        idiv.appendChild(label);
                     }
-                },
-            });
+                } else if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                } else {
+                    alert(response.message);
+                }
+            })
             searchBranch();
             $(".uid-select").select2();
 

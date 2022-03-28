@@ -26,8 +26,8 @@
             </div>
             <div id="DIV2">
                 <input id="managerY" name="manager" type="radio" value="Y"><label style="font-size: x-large;">是</label>
-                <input id="managerN" name="manager" type="radio" value="N" checked
-                    style="margin-left: 35%;"><label style="font-size: x-large;">否</label>
+                <input id="managerN" name="manager" type="radio" value="N" checked style="margin-left: 35%;"><label
+                    style="font-size: x-large;">否</label>
             </div>
         </div>
         <div class="inner">
@@ -35,9 +35,10 @@
                 <label style="font-size: x-large;">指定人員: </label>
             </div>
             <div id="DIV2">
-                <input id="appointedY" name="appointed" type="radio" value="Y"><label style="font-size: x-large;">是</label>
-                <input id="appointedN" name="appointed" type="radio" value="N" checked
-                    style="margin-left: 35%;"><label style="font-size: x-large;">否</label>
+                <input id="appointedY" name="appointed" type="radio" value="Y"><label
+                    style="font-size: x-large;">是</label>
+                <input id="appointedN" name="appointed" type="radio" value="N" checked style="margin-left: 35%;"><label
+                    style="font-size: x-large;">否</label>
             </div>
         </div>
         <div class="inner">
@@ -46,7 +47,8 @@
             </div>
             <div id="DIV2">
                 <input name="security" type="radio" value="SU"><label style="font-size: x-large;">是</label>
-                <input name="security" type="radio" value="U" checked style="margin-left: 35%;"><label style="font-size: x-large;">否</label>
+                <input name="security" type="radio" value="U" checked style="margin-left: 35%;"><label
+                    style="font-size: x-large;">否</label>
             </div>
         </div>
         <div class="inner">
@@ -83,6 +85,7 @@
 
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/HttpUtils.js"></script>
     <script>
         $(function () {
 
@@ -102,57 +105,50 @@
                     $("#branchDiv").hide();
                 }
             }
-            $.ajax({
-                url: `${ip}webcam_web_api/api/WorkReference`,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (response) {
-                    console.log(response);
-                    if (response.code == 0) {
-                        var dataList = response['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            let workType = dataList[i]["workType"];
-                            var idiv = document.createElement('div');
-                            idiv.id = "group" + (i + 1);
-                            idiv.style = "width:33%; float:left;"
-                            document.getElementById('cblist').appendChild(idiv)
-                            if (workType == dept) {
-                                var input = document.createElement('input')
-                                input.setAttribute('type', 'checkbox');
-                                input.setAttribute('name', 'workType');
-                                input.setAttribute('value', dataList[i]["workType"]);
-                                idiv.appendChild(input)
-                                // $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked"  }));
+            HttpUtils.get(`${ip}webcam_web_api/api/WorkReference`).then((response) => {
+                console.log(response);
+                if (response.code == 0) {
+                    var dataList = response['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        let workType = dataList[i]["workType"];
+                        var idiv = document.createElement('div');
+                        idiv.id = "group" + (i + 1);
+                        idiv.style = "width:33%; float:left;"
+                        document.getElementById('cblist').appendChild(idiv)
+                        if (workType == dept) {
+                            var input = document.createElement('input')
+                            input.setAttribute('type', 'checkbox');
+                            input.setAttribute('name', 'workType');
+                            input.setAttribute('value', dataList[i]["workType"]);
+                            idiv.appendChild(input)
+                            // $('#cblist').append($('<input />', { type: 'checkbox', name: 'workType', value: dataList[i]["workType"], checked: "checked"  }));
+                        } else {
+                            var checkbox = document.createElement('input');
+                            if (dept == branch && !dept.match("100|800|600")) {
+                                checkbox.setAttribute('type', 'checkbox');
+                                checkbox.setAttribute('name', 'workType');
+                                checkbox.setAttribute('value', dataList[i]['workType']);
+                                checkbox.setAttribute('disabled', "disabled");
+                                idiv.appendChild(checkbox);
                             } else {
-                                var checkbox = document.createElement('input');
-                                if (dept == branch && !dept.match("100|800|600")) {
-                                    checkbox.setAttribute('type', 'checkbox');
-                                    checkbox.setAttribute('name', 'workType');
-                                    checkbox.setAttribute('value', dataList[i]['workType']);
-                                    checkbox.setAttribute('disabled', "disabled");
-                                    idiv.appendChild(checkbox);
-                                } else {
-                                    checkbox.setAttribute('type', 'checkbox');
-                                    checkbox.setAttribute('name', 'workType');
-                                    checkbox.setAttribute('value', dataList[i]['workType']);
-                                    idiv.appendChild(checkbox);
-                                }
+                                checkbox.setAttribute('type', 'checkbox');
+                                checkbox.setAttribute('name', 'workType');
+                                checkbox.setAttribute('value', dataList[i]['workType']);
+                                idiv.appendChild(checkbox);
                             }
-                            var label = document.createElement('label');
-                            label.setAttribute('text', dataList[i]["workName"]);
-                            label.innerHTML = dataList[i]["workName"];
-                            label.setAttribute('for', workType);
-                            idiv.appendChild(label)
                         }
-                    } else if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    } else {
-                        alert(response.message);
+                        var label = document.createElement('label');
+                        label.setAttribute('text', dataList[i]["workName"]);
+                        label.innerHTML = dataList[i]["workName"];
+                        label.setAttribute('for', workType);
+                        idiv.appendChild(label)
                     }
-                },
+                } else if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                } else {
+                    alert(response.message);
+                }
             });
             searchBranch();
             $("#dept").val(dept);

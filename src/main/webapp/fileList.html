@@ -106,6 +106,7 @@
     <script src='js/jqGrid/jquery.jqGrid.min.js' type="text/javascript"></script>
     <script src='js/jqGrid/i18n/grid.locale-tw.js' type="text/javascript"></script>
     <script src="js/main.js"></script>
+    <script src="js/HttpUtils.js"></script>
     <script>
         var fileObject = {};
         var userObject = {};
@@ -125,7 +126,7 @@
             userObject = {};
             fileObject = {};
             let date = $("#date").val().replaceAll("-", "");
-            $.getJSON(`${ip}webcam_web_api/api/File/searchByDate?date=${date}`, function (response) {
+            HttpUtils.get(`${ip}webcam_web_api/api/File/searchByDate?date=${date}`).then((response) => {
                 if (response.code == 2) {
                     sessionCheckFailed(response);
                     return;

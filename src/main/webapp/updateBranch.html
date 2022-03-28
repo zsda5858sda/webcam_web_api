@@ -57,26 +57,20 @@
             if (localStorage.getItem("security") == "U") {
                 history.go(-1);
             }
-            $.ajax({
-                url: `${ip}webcam_web_api/api/Branch`,
-                type: "GET",
-                contentType: "application/json;charset=utf-8",
-                async: false,
-                success: function (response) {
-                    if (response.code == 0) {
-                        var dataList = response['data'];
-                        for (var i = 0; i < dataList.length; i++) {
-                            let branchCode = dataList[i]["branchCode"];
-                            let branchName = dataList[i]["branchName"];
-                            $('#oldBranchName').append($('<option />', { value: branchCode, text: branchName }));
-                        }
-                    } else if (response.code == 2) {
-                        sessionCheckFailed(response);
-                        return;
-                    } else {
-                        alert(response.message);
+            HttpUtils.get(`${ip}webcam_web_api/api/Branch`).then((response) => {
+                if (response.code == 0) {
+                    var dataList = response['data'];
+                    for (var i = 0; i < dataList.length; i++) {
+                        let branchCode = dataList[i]["branchCode"];
+                        let branchName = dataList[i]["branchName"];
+                        $('#oldBranchName').append($('<option />', { value: branchCode, text: branchName }));
                     }
-                },
+                } else if (response.code == 2) {
+                    sessionCheckFailed(response);
+                    return;
+                } else {
+                    alert(response.message);
+                }
             })
             $(".branch-select").select2();
 

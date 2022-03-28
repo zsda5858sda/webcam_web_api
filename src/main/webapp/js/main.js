@@ -8,16 +8,9 @@ function submit() {
     $("#submitBtn").attr("disabled", true);
     let requestURL = `${ip}webcam_web_api/api/User`;
     let dataJSON = localStorage.getItem("checkData");
-    $.ajax({
-        url: requestURL,
-        data: dataJSON,
-        type: "POST",
-        dataType: "json",
-        async: false,
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
+    HttpUtils.post(requestURL, dataJSON).then(async (response) => {
             if (response.code == 2) {
-                sessionCheckFailed(response);
+            tokenCheckFailed(response);
                 return;
             }
             await sendLog(localStorage.getItem("userId"), response.message);
@@ -25,8 +18,7 @@ function submit() {
             $("#submitBtn").attr("disabled", false);
             if (response.code == 0) location.href = "index.html";
             else history.back();
-        },
-    });
+    })
 }
 
 //登入api
@@ -44,42 +36,27 @@ function login() {
     } else if (pwd == "") {
         alert("請輸入密碼！")
     } else {
-        $.ajax({
-            url: loginURL,
-            data: JSON.stringify(dataJSON),
-            dataType: "json",
-            type: "POST",
-            contentType: "application/json;charset=utf-8",
-            success: async function (response) {
+        HttpUtils.post(loginURL, dataJSON).then(async (response) => {
+            sessionStorage.setItem("token", response.token);
                 await sendLog(userId, response.message);
                 if (response["code"] == 0) {
                     let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
                     localStorage.clear();
-                    $.ajax({
-                        url: getUserURL,
-                        type: "GET",
-                        dataType: "json",
-                        async: false,
-                        success: function (responseUserData) {
-                            if (responseUserData.code == 0) {
-                                localStorage.setItem("workType", responseUserData.data["workType"])
-                                localStorage.setItem("security", responseUserData.data["security"])
-                                localStorage.setItem("dept", responseUserData.data["dept"])
-                                localStorage.setItem("branch", responseUserData.data["branch"])
-                                localStorage.setItem("manager", responseUserData.data["manager"])
-                                localStorage.setItem("appointed", responseUserData.data["appointed"])
+                await HttpUtils.get(getUserURL).then((response) => {
+                    if (response.code == 0) {
+                        localStorage.setItem("workType", response.data["workType"])
+                        localStorage.setItem("security", response.data["security"])
+                        localStorage.setItem("dept", response.data["dept"])
+                        localStorage.setItem("branch", response.data["branch"])
+                        localStorage.setItem("manager", response.data["manager"])
+                        localStorage.setItem("appointed", response.data["appointed"])
                             }
-                        }
-                    })
+                });
                     localStorage.setItem("userId", userId);
                     location.href = "index.html";
                 } else {
                     alert(response.message);
                 }
-            },
-            error: function (xhr) {
-                alert(xhr.responseJSON.message);
-            }
         });
     }
 
@@ -101,13 +78,9 @@ function searchFile() {
     var branch = localStorage.getItem("branch");
     var workType = localStorage.getItem("workType");
     let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&branch=${branch || ""}&workType=${workType || ""}`;
-    $.ajax({
-        url: requestURL,
-        dataType: "json",
-        type: "GET",
-        success: async function (response) {
+    HttpUtils.get(requestURL).then(async (response) => {
             if (response.code == 2) {
-                sessionCheckFailed(response);
+            tokenCheckFailed(response);
                 return;
             }
             await sendLog(localStorage.getItem("userId"), response.message);
@@ -122,7 +95,6 @@ function searchFile() {
             } else {
                 alert(response.message);
             }
-        },
     });
 }
 
@@ -135,15 +107,9 @@ function addBranch() {
         "branchName": dataNameJSON.branchName,
         "branchCode": dataNameJSON.branchCode
     }
-    $.ajax({
-        url: requestURL,
-        type: "POST",
-        dataType: "json",
-        data: JSON.stringify(dataJSON),
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
+    HttpUtils.post(requestURL, dataJSON).then(async (response) => {
             if (response.code == 2) {
-                sessionCheckFailed(response);
+            tokenCheckFailed(response);
                 return;
             }
             await sendLog(localStorage.getItem("userId"), response.message);
@@ -151,8 +117,7 @@ function addBranch() {
             $("#addBranchBtn").attr("disabled", false);
             if (response.code == 0) location.href = "index.html";
             else history.back();
-        }
-    })
+    });
 }
 
 //新增業務種類代碼api
@@ -164,15 +129,9 @@ function addWork() {
         "workName": dataNameJSON.workName,
         "workType": dataNameJSON.workType
     }
-    $.ajax({
-        url: requestURL,
-        type: "POST",
-        dataType: "json",
-        data: JSON.stringify(dataJSON),
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
+    HttpUtils.post(requestURL, dataJSON).then(async (response) => {
             if (response.code == 2) {
-                sessionCheckFailed(response);
+            tokenCheckFailed(response);
                 return;
             }
             await sendLog(localStorage.getItem("userId"), response.message);
@@ -181,8 +140,7 @@ function addWork() {
 
             if (response.code == 0) location.href = "index.html";
             else history.back();
-        }
-    })
+    });
 }
 
 //新增後台log api
@@ -192,16 +150,9 @@ async function sendLog(userId, action) {
         "userId": userId,
         "action": action,
     }
-    $.ajax({
-        url: requestURL,
-        type: "POST",
-        dataType: "json",
-        data: JSON.stringify(dataJSON),
-        contentType: "application/json;charset=utf-8",
-        success: function (response) {
+    HttpUtils.post(requestURL, dataJSON).then((response) => {
             console.log(response);
-        }
-    })
+    });
 }
 
 //查詢log api
@@ -215,9 +166,9 @@ async function searchLog(isApp) {
     var userId = $("#uid").val();
     var appendPath = isApp ? "/app" : "";
     let requestURL = `${ip}webcam_web_api/api/Log${appendPath}?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}`
-    var responseData = (await $.getJSON(requestURL).done(function (response) {
+    var responseData = (await HttpUtils.get(requestURL).then(function (response) {
         if (response.code == 2) {
-            sessionCheckFailed(response);
+            tokenCheckFailed(response);
             return;
         }
     })).data;
@@ -329,13 +280,8 @@ function goCheckPage(type) {
 
 // 搜尋分行、部門代碼api
 function searchBranch() {
-    $.ajax({
-        url: `${ip}webcam_web_api/api/Branch`,
-        type: "GET",
-        dataType: "json",
-        contentType: "application/json;charset=utf-8",
-        async: false,
-        success: function (response) {
+    let requestURL = `${ip}webcam_web_api/api/Branch`;
+    HttpUtils.get(requestURL).then((response) => {
             if (response.code == 0) {
                 var dataList = response['data'];
                 for (var i = 0; i < dataList.length; i++) {
@@ -345,12 +291,11 @@ function searchBranch() {
                     $('#branch').append($('<option />', { value: branchCode, text: branchName }));
                 }
             } else if (response.code == 2) {
-                sessionCheckFailed(response);
+            tokenCheckFailed(response);
                 return;
             } else {
                 alert(response.message);
             }
-        },
     });
 }
 
@@ -419,16 +364,9 @@ function update(type) {
     $("#submitBtn").attr("disabled", true);
     let requestURL = `${ip}webcam_web_api/api/${type}`;
     let dataJSON = localStorage.getItem("checkData");
-    $.ajax({
-        url: requestURL,
-        data: dataJSON,
-        type: "PATCH",
-        dataType: "json",
-        async: false,
-        contentType: "application/json;charset=utf-8",
-        success: async function (response) {
+    HttpUtils.patch(requestURL, dataJSON).then(async (response) => {
             if (response.code == 2) {
-                sessionCheckFailed(response);
+            tokenCheckFailed(response);
                 return;
             }
             await sendLog(localStorage.getItem("userId"), response.message);
@@ -436,12 +374,16 @@ function update(type) {
             $("#submitBtn").attr("disabled", false);
             if (response.code == 0) location.href = "index.html";
             else history.back();
-        },
-    });
+    })
 }
 
-function sessionCheckFailed(response) {
-    alert(response.message);
+async function tokenCheckFailed(response) {
+    let token = sessionStorage.getItem("token") ?? "";
+    let msg = response.message;
+    let logMessage = token == "" ? msg : `${msg}, token id: ${token}`;
+    await sendLog(localStorage.getItem("userId"), logMessage);
+    alert(msg);
     localStorage.clear();
+    sessionStorage.clear();
     location.href = "login.html";
 }
