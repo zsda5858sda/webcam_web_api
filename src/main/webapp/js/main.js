@@ -1,5 +1,5 @@
-// var ip = "http://172.16.45.245:8080/"
-var ip = "http://192.168.123.207:8080/";
+// var ip = "http://172.16.45.168:8080/"
+var ip = "http://localhost:8080/";
 
 //新增使用者api
 
@@ -9,15 +9,15 @@ function submit() {
     let requestURL = `${ip}webcam_web_api/api/User`;
     let dataJSON = localStorage.getItem("checkData");
     HttpUtils.post(requestURL, dataJSON).then(async (response) => {
-            if (response.code == 2) {
+        if (response.code == 2) {
             tokenCheckFailed(response);
-                return;
-            }
-            await sendLog(localStorage.getItem("userId"), response.message);
-            alert(response.message);
-            $("#submitBtn").attr("disabled", false);
-            if (response.code == 0) location.href = "index.html";
-            else history.back();
+            return;
+        }
+        await sendLog(localStorage.getItem("userId"), response.message);
+        alert(response.message);
+        $("#submitBtn").attr("disabled", false);
+        if (response.code == 0) location.href = "index.html";
+        else history.back();
     })
 }
 
@@ -38,10 +38,9 @@ function login() {
     } else {
         HttpUtils.post(loginURL, dataJSON).then(async (response) => {
             sessionStorage.setItem("token", response.token);
-                await sendLog(userId, response.message);
-                if (response["code"] == 0) {
-                    let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
-                    localStorage.clear();
+            await sendLog(userId, response.message);
+            if (response["code"] == 0) {
+                let getUserURL = `${ip}webcam_web_api/api/User/${userId}`;
                 await HttpUtils.get(getUserURL).then((response) => {
                     if (response.code == 0) {
                         localStorage.setItem("workType", response.data["workType"])
@@ -50,13 +49,13 @@ function login() {
                         localStorage.setItem("branch", response.data["branch"])
                         localStorage.setItem("manager", response.data["manager"])
                         localStorage.setItem("appointed", response.data["appointed"])
-                            }
+                    }
                 });
-                    localStorage.setItem("userId", userId);
-                    location.href = "index.html";
-                } else {
-                    alert(response.message);
-                }
+                localStorage.setItem("userId", userId);
+                location.href = "index.html";
+            } else {
+                alert(response.message);
+            }
         });
     }
 
@@ -79,22 +78,22 @@ function searchFile() {
     var workType = localStorage.getItem("workType");
     let requestURL = `${ip}webcam_web_api/api/File?minDate=${minDate}&maxDate=${maxDate}&userId=${userId}&branch=${branch || ""}&workType=${workType || ""}`;
     HttpUtils.get(requestURL).then(async (response) => {
-            if (response.code == 2) {
+        if (response.code == 2) {
             tokenCheckFailed(response);
-                return;
-            }
-            await sendLog(localStorage.getItem("userId"), response.message);
-            if (response.code == 0) {
-                let responseData = response.data;
-                if (responseData.length != 0) {
-                    location.href = "fileManage.html";
-                    localStorage.setItem("fileData", JSON.stringify(responseData));
-                } else {
-                    alert("查無資料")
-                }
+            return;
+        }
+        await sendLog(localStorage.getItem("userId"), response.message);
+        if (response.code == 0) {
+            let responseData = response.data;
+            if (responseData.length != 0) {
+                location.href = "fileManage.html";
+                localStorage.setItem("fileData", JSON.stringify(responseData));
             } else {
-                alert(response.message);
+                alert("查無資料")
             }
+        } else {
+            alert(response.message);
+        }
     });
 }
 
@@ -108,15 +107,15 @@ function addBranch() {
         "branchCode": dataNameJSON.branchCode
     }
     HttpUtils.post(requestURL, dataJSON).then(async (response) => {
-            if (response.code == 2) {
+        if (response.code == 2) {
             tokenCheckFailed(response);
-                return;
-            }
-            await sendLog(localStorage.getItem("userId"), response.message);
-            alert(response.message);
-            $("#addBranchBtn").attr("disabled", false);
-            if (response.code == 0) location.href = "index.html";
-            else history.back();
+            return;
+        }
+        await sendLog(localStorage.getItem("userId"), response.message);
+        alert(response.message);
+        $("#addBranchBtn").attr("disabled", false);
+        if (response.code == 0) location.href = "index.html";
+        else history.back();
     });
 }
 
@@ -130,16 +129,16 @@ function addWork() {
         "workType": dataNameJSON.workType
     }
     HttpUtils.post(requestURL, dataJSON).then(async (response) => {
-            if (response.code == 2) {
+        if (response.code == 2) {
             tokenCheckFailed(response);
-                return;
-            }
-            await sendLog(localStorage.getItem("userId"), response.message);
-            alert(response.message);
-            $("#addWorkBtn").attr("disabled", false);
+            return;
+        }
+        await sendLog(localStorage.getItem("userId"), response.message);
+        alert(response.message);
+        $("#addWorkBtn").attr("disabled", false);
 
-            if (response.code == 0) location.href = "index.html";
-            else history.back();
+        if (response.code == 0) location.href = "index.html";
+        else history.back();
     });
 }
 
@@ -151,7 +150,7 @@ async function sendLog(userId, action) {
         "action": action,
     }
     HttpUtils.post(requestURL, dataJSON).then((response) => {
-            console.log(response);
+        console.log(response);
     });
 }
 
@@ -282,20 +281,20 @@ function goCheckPage(type) {
 function searchBranch() {
     let requestURL = `${ip}webcam_web_api/api/Branch`;
     HttpUtils.get(requestURL).then((response) => {
-            if (response.code == 0) {
-                var dataList = response['data'];
-                for (var i = 0; i < dataList.length; i++) {
-                    let branchCode = dataList[i]["branchCode"];
-                    let branchName = dataList[i]["branchName"];
-                    $('#dept').append($('<option />', { value: branchCode, text: branchName }));
-                    $('#branch').append($('<option />', { value: branchCode, text: branchName }));
-                }
-            } else if (response.code == 2) {
-            tokenCheckFailed(response);
-                return;
-            } else {
-                alert(response.message);
+        if (response.code == 0) {
+            var dataList = response['data'];
+            for (var i = 0; i < dataList.length; i++) {
+                let branchCode = dataList[i]["branchCode"];
+                let branchName = dataList[i]["branchName"];
+                $('#dept').append($('<option />', { value: branchCode, text: branchName }));
+                $('#branch').append($('<option />', { value: branchCode, text: branchName }));
             }
+        } else if (response.code == 2) {
+            tokenCheckFailed(response);
+            return;
+        } else {
+            alert(response.message);
+        }
     });
 }
 
@@ -365,15 +364,15 @@ function update(type) {
     let requestURL = `${ip}webcam_web_api/api/${type}`;
     let dataJSON = localStorage.getItem("checkData");
     HttpUtils.patch(requestURL, dataJSON).then(async (response) => {
-            if (response.code == 2) {
+        if (response.code == 2) {
             tokenCheckFailed(response);
-                return;
-            }
-            await sendLog(localStorage.getItem("userId"), response.message);
-            alert(response.message);
-            $("#submitBtn").attr("disabled", false);
-            if (response.code == 0) location.href = "index.html";
-            else history.back();
+            return;
+        }
+        await sendLog(localStorage.getItem("userId"), response.message);
+        alert(response.message);
+        $("#submitBtn").attr("disabled", false);
+        if (response.code == 0) location.href = "index.html";
+        else history.back();
     })
 }
 
