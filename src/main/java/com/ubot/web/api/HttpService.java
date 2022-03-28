@@ -3,6 +3,8 @@ package com.ubot.web.api;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,12 +15,13 @@ import org.json.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ubot.web.db.dao.UserSessionDao;
+import com.ubot.web.db.dao.UserTokenDao;
 import com.ubot.web.db.vo.EaiVO;
-import com.ubot.web.db.vo.UserSession;
+import com.ubot.web.db.vo.UserToken;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -41,12 +44,14 @@ public class HttpService {
 	private HttpServletRequest httpRequest;
 	private final ObjectMapper mapper;
 	private final Logger logger;
-	private final UserSessionDao userSessionDao;
+	private final UserTokenDao userTokenDao;
+	private static final long EXPIRATION_TIME = 1000;
+	private static final String SECRET = "b61DR7Rm8drVqMy3";
 
 	public HttpService() {
 		this.mapper = new ObjectMapper();
 		this.logger = LogManager.getLogger(this.getClass());
-		this.userSessionDao = new UserSessionDao();
+		this.userTokenDao = new UserTokenDao();
 	}
 
 	@POST
@@ -81,8 +86,6 @@ public class HttpService {
 				String errMessage = "";
 				StringBuffer errMessageBuffer = new StringBuffer("AD驗證登入失敗, 原因: ");
 				JSONObject result = new JSONObject();
-				HttpSession session = httpRequest.getSession();
-				UserSession userSession = new UserSession();
 
 				try {
 					Response clientResponse = sendToAdHub(eaiVO);
@@ -93,11 +96,7 @@ public class HttpService {
 						logger.info(responseString);
 						if (rc2.equals("M000")) {
 							message = String.format(message, eaiVO.getLoginId());
-							userSession.setSessionId(session.getId());
-							userSession.setUserId(eaiVO.getLoginId());
-							userSession.setIp(httpRequest.getRemoteAddr());
 
-							userSessionDao.deleteBeforeInsertQuery(userSession);
 							logger.info(message);
 							result.put("message", message);
 							result.put("code", "0");
@@ -113,6 +112,11 @@ public class HttpService {
 					timer.cancel();
 				} catch (Exception e) {
 					setErrResult(result, e.getMessage());
+		UserToken userToken = new UserToken();
+					userToken.setTokenId(token);
+					userToken.setUserId(eaiVO.getLoginId());
+					userToken.setIp(httpRequest.getRemoteAddr());
+					userTokenDao.deleteBeforeInsertQuery(userToken);
 				}
 				asyncResponse.resume(Response.status(200).entity(result.toString()).build());
 			}
@@ -143,5 +147,16 @@ public class HttpService {
 		logger.error(message);
 		result.put("code", 1);
 		result.put("message", message);
+	}
+
+	/**
+	 * 簽發JWT
+	 */
+	private String getToken(EaiVO userDetails) {
+		Map<String, Object> claims = new HashMap<String, Object>();
+		claims.put("userId", userDetails.getLoginId());
+
+		return Jwts.builder().setClaims(claims).setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+				.signWith(SignatureAlgorithm.HS512, SECRET).compact();
 	}
 }

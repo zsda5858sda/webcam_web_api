@@ -10,26 +10,26 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ubot.web.db.vo.UserSession;
+import com.ubot.web.db.vo.UserToken;
 
-//有關對usersession表的CRUD
-public class UserSessionDao extends BaseDao {
+//有關對usertoken表的CRUD
+public class UserTokenDao extends BaseDao {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 
-	public Optional<UserSession> selectById(String id) throws Exception {
+	public Optional<UserToken> selectById(String id) throws Exception {
 		Connection conn = getConnection();
-		String sql = String.format("select * from usersession where SESSIONID = '%s'", id);
+		String sql = String.format("select * from usertoken where SESSIONID = '%s'", id);
 		logger.info(sql);
-		UserSession userSession = null;
+		UserToken userToken = new UserToken();
 		try (Statement stat = conn.createStatement(); ResultSet resultSet = stat.executeQuery(sql);) {
 
 			while (resultSet.next()) {
-				userSession = new UserSession();
-				String sessionId = resultSet.getString("sessionId");
+				userToken = new UserToken();
+				String tokenId = resultSet.getString("tokenId");
 				String userId = resultSet.getString("userId");
 
-				userSession.setSessionId(sessionId);
-				userSession.setUserId(userId);
+				userToken.setTokenId(tokenId);
+				userToken.setUserId(userId);
 			}
 		} catch (SQLException e) {
 			throw new Exception(e.getMessage());
@@ -37,24 +37,24 @@ public class UserSessionDao extends BaseDao {
 			conn.close();
 		}
 
-		return Optional.ofNullable(userSession);
+		return Optional.ofNullable(userToken);
 	}
 
-	public void deleteBeforeInsertQuery(UserSession userSession) throws Exception {
+	public void deleteBeforeInsertQuery(UserToken userToken) throws Exception {
 		Connection conn = getConnection();
-		String deleteSql = "delete from usersession where USERID = ?";
-		String insertSql = "insert into usersession (SESSIONID, USERID, IP) values (?,?,?);";
+		String deleteSql = "delete from usertoken where USERID = ?";
+		String insertSql = "insert into usertoken (TOKENID, USERID, IP) values (?,?,?);";
 		try (PreparedStatement dps = conn.prepareStatement(deleteSql);
 				PreparedStatement ips = conn.prepareStatement(insertSql)) {
 
-			dps.setString(1, userSession.getUserId());
+			dps.setString(1, userToken.getUserId());
 			logger.info(dps.toString());
 			dps.execute();
 			dps.close();
 
-			ips.setString(1, userSession.getSessionId());
-			ips.setString(2, userSession.getUserId());
-			ips.setString(3, userSession.getIp());
+			ips.setString(1, userToken.getTokenId());
+			ips.setString(2, userToken.getUserId());
+			ips.setString(3, userToken.getIp());
 			logger.info(ips.toString());
 			ips.execute();
 			ips.close();

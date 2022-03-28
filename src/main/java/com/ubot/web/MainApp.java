@@ -4,7 +4,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.ubot.web.config.Config;
-import com.ubot.web.config.SessionConfig;
+import com.ubot.web.config.TokenConfig;
 import com.ubot.web.config.XSSFilter;
 import com.ubot.web.exception.NotFoundException;
 import com.ubot.web.exception.PrimaryKeyException;
@@ -21,11 +21,12 @@ public class MainApp extends ResourceConfig {
 		packages("com.ubot.web.api");
 		register(Config.class);
 		register(XSSFilter.class);
-		register(SessionConfig.class);
+		register(TokenConfig.class);
 		register(NotFoundException.class);
 		register(UnknownException.class);
 		register(PrimaryKeyException.class);
 		register(MultiPartFeature.class);
+
 	}
 
 }

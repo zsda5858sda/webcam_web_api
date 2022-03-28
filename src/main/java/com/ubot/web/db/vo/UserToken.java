@@ -1,18 +1,10 @@
 package com.ubot.web.db.vo;
 
-//供session參照，對應usersession表
-public class UserSession {
-	private String sessionId;
+//供token參照，對應usertoken表
+public class UserToken {
+	private String tokenId;
 	private String userId;
 	private String ip;
-
-	public String getSessionId() {
-		return sessionId;
-	}
-
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
 
 	public String getUserId() {
 		return userId;
@@ -28,5 +20,13 @@ public class UserSession {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public String getTokenId() {
+		return tokenId;
+	}
+
+	public void setTokenId(String tokenId) {
+		this.tokenId = tokenId;
 	}
 }
