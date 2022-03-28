@@ -101,6 +101,7 @@
         <div id="filePage"></div>
     </div>
     <div id="fade" class="black_overlay"></div>
+    
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
     <script src='js/jqGrid/jquery.jqGrid.min.js' type="text/javascript"></script>
@@ -222,8 +223,23 @@
         }
 
         function setPreviewButton(cellvalue, options, rowObject) {
-            let previewBtn = `<button type='button' title='預覽' style='margin: 0' onclick='window.open("${ip}webcam_web_api/api/File/preview?filePath=${rowObject['filePath']}")'>預覽</button>`;
+            let previewBtn = `<button type='button' title='預覽' style='margin: 0' onclick='preview("${ip}", "${rowObject['filePath']}")'>預覽</button>`;
             return previewBtn;
+        }
+
+        function preview(ip, filePath) {
+            let requestURL = `${ip}webcam_web_api/api/File/preview?filePath=${filePath}`;
+            return HttpUtils.getBlob(requestURL).then((binary) => {
+                let type = binary.type;
+                let url = URL.createObjectURL(binary);
+                var a = document.createElement('a');
+                a.style = "display: none";
+                a.href = url;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
         }
     </script>
 </body>
