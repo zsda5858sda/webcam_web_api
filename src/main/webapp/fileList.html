@@ -128,7 +128,7 @@
             let date = $("#date").val().replaceAll("-", "");
             HttpUtils.get(`${ip}webcam_web_api/api/File/searchByDate?date=${date}`).then((response) => {
                 if (response.code == 2) {
-                    sessionCheckFailed(response);
+                    tokenCheckFailed(response);
                     return;
                 }
 

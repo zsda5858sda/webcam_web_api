@@ -67,7 +67,7 @@
                         $('#oldWorkName').append($('<option />', { value: workType, text: workName }));
                     }
                 } else if (response.code == 2) {
-                    sessionCheckFailed(response);
+                    tokenCheckFailed(response);
                     return;
                 } else {
                     alert(response.message);

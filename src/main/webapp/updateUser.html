@@ -112,7 +112,7 @@
                         $('#uid').append($('<option />', { value: JSON.stringify(dataList[i]), text: dataList[i]["userId"] }));
                     }
                 } else if (response.code == 2) {
-                    sessionCheckFailed(response);
+                    tokenCheckFailed(response);
                     return;
                 } else {
                     alert(response.message);
@@ -145,7 +145,7 @@
                         idiv.appendChild(label);
                     }
                 } else if (response.code == 2) {
-                    sessionCheckFailed(response);
+                    tokenCheckFailed(response);
                     return;
                 } else {
                     alert(response.message);

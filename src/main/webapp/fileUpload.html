@@ -103,7 +103,7 @@
             for (var i = 0; i < video.length; i++) formdata.append('video', video[i]);
             HttpUtils.postFormdata(`${ip}webcam_web_api/api/File/upload`, formdata).then(async (response) => {
                 if (response.code == 2) {
-                    sessionCheckFailed(response);
+                    tokenCheckFailed(response);
                     return;
                 }
                 await sendLog(localStorage.getItem("userId"), response.message);
@@ -124,7 +124,7 @@
                         $('#workType').append($('<option />', { value: workType, text: workName }));
                     }
                 } else if (response.code == 2) {
-                    sessionCheckFailed(response);
+                    tokenCheckFailed(response);
                     return;
                 } else {
                     alert(returnData.message);
